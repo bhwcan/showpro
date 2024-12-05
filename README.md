@@ -58,7 +58,7 @@ The song view is a simple window that displays the chordpro file. The chords are
 
 The song list windows displays a grid with the databasse Id; chordpro Title, and Subtitile; the Book with subdirectory name; and the relative path name. Move around the grid using standard directional keys and mouse clicks. Left clicking in the file name cell will pop up a simple edit window.
 
-![2024-12-02-09-23-59-image](https://github.com/user-attachments/assets/fc15a75e-f5e9-49a9-a5c2-133d25016af7)
+![image](https://github.com/user-attachments/assets/2c396471-5b90-42a1-8329-4c800abc4ad6)
 
 #### Song List Buttons
 
@@ -79,19 +79,21 @@ The hot keys allow the operator to modify the song view window and the buttons w
 | Key     | Action                                                                                                                            |
 | ------- | --------------------------------------------------------------------------------------------------------------------------------- |
 | enter   | Display song in view window                                                                                                       |
+| del     | Mark song as DEL                                                                                                                  |
 | b       | Enter the book drop down to select a new book                                                                                     |
-| s       | Enter the first word box for search. To move between buttons use tab and shift-tab. Search starts when Search button is pressed.  |
-| c       | Select clear button, enter to press                                                                                               |
+| s       | Enter the first word box for search. To move between buttons use tab and shift-tab.                                               |
+| c       | Clear the search mode and return to book mode.                                                                                    |
 | e       | Edit will pop up a simple edit window to modify cordpro file                                                                      |
-| 0       | Bold chords in view window                                                                                                        |
-| 1       | Red chords in view window                                                                                                         |
-| 2       | Blue chords in view window                                                                                                        |
-| 3       | Green chords in view window                                                                                                       |
+| 0       | Set stars to zero                                                                                                                 |
+| 1       | Set stars to one                                                                                                                  |
+| 2       | Set stars to two                                                                                                                  |
+| 3       | Set stars to three                                                                                                                |
 | z       | Zoom In on view window                                                                                                            |
 | x       | Zoom out on view window                                                                                                           |
 | t       | Transpose up on view window                                                                                                       |
 | y       | Transpose down on view window                                                                                                     |
 | u       | Save transpose to song file                                                                                                       |
+| v       | Toggle chord colors                                                                                                               |
 | m       | Scroll view window down one line                                                                                                  |
 | k       | Scroll view window up one line                                                                                                    |
 | o       | Order (sort) the column containing selected.                                                                                      |
