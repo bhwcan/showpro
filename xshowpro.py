@@ -121,10 +121,9 @@ class Song:
       cd += 1
     l = 0
     for lyric in self.lyrics:
-      if cd < len(self.directives):
-        while self.directives[cd].y == l:
-          output += self.directives[cd].line
-          cd += 1
+      while cd < len(self.directives) and self.directives[cd].y == l:
+        output += self.directives[cd].line
+        cd += 1
       output += lyric
       l += 1
     while cd < len(self.directives):
@@ -912,27 +911,6 @@ class MainWindow(wx.Frame):
 
     self.Raise()
     self.Show()
-
-  # def on_key_pressed(self, event):
-  #   delay = 0
-  #   jump = 5
-  #   steps = 10
-  #   key = event.GetKeyCode()
-  #   print(key)
-  #   if key == 315:
-  #     y = self.control.G
-  #     self.control.ScrollLines(-jump)
-  #     #for step in range(0,steps):
-  #     #  prow = self.control.GetScrollPos(wx.VERTICAL)
-  #     #  prow -= jump
-  #     #  self.control.SetScrollPos(wx.VERTICAL, prow)
-  #     #  time.sleep(delay)
-  #   elif key == 317:
-  #     self.control.ScrollLines(jump)
-  #     #for step in range(0,steps):
-  #     #  prow = self.control.GetScrollPos(wx.VERTICAL)
-  #     #  prow += jump
-  #     #  self.control.SetScrollPos(wx.VERTICAL, prow)
     
   def OnTextURL(self, event):
     #print('OnTextURL')
@@ -952,9 +930,10 @@ class MainWindow(wx.Frame):
       self.song.transform(-1)
 
   def OnSave(self,e):
+    #print("onSave:", self.filename)
     if self.song != None:
       output = self.song.save()
-      f = open(self.filename, 'w')
+      f = open(self.filename, 'w', encoding="utf-8")
       f.write(output)
       f.close()
     
