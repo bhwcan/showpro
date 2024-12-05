@@ -510,7 +510,7 @@ class SongPanel(wx.Panel):
     self.searchtxt1 = wx.TextCtrl(self, style=wx.TE_PROCESS_ENTER)
     self.searchop = wx.ComboBox(self, choices=["And", "Or", "Not" ], style=wx.CB_DROPDOWN|wx.TE_READONLY)
     self.searchop.SetValue("And")
-    self.searchtxt2 = wx.TextCtrl(self)
+    self.searchtxt2 = wx.TextCtrl(self, style=wx.TE_PROCESS_ENTER)
     self.searchclear = wx.Button(self, label="Clear")
     self.rebuildbutton = wx.Button(self, label="Rebuild")
 
@@ -539,6 +539,7 @@ class SongPanel(wx.Panel):
     self.grid.Bind(wx.grid.EVT_GRID_CELL_LEFT_CLICK, self.on_cell_click)
     self.searchbutton.Bind(wx.EVT_BUTTON, self.on_button_click)
     self.searchtxt1.Bind(wx.EVT_TEXT_ENTER, self.on_button_click)
+    self.searchtxt2.Bind(wx.EVT_TEXT_ENTER, self.on_button_click)
     self.editbook.Bind(wx.EVT_COMBOBOX, self.bookselect)
     self.searchclear.Bind(wx.EVT_BUTTON, self.on_button_clear)
     self.grid.Bind(wx.grid.EVT_GRID_LABEL_LEFT_CLICK, self.on_label_click)
@@ -594,9 +595,12 @@ class SongPanel(wx.Panel):
         self.mf.song.display()
     elif key == 127: # DEL
       row = self.grid.GetGridCursorRow()
-      filename = os.path.join(self.db.getpath(), self.grid.GetCellValue(row,4), self.grid.GetCellValue(row,5))
-      sidstr = self.grid.GetCellValue(row,0)
-      self.setstars(sidstr, filename, -1)
+      filevalue = self.grid.GetCellValue(row,5)
+      if len(filevalue) > 0:
+        sidstr = self.grid.GetCellValue(row,0)
+        book = self.grid.GetCellValue(row,4)
+        filename = os.path.join(self.db.getpath(), book, filevalue)
+        self.setstars(sidstr, book, filename, -1)
     elif key == 69: # e for edit
       row = self.grid.GetGridCursorRow()
       filename = os.path.join(self.db.getpath(), self.grid.GetCellValue(row,4), self.grid.GetCellValue(row,5))
@@ -618,10 +622,13 @@ class SongPanel(wx.Panel):
       self.on_button_clear(event)
     elif key > 47 and key < 52: # 0-3 for number of stars
       row = self.grid.GetGridCursorRow()
-      filename = os.path.join(self.db.getpath(), self.grid.GetCellValue(row,4), self.grid.GetCellValue(row,5))
-      sidstr = self.grid.GetCellValue(row,0)
-      value = key - 48
-      self.setstars(sidstr, filename, value)
+      filevalue = self.grid.GetCellValue(row,5)
+      if len(filevalue) > 0:
+        sidstr = self.grid.GetCellValue(row,0)
+        book = self.grid.GetCellValue(row,4)
+        filename = os.path.join(self.db.getpath(), book, filevalue)
+        value = key - 48
+        self.setstars(sidstr, book, filename, value)
     elif key == 90: # z zoom in
       self.mf.OnZoomIn(event)
     elif key == 88: # x zoom out
@@ -644,7 +651,7 @@ class SongPanel(wx.Panel):
     else:
       event.Skip()
 
-  def setstars(self, sidstr, filename, value):
+  def setstars(self, sidstr, book, filename, value):
     if os.path.isfile(filename):
       f = open(filename, 'r', encoding="utf-8", errors='ignore')
       data = f.read()
@@ -667,16 +674,22 @@ class SongPanel(wx.Panel):
       # this should work if the file was found
       sid = int(sidstr)
       self.db.setSongValue(sid, 0, value)
+      if book in self.books:
+        del self.books[book]
+      if "All" in self.books: 
+        del self.books["All"]
       if self.insearch:
-        self.searchlist = self.db.search(self.search, self.operator, self.search2)
+        self.searchlist = sorted(self.db.search(self.search, self.operator, self.search2), key=lambda x: x[self.currentsortcol])
         self.gridbook(self.searchlist)
       else:
-        self.books[self.currentbook] = self.db.getSongs(self.currentbook)
-        self.gridbook(self.books[self.currentbook])
+        self.loadbook()
 
   def loadbook(self):
     if self.currentbook not in self.books:
-      self.books[self.currentbook] = self.db.getSongs(self.currentbook)
+      if self.currentsortcol  == 0:
+        self.books[self.currentbook] = self.db.getSongs(self.currentbook)
+      else:
+        self.books[self.currentbook] = sorted(self.db.getSongs(self.currentbook), key=lambda x: x[self.currentsortcol])
     if self.insearch:
       self.searchtxt1.Clear()
       self.searchop.SetValue("And")
@@ -748,7 +761,7 @@ class SongPanel(wx.Panel):
       if col != self.currentsortcol:
         self.books[self.currentbook] = sorted(self.books[self.currentbook], key=lambda x: x[col])
         self.loadbook()
-        self.currentsortcol = col
+    self.currentsortcol = col
     
   def on_label_click(self, event):
     col = event.GetCol()
@@ -771,6 +784,8 @@ class SongPanel(wx.Panel):
     self.operator = self.searchop.GetValue()
     self.search2 = self.searchtxt2.GetValue().strip().lower()
     self.searchlist = self.db.search(self.search, self.operator, self.search2)
+    if self.currentsortcol != 0:
+      self.searchlist = sorted(self.searchlist, key=lambda x: x[self.currentsortcol])
     self.insearch = True
     self.gridbook(self.searchlist)
     
@@ -788,8 +803,7 @@ class SongPanel(wx.Panel):
       else:
         editframe = EditWindow(self.mf, filename, self.display)
         #subprocess.Popen(["emacs", filename], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-    else:
-      event.Skip()
+    event.Skip()
     
 class SongWindow(wx.Frame):
   def __init__(self, parent, title):
