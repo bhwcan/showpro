@@ -3,15 +3,10 @@
 #(c) Byron Walton, bhwcan@netscape.net
 #
 import wx
-#import wx.grid
-#import string
-#import webbrowser
-#from pathlib import Path
 
 #local imports
 from xsp_database import Database
 from xsp_displays import Displays
-from xsp_song import Song
 from xsp_songpanel import SongPanel
 from xsp_songwindow import SongWindow
 from xsp_viewwindow import ViewWindow
@@ -37,8 +32,8 @@ listrect = displays.getListRect()
 # open the windows
 songframe = SongWindow(None, "Showpro Songs")
 viewframe = ViewWindow(songframe)
-viewframe.SetPosition(wx.Point(viewrect[0], viewrect[1]+30))
-viewframe.SetSize(wx.Size(viewrect[2],viewrect[3]-30))
+viewframe.SetPosition(wx.Point(viewrect[0], viewrect[1]+30)) # for mac top bar
+viewframe.SetSize(wx.Size(viewrect[2],viewrect[3]-70)) # for mac top bar and window bottom
 songframe.SetPosition(wx.Point(listrect[0], listrect[1]+30))
 panel = SongPanel(songframe, viewframe, db, listrect)
 songframe.Show()

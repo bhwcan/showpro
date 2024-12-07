@@ -1,5 +1,6 @@
 import os
 import json
+import string
 from pathlib import Path
 
 class Database():
@@ -105,7 +106,7 @@ class Database():
 #    f.close()
 #    return self.gettitles(data)
 
-  def rebuild(self, statusbar):
+  def rebuild(self, sw):
     #print("db.rebuild")
     bookno = 0
     booknames = None
@@ -134,9 +135,10 @@ class Database():
             data = self.readsong(bookname, rfile)
             (title, subtitle, star) = self.gettitles(data)
             if title != "":
-              #print("titles:", sid, title, subtitle)
-              if statusbar != None:
-                statusbar.SetStatusText("Rebuilding indexes: {:05d}".format(sid), 0)
+              if sid % 100 == 0 and sw != None:
+                #print("titles:", sid, title, subtitle, statusbar)
+                text = "Rebuilding indexes: {:05d}".format(sid)
+                sw.setstatus(text)
               self.songs.append([ star, title, subtitle, booknames[bookno], rfile ])
               self.idxtitle(sid, title)
               self.idxtitle(sid, subtitle)

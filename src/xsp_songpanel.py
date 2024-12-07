@@ -62,6 +62,7 @@ class SongPanel(wx.Panel):
     self.grid.SetColSize(3, 300)
     self.grid.AutoSizeColumn(4)
     self.grid.SetColSize(5, 300)
+    self.grid.DisableDragRowSize()
 
     self.grid.Bind(wx.grid.EVT_GRID_CELL_LEFT_CLICK, self.on_cell_click)
     self.searchbutton.Bind(wx.EVT_BUTTON, self.on_button_click)
@@ -93,7 +94,7 @@ class SongPanel(wx.Panel):
 
   def rebuildindexes(self,event):
     currentfound = False
-    self.db.rebuild(self.Parent.statusbar)
+    self.db.rebuild(self.Parent)
     self.booklist = []
     books = self.db.getBooks()
     self.editbook.Clear()
@@ -264,7 +265,7 @@ class SongPanel(wx.Panel):
       songtxt = " search songs"
     else:
       songtxt = " book songs"
-    self.Parent.statusbar.SetStatusText(str(row) + songtxt, 0)
+    self.Parent.setstatus(str(row) + songtxt)
     #print("set cursor at start", index, currentrow, currentcol)
     self.grid.SetGridCursor(currentrow,currentcol)
     self.grid.MakeCellVisible(currentrow,currentcol)

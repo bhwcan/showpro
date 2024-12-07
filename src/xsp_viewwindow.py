@@ -1,4 +1,6 @@
 import wx
+import webbrowser
+
 from xsp_song import Song
 
 class ViewWindow(wx.Frame):
