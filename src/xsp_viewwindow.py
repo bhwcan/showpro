@@ -33,18 +33,11 @@ class ViewWindow(wx.Frame):
     chordBlue = chordmenu.Append(1003, "&Blue", "Set chords to blue")
     chordGreen= chordmenu.Append(1004, "&Green","Set chords to green")
 
-    # Setting up the menu.
-    transmenu= wx.Menu()
-    transplus = transmenu.Append(2005, "Up &+","Transpose up one step")
-    transminus = transmenu.Append(2006, "Down &-", "Transpose down one step")
-    transave = transmenu.Append(wx.ID_SAVE, "&Save", "Save transformation to chordpro file")
-
     # Creating the menubar.
     menuBar = wx.MenuBar()
     menuBar.Append(filemenu,"&File") # Adding the "filemenu" to the MenuBar
     menuBar.Append(zoommenu,"&Zoom") # Adding the "filemenu" to the MenuBar
     menuBar.Append(chordmenu,"&Color") # Adding the "filemenu" to the MenuBar
-    menuBar.Append(transmenu,"&Transpose") # Adding the "filemenu" to the MenuBar
     self.SetMenuBar(menuBar)  # Adding the MenuBar to the Frame content.
 
     # Events.
@@ -56,9 +49,6 @@ class ViewWindow(wx.Frame):
     self.Bind(wx.EVT_MENU, self.OnRed, chordRed)
     self.Bind(wx.EVT_MENU, self.OnBlue, chordBlue)
     self.Bind(wx.EVT_MENU, self.OnGreen, chordGreen)
-    self.Bind(wx.EVT_MENU, self.OnPlus, transplus)
-    self.Bind(wx.EVT_MENU, self.OnMinus, transminus)
-    self.Bind(wx.EVT_MENU, self.OnSave, transave)
     self.Bind(wx.EVT_TEXT_URL, self.OnTextURL)
 
     self.Raise()
@@ -73,22 +63,6 @@ class ViewWindow(wx.Frame):
         webbrowser.open_new_tab(url)
     event.Skip()
 
-  def OnPlus(self,e):
-    if self.song != None:
-      self.song.transform(1)
-
-  def OnMinus(self,e):
-    if self.song != None:
-      self.song.transform(-1)
-
-  def OnSave(self,e):
-    #print("onSave:", self.filename)
-    if self.song != None:
-      output = self.song.save()
-      f = open(self.filename, 'w', encoding="utf-8")
-      f.write(output)
-      f.close()
-    
   def OnBold(self,e):
     self.chordcolor = 0
     if self.song != None:

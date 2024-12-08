@@ -1,10 +1,11 @@
 import wx
 
 class EditWindow(wx.Frame):
-  def __init__(self, parent, filename, display):
+  def __init__(self, parent, filename):
     self.filename = filename
 
-    wx.Frame.__init__(self, parent, title=filename, pos=(display[0]+200, display[1]+100), size=(800,600), style=wx.DEFAULT_FRAME_STYLE)
+    wx.Frame.__init__(self, parent, title=filename, size=(800,600), style=wx.DEFAULT_FRAME_STYLE)
+
     self.control = wx.TextCtrl(self, style=wx.TE_MULTILINE)
     font=wx.Font(12, wx.FONTFAMILY_TELETYPE, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False)
     self.control.SetFont(font)
