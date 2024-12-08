@@ -35,7 +35,7 @@ It uses chordpro files installed in subdirectories under the users Documents fol
 
 The song view is a simple window that displays the chordpro file. The chords are presented inline as bolded.
 
-![2024-12-02-08-35-27-image](https://github.com/user-attachments/assets/f04686d9-2c61-42ad-8210-21919380f82e)
+![image](https://github.com/user-attachments/assets/49b3ccae-3713-4e48-863e-1b6ff23b3d9d)
 
 #### Song View Menu
 
@@ -49,10 +49,6 @@ The song view is a simple window that displays the chordpro file. The chords are
   - Red - bold and red chords
   - Blue - bold and blue chords
   - Green - bold and green chords
-- Transpose
-  - Up + - transpose up one step (key)
-  - Down + - transpose down one step (key)
-  - Save - save the transpose to the chordpro file
 
 ### Song List
 
