@@ -43,7 +43,13 @@ class SongGrid(wx.grid.Grid):
       row = self.GetGridCursorRow()
       filevalue = self.GetCellValue(row,5)
       if len(filevalue) > 0:
-        editframe = EditWindow(self, self.db.getsongpath(self.GetCellValue(row,4), filevalue))
+        pos = self.Parent.Parent.GetPosition()
+        pos[0] += 100
+        pos[1] += 100
+        size = self.Parent.Parent.GetSize()
+        size[0] -= 200
+        size[1] -= 200
+        editframe = EditWindow(self, self.db.getsongpath(self.GetCellValue(row,4), filevalue), pos, size)
     elif key == 86: # v for view color (sick)
       if self.mf.song != None:
         color = self.mf.chordcolor
@@ -186,7 +192,13 @@ class SongGrid(wx.grid.Grid):
         self.mf.opensong(self.db.readsong(bookvalue, filevalue))
         self.mf.song.display()
       else:
-        editframe = EditWindow(self, self.db.getsongpath(bookvalue, filevalue))
+        pos = self.Parent.Parent.GetPosition()
+        pos[0] += 100
+        pos[1] += 100
+        size = self.Parent.Parent.GetSize()
+        size[0] -= 200
+        size[1] -= 200
+        editframe = EditWindow(self, self.db.getsongpath(bookvalue, filevalue), pos, size)
     event.Skip()
 
   def sortcol(self, col):
