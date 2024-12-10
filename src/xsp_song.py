@@ -147,6 +147,7 @@ class Song:
     if wx.Platform == "__WXMAC__":
       face = "Menlo"
     choruson = False
+    highlighton = False
     cordattr = wx.TextAttr(wx.BLACK, font=wx.Font(self.textsize, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, False, face))
     if self.chordcolor == 1:
       cordattr = wx.TextAttr(wx.Colour(120,0,0), font=wx.Font(self.textsize, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, False, face))
@@ -157,7 +158,8 @@ class Song:
     boldattr = wx.TextAttr(wx.BLACK, font=wx.Font(self.textsize, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, False, face))
     fontattr = wx.TextAttr(wx.BLACK, font=wx.Font(self.textsize, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, face))
     itlcattr = wx.TextAttr(wx.BLACK, font=wx.Font(self.textsize, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_SLANT, wx.FONTWEIGHT_NORMAL, False, face))
-    
+    highlight = wx.Colour(200,200,200) #grey
+
     cd = 0
     while cd < len(self.directives) and self.directives[cd].y <= 0:
       cd += 1
@@ -182,17 +184,38 @@ class Song:
         if d.name == "end_of_chorus" or d.name == "eoc":
           choruson = False
           #print("end_of_chorus");
+        if d.name == "start_of_bridge" or d.name == "sob":
+          highlighton = True
+          #print("start_of_chorus");
+          #cordattr.SetBackgroundColour(highlight)
+          #fontattr.SetBackgroundColour(highlight)
+        if d.name == "end_of_bridge" or d.name == "eob":
+          highlighton = False
+          #cordattr.SetBackgroundColour(wx.WHITE)
+          #fontattr.SetBackgroundColour(wx.WHITE)
+          #choruson = False
+          #print("end_of_chorus");
         if d.name == "comment" or d.name == "c" or\
            d.name == "comment_italic" or d.name == "ci":
           #print("comment:", d.text)
           rtc.SetDefaultStyle(itlcattr)
+          if choruson:
+            rtc.WriteText(self.tab)
           rtc.WriteText(self.tab + d.text + "\n")
           rtc.SetDefaultStyle(fontattr)
         cd += 1
       s = 0
+      fontattr.SetBackgroundColour(wx.WHITE)
+      rtc.SetDefaultStyle(fontattr)
       rtc.WriteText(self.tab) # normal tab
       if choruson:
         rtc.WriteText(self.tab) # chorus tab
+      if highlighton:
+        fontattr.SetBackgroundColour(highlight)
+        cordattr.SetBackgroundColour(highlight)
+        rtc.SetDefaultStyle(fontattr)
+      else:
+        cordattr.SetBackgroundColour(wx.WHITE)
       while True:
         cs = lyric.find('[',s)
         if cs < 0:
