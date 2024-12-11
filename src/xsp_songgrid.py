@@ -32,14 +32,14 @@ class SongGrid(wx.grid.Grid):
 
   def on_key_pressed(self,event):
     key = event.GetKeyCode()
-    #print(key)
-    if key == 13: # Enter
+    #print(key, chr(key))
+    if key == 13: # Enter to show
       row = self.GetGridCursorRow()
       filevalue = self.GetCellValue(row,5)
       if len(filevalue) > 0:
         self.mf.opensong(self.db.readsong(self.GetCellValue(row,4), filevalue))
         self.mf.song.display()
-    elif key == 69: # e for edit
+    elif key == 96: # ` baclquote for edit
       row = self.GetGridCursorRow()
       filevalue = self.GetCellValue(row,5)
       if len(filevalue) > 0:
@@ -50,7 +50,7 @@ class SongGrid(wx.grid.Grid):
         size[0] -= 200
         size[1] -= 200
         editframe = EditWindow(self, self.db.getsongpath(self.GetCellValue(row,4), filevalue), pos, size)
-    elif key == 86: # v for view color (sick)
+    elif key == 44: # , comma for view color (sick)
       if self.mf.song != None:
         color = self.mf.chordcolor
         color += 1
@@ -58,24 +58,47 @@ class SongGrid(wx.grid.Grid):
           color = 0
         self.mf.chordcolor = color
         self.mf.song.setchordcolor(color)
-    elif key == 90: # z zoom in
+    elif key == 314 and event.ControlDown(): # ctrl-leftarrow zoom in
       self.mf.OnZoomIn(event)
-    elif key == 88: # x zoom out
+    elif key == 316 and event.ControlDown(): # ctrl-rightarrow zoom out
       self.mf.OnZoomOut(event)
-    elif key == 84 or key == 61: # t tranpose up
+    elif key == 93: # ] tranpose up
       self.mf.song.transform(1)
-    elif key == 89 or key == 45: # y transpose down
+    elif key == 91: # [ transpose down
       self.mf.song.transform(-1)
-    elif key == 85: # u save transpose
+    elif key == 92: # \ save transpose
       row = self.GetGridCursorRow()
       filevalue = self.GetCellValue(row,5)
       if len(filevalue) > 0:
         self.db.writesong(self.GetCellValue(row,4), filevalue, self.mf.song.save())
-    elif key == 77: # m move down
+        self.mf.song.display()
+    elif key == 317 and event.AltDown(): # alt-downarrow next song
+      row = self.GetGridCursorRow()
+      if row < len(self.songs)-1:
+        row += 1
+        filevalue = self.GetCellValue(row,5)
+        if len(filevalue) > 0:
+          self.mf.opensong(self.db.readsong(self.GetCellValue(row,4), filevalue))
+          self.mf.song.display()
+          col = self.GetGridCursorCol()
+          self.SetGridCursor(row,col)
+          self.MakeCellVisible(row,col)
+    elif key == 315 and event.AltDown(): # alt-uparrow  previos song
+      row = self.GetGridCursorRow()
+      if row > 0:
+        row -= 1
+        filevalue = self.GetCellValue(row,5)
+        if len(filevalue) > 0:
+          self.mf.opensong(self.db.readsong(self.GetCellValue(row,4), filevalue))
+          self.mf.song.display()
+          col = self.GetGridCursorCol()
+          self.SetGridCursor(row,col)
+          self.MakeCellVisible(row,col)
+    elif key == 317 and event.ControlDown(): # ctrl-downarrow move down
       self.mf.control.ScrollLines(1)
-    elif key == 75: # k move up
+    elif key == 315 and event.ControlDown(): # ctrl-uparrow  move up
       self.mf.control.ScrollLines(-1)
-    elif key == 79: # o for order
+    elif key == 46: # . period for order
       col = self.GetGridCursorCol()
       self.sortcol(col)
     elif key == 127: # DEL
@@ -86,7 +109,7 @@ class SongGrid(wx.grid.Grid):
         book = self.GetCellValue(row,4)
         self.songs[row][1] = -1
         self.setstars(sid, book, filevalue, -1)
-    elif key > 47 and key < 52: # 0-3 for number of stars
+    elif key > 47 and key < 52 and not event.AltDown(): # 0-3 for number of stars
       row = self.GetGridCursorRow()
       filevalue = self.GetCellValue(row,5)
       if len(filevalue) > 0:
@@ -95,6 +118,29 @@ class SongGrid(wx.grid.Grid):
         value = key - 48
         self.songs[row][1] = value
         self.setstars(sid, book, filevalue, value)
+    elif key == 60: # < first
+      col = self.GetGridCursorCol()
+      row =  0
+      self.SetGridCursor(row,col)
+      self.MakeCellVisible(row,col)
+    elif key == 62: # >  last
+      col = self.GetGridCursorCol()
+      row =  len(self.songs) - 1
+      self.SetGridCursor(row,col)
+      self.MakeCellVisible(row,col)
+    elif key > 64 and key < 91: # A - Z
+      col = self.GetGridCursorCol()
+      if col > 1 and col < 4:
+        if col != self.currentsortcol:
+          self.sortcol(col)
+        row = self.db.searchset(self.songs, col, chr(key))
+        while row < 0 and key > 64:
+          key -= 1
+          row = self.db.searchset(self.songs, col, chr(key))
+        if row >= 0:
+          self.SetGridCursor(row,col)
+          self.MakeCellVisible(row,col)
+        #print("search:", row, chr(key), self.GetColLabelValue(col))
     else:
       event.Skip()
 
@@ -144,7 +190,7 @@ class SongGrid(wx.grid.Grid):
     currentrow = 0
     if len(book) > self.numrows:
       appendrows = len(book) - self.numrows
-      self.grid.AppendRows(appendrows)
+      self.AppendRows(appendrows)
       self.numrows = len(book)
     for cr in self.colouredrows: # reset colours
         self.SetCellBackgroundColour(cr,1,wx.Colour(255,255,255))
@@ -203,7 +249,10 @@ class SongGrid(wx.grid.Grid):
 
   def sortcol(self, col):
     if col != self.currentsortcol:
-      self.songs = sorted(self.songs, key=lambda x: x[col])
+      if col > 1:
+        self.songs = sorted(self.songs, key=lambda x: x[col].lower())
+      else:
+        self.songs = sorted(self.songs, key=lambda x: x[col])
       self.gridsongs(self.songs)
       self.SetColLabelValue(self.currentsortcol, self.collables[self.currentsortcol])
       self.SetColLabelValue(col, self.colsortlables[col])

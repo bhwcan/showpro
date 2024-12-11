@@ -6,10 +6,7 @@ import wx
 
 #local imports
 from xsp_database import Database
-from xsp_displays import Displays
-from xsp_songpanel import SongPanel
-from xsp_songwindow import SongWindow
-from xsp_viewwindow import ViewWindow
+from xsp_mainwindow import MainWindow
 
 #MAIN
 #print("platform:", wx.Platform)
@@ -25,16 +22,8 @@ if not db.setrootpath():
   dlg.Destroy() # finally destroy it when finished.
   exit(10)
 
-displays = Displays()
-viewrect = displays.getViewRect()
-listrect = displays.getListRect()
 
 # open the windows
-songframe = SongWindow(None, "Showpro Songs")
-viewframe = ViewWindow(songframe)
-viewframe.SetPosition(wx.Point(viewrect[0], viewrect[1]+30)) # for mac top bar
-viewframe.SetSize(wx.Size(viewrect[2],viewrect[3]-70)) # for mac top bar and window bottom
-songframe.SetPosition(wx.Point(listrect[0], listrect[1]+30))
-panel = SongPanel(songframe, viewframe, db, listrect)
-songframe.Show()
+mainframe = MainWindow(db)
+mainframe.Show()
 app.MainLoop()

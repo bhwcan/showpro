@@ -159,7 +159,34 @@ class Database():
     with open(os.path.join(self.path, "songsidx.dat"), "w") as fh:
       json.dump(self.titleidx, fh)
 
-  def binary_search_array_of_arrays(self, target):
+  def searchset(self, songset, col, target):
+    # obviously assumes sorted set
+    first = -1
+    last = -1
+    found = -1
+    low = 0
+    high = len(songset) - 1
+
+    while low <= high:
+      mid = (low + high) // 2
+      first_element = songset[mid][col][0].upper()
+      if first_element == target:
+        found =  mid  # found the target array
+        break
+      elif first_element < target:
+        low = mid + 1
+      else:
+        high = mid - 1
+
+    if found >= 0:
+      first = found
+      while songset[first][col][0].upper() == target:
+        first -= 1
+      first += 1
+      
+    return first
+    
+  def searchindex(self, target):
     arrays = self.titleidx
     songlist = []
     first = -1
@@ -197,15 +224,15 @@ class Database():
   def search(self, search, operator, search2):
     resultset = []
     if search != None and len(search) > 0:
-      searchsongs = self.binary_search_array_of_arrays(search)
+      searchsongs = self.searchindex(search)
       if search2 != None and len(search2) > 0:
-        search2songs = self.binary_search_array_of_arrays(search2)
+        search2songs = self.searchindex(search2)
       else:
         search2 = None
     else:
       if search2 != None and len(search2) > 0:
         search = search2
-        searchsongs = self.binary_search_array_of_arrays(search)
+        searchsongs = self.searchindex(search)
         search2 = None
       else:
         return resultset # no data to search
