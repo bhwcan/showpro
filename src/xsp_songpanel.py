@@ -2,13 +2,13 @@ import wx
 from xsp_songgrid import SongGrid
 
 class SongPanel(wx.Panel):
-  def __init__(self, parent, mainframe, db):
+  def __init__(self, parent, mainframe, db, pp):
     wx.Panel.__init__(self, parent)
     self.mf = mainframe
     self.SetSize(1200,800)
     self.books = {}
     self.currentbook = "All"
-
+    self.pp = pp
     self.db = db
     #self.db.open()
 
@@ -69,6 +69,9 @@ class SongPanel(wx.Panel):
     #print(key)
     if key == 27: # Esc for quit
       self.mf.Parent.Close(True)
+    elif key == 13 and event.AltDown():
+      #print("Alt Enter")
+      song = self.addtoplaylist()
     elif key > 48 and key < 52 and event.AltDown(): # Alt 1,2,4 for window tabs
       notebook = self.GetParent()
       value = key - 49
@@ -77,6 +80,12 @@ class SongPanel(wx.Panel):
         notebook.GetParent().GetParent().pages[value].grid.SetFocus()
     else:
       event.Skip()
+
+  def addtoplaylist(self):
+      song = self.grid.getcurrentsong()
+      if song:
+        playlist = self.pp.addsong(song)
+        self.Parent.Parent.Parent.setstatus2(song[4] + " - " + song[2] + " added to playlist [" + playlist + "]")
 
   def loadbook(self):
     if self.currentbook not in self.books:

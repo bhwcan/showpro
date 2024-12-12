@@ -2,9 +2,10 @@ import wx
 from xsp_songgrid import SongGrid
 
 class SearchPanel(wx.Panel):
-  def __init__(self, parent, mainframe, db):
+  def __init__(self, parent, mainframe, db, pp):
     wx.Panel.__init__(self, parent)
     self.mf = mainframe
+    self.pp = pp
     self.SetSize(1200,800)
     self.searchlist = None
     self.insearch = False

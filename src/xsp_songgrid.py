@@ -33,7 +33,7 @@ class SongGrid(wx.grid.Grid):
   def on_key_pressed(self,event):
     key = event.GetKeyCode()
     #print(key, chr(key))
-    if key == 13: # Enter to show
+    if key == 13 and not event.AltDown(): # Enter to show
       row = self.GetGridCursorRow()
       filevalue = self.GetCellValue(row,5)
       if len(filevalue) > 0:
@@ -173,8 +173,15 @@ class SongGrid(wx.grid.Grid):
     self.AutoSizeColumn(4)
     self.SetColSize(5, 300)
 
-  def gridsongs(self, book):
-    self.songs = book
+  def gridclear(self):
+    self.ClearGrid()
+    for cr in self.colouredrows: # reset colours
+        self.SetCellBackgroundColour(cr,1,wx.Colour(255,255,255))
+    self.colouredrows = [] # reset colour list
+    
+  def gridsongs(self, book=None):
+    if book != None:
+      self.songs = book
     #print(book)
     index = -1
     currentcol = self.GetGridCursorCol()
@@ -185,17 +192,14 @@ class SongGrid(wx.grid.Grid):
     #print('['+sindex+']', type(sindex), index)
     #index = int(sindex)
     #index = int(self.grid.GetCellValue(currentrow, 0))
-    self.ClearGrid()
+    self.gridclear()
     row = 0
     currentrow = 0
-    if len(book) > self.numrows:
-      appendrows = len(book) - self.numrows
+    if len(self.songs) > self.numrows:
+      appendrows = len(self.songs) - self.numrows
       self.AppendRows(appendrows)
-      self.numrows = len(book)
-    for cr in self.colouredrows: # reset colours
-        self.SetCellBackgroundColour(cr,1,wx.Colour(255,255,255))
-    self.colouredrows = [] # reset colour list
-    for song in book:
+      self.numrows = len(self.songs)
+    for song in self.songs:
       #print(row, index, '=', song[0])
       if index > 0 and index == song[0]:
         #print("index found:", index, song[0])
@@ -257,7 +261,14 @@ class SongGrid(wx.grid.Grid):
       self.SetColLabelValue(self.currentsortcol, self.collables[self.currentsortcol])
       self.SetColLabelValue(col, self.colsortlables[col])
       self.currentsortcol = col
-    
+
+  def getcurrentsong(self):
+    row = self.GetGridCursorRow()
+    if row >= 0 and row < len(self.songs):
+      return self.songs[row]
+    else:
+      return None
+
   def on_label_click(self, event):
     col = event.GetCol()
     self.sortcol(col)

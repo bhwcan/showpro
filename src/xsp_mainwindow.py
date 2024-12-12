@@ -14,7 +14,8 @@ class MainWindow(wx.Frame):
     self.pages = []
 
     self.statusbar = self.CreateStatusBar() # A Statusbar in the bottom of the window
-    self.statusbar.SetFieldsCount(1)
+    self.statusbar.SetFieldsCount(2)
+    self.statusbar.SetStatusWidths([-1,-3])
 
     displays = Displays()
     viewrect = displays.getViewRect()
@@ -28,12 +29,13 @@ class MainWindow(wx.Frame):
     # Here we create a panel and a notebook on the panel
     p = wx.Panel(self)
     self.nb = wx.Notebook(p)
+    self.nb.Bind(wx.EVT_NOTEBOOK_PAGE_CHANGED, self.pagechanged)
 
-    bp = SongPanel(self.nb, self.vf, db)
-    self.pages.append(bp)
-    sp = SearchPanel(self.nb, self.vf, db)
-    self.pages.append(sp)
     pp = ListPanel(self.nb, self.vf, db)
+    bp = SongPanel(self.nb, self.vf, db, pp)
+    sp = SearchPanel(self.nb, self.vf, db, pp)
+    self.pages.append(bp)
+    self.pages.append(sp)
     self.pages.append(pp)
 
     # add the pages to the notebook with the label to show on the tab
@@ -47,6 +49,15 @@ class MainWindow(wx.Frame):
     sizer.Add(self.nb, 1, wx.EXPAND)
     p.SetSizer(sizer)
 
+  def pagechanged(self, event):
+    page = event.GetSelection()
+    #print("new page:", page)
+    if page == 2:
+      self.pages[2].showsongs()
+      
   def setstatus(self, text):
     #print(text)
     self.statusbar.SetStatusText(text, 0)
+
+  def setstatus2(self, text):
+    self.statusbar.SetStatusText(text, 1)
