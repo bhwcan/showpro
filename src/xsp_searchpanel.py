@@ -7,8 +7,7 @@ class SearchPanel(wx.Panel):
     self.mf = mainframe
     self.pp = pp
     self.SetSize(1200,800)
-    self.searchlist = None
-    self.insearch = False
+    self.searchlist = []
     self.search = ""
     self.operator = "And"
     self.search2 = ""
@@ -40,6 +39,7 @@ class SearchPanel(wx.Panel):
     self.searchtxt2.Bind(wx.EVT_TEXT_ENTER, self.on_button_click)
     self.searchclear.Bind(wx.EVT_BUTTON, self.on_button_clear)
     self.Bind(wx.EVT_KEY_DOWN, self.on_key_pressed)
+    self.grid.Bind(wx.grid.EVT_GRID_CELL_RIGHT_CLICK, self.on_right_click)
 
     topsizer = wx.BoxSizer(wx.HORIZONTAL)
     topsizer.Add(self.searchbutton, 0, wx.ALL, 10)
@@ -60,6 +60,9 @@ class SearchPanel(wx.Panel):
     #print(key)
     if key == 27: # Esc for quit
       self.mf.Parent.Close(True)
+    elif key == 13 and event.AltDown():
+      #print("Alt Enter")
+      self.addtoplaylist()
     elif key > 48 and key < 52 and event.AltDown(): # Alt 1,2,4 for window tabs
       notebook = self.GetParent()
       value = key - 49
@@ -69,6 +72,19 @@ class SearchPanel(wx.Panel):
     else:
       event.Skip()
 
+  def on_right_click(self, event):
+    self.addtoplaylist()
+    
+  def addtoplaylist(self):
+      song = self.grid.getcurrentsong()
+      if song:
+        playlist = self.pp.addsong(song)
+        self.Parent.Parent.Parent.setstatus2(song[4] + " - " + song[2] + " added to playlist [" + playlist + "]")
+
+  def showsongs(self):
+    self.Parent.Parent.Parent.setstatus(str(len(self.searchlist)) + " search songs")
+    self.Parent.Parent.Parent.setstatus2("")
+   
   def on_button_clear(self, event):
     self.searchtxt1.Clear()
     self.searchop.SetValue("And")
@@ -82,6 +98,6 @@ class SearchPanel(wx.Panel):
     self.searchlist = self.db.search(self.search, self.operator, self.search2)
     if self.grid.getcurrentsortcol() != 0:
       self.searchlist = sorted(self.searchlist, key=lambda x: x[self.grid.getcurrentsortcol()])
-    self.insearch = True
     self.grid.gridsongs(self.searchlist)
+    self.showsongs()
     

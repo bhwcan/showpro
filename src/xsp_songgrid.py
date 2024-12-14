@@ -6,8 +6,7 @@ class SongGrid(wx.grid.Grid):
   def __init__(self, parent, rows, db, mf):
     wx.grid.Grid.__init__(self, parent, size=(1200,600))
     
-    self.currentsortcol = 0
-    self.colouredrows = []
+    self.currentsortcol = -1
     self.stars = [ "☆☆☆", "★☆☆", "★★☆", "★★★" ]
     self.songs = []
     self.numrows = rows
@@ -22,9 +21,8 @@ class SongGrid(wx.grid.Grid):
     self.SetRowLabelSize(0)  # Hide row labels
     self.DisableDragRowSize()
 
-    for i in range(1, self.numcols):
+    for i in range(self.numcols):
       self.SetColLabelValue(i, self.collables[i])
-    self.SetColLabelValue(self.currentsortcol, self.colsortlables[self.currentsortcol])
 
     self.Bind(wx.grid.EVT_GRID_CELL_LEFT_CLICK, self.on_cell_click)
     self.Bind(wx.grid.EVT_GRID_LABEL_LEFT_CLICK, self.on_label_click)
@@ -102,13 +100,7 @@ class SongGrid(wx.grid.Grid):
       col = self.GetGridCursorCol()
       self.sortcol(col)
     elif key == 127: # DEL
-      row = self.GetGridCursorRow()
-      filevalue = self.GetCellValue(row,5)
-      if len(filevalue) > 0:
-        sid = int(self.GetCellValue(row,0))
-        book = self.GetCellValue(row,4)
-        self.songs[row][1] = -1
-        self.setstars(sid, book, filevalue, -1)
+      self.delrequested()
     elif key > 47 and key < 52 and not event.AltDown(): # 0-3 for number of stars
       row = self.GetGridCursorRow()
       filevalue = self.GetCellValue(row,5)
@@ -144,6 +136,15 @@ class SongGrid(wx.grid.Grid):
     else:
       event.Skip()
 
+  def delrequested(self):
+    row = self.GetGridCursorRow()
+    filevalue = self.GetCellValue(row,5)
+    if len(filevalue) > 0:
+      sid = int(self.GetCellValue(row,0))
+      book = self.GetCellValue(row,4)
+      self.songs[row][1] = -1
+      self.setstars(sid, book, filevalue, -1)
+    
   def setstars(self, sid, book, filename, value):
     data = self.db.readsong(book, filename)
     starstring = "#showpro: {}\n".format(value)
@@ -175,59 +176,63 @@ class SongGrid(wx.grid.Grid):
 
   def gridclear(self):
     self.ClearGrid()
-    for cr in self.colouredrows: # reset colours
-        self.SetCellBackgroundColour(cr,1,wx.Colour(255,255,255))
-    self.colouredrows = [] # reset colour list
+    for cr in range(len(self.songs)):
+        self.SetCellBackgroundColour(cr,1,wx.WHITE)
     
   def gridsongs(self, book=None):
-    if book != None:
-      self.songs = book
-    #print(book)
     index = -1
     currentcol = self.GetGridCursorCol()
     currentrow = self.GetGridCursorRow()
     sindex = self.GetCellValue(currentrow, 0)
     if len(sindex) > 0:
       index = int(sindex)
+    self.gridclear()
+    if book != None:
+      self.songs = book
+    #print(book)
     #print('['+sindex+']', type(sindex), index)
     #index = int(sindex)
     #index = int(self.grid.GetCellValue(currentrow, 0))
-    self.gridclear()
     row = 0
     currentrow = 0
     if len(self.songs) > self.numrows:
       appendrows = len(self.songs) - self.numrows
       self.AppendRows(appendrows)
-      self.numrows = len(self.songs)
+      self.numrows += appendrows
     for song in self.songs:
       #print(row, index, '=', song[0])
       if index > 0 and index == song[0]:
         #print("index found:", index, song[0])
         currentrow = row
-      self.SetCellValue(row, 0, str(song[0]))
-      if song[1] == 0:
-        self.SetCellValue(row, 1, self.stars[song[1]])
-      elif song[1] > 0:
-        self.SetCellValue(row, 1, self.stars[song[1]])
-        if song[1] == 1:
-          self.SetCellBackgroundColour(row,1,wx.YELLOW)
-        else:
-          self.SetCellBackgroundColour(row,1,wx.GREEN)
-        self.colouredrows.append(row)
-      else:
-        self.SetCellValue(row, 1, "DEL")
-        self.SetCellBackgroundColour(row,1,wx.RED)
-        self.colouredrows.append(row)
-      self.SetCellValue(row, 2, song[2])
-      self.SetCellValue(row, 3, song[3])
-      self.SetCellValue(row, 4, song[4])
-      self.SetCellValue(row, 5, song[5])
+      self.gridrow(row, song)
       row += 1
     #print("set cursor at start", index, currentrow, currentcol)
     self.SetGridCursor(currentrow,currentcol)
     self.MakeCellVisible(currentrow,currentcol)
     self.SetFocus()
     #wx.CallAfter(self.grid.SetGridCursor, 0, 1)
+
+  def gridrow(self, row, song):
+    coloured = False
+    self.SetCellValue(row, 0, str(song[0]))
+    if song[1] == 0:
+      self.SetCellValue(row, 1, self.stars[song[1]])
+      self.SetCellBackgroundColour(row,1,wx.WHITE)
+    elif song[1] > 0:
+      self.SetCellValue(row, 1, self.stars[song[1]])
+      if song[1] == 1:
+        self.SetCellBackgroundColour(row,1,wx.YELLOW)
+      else:
+        self.SetCellBackgroundColour(row,1,wx.GREEN)
+      coloured = True
+    else:
+      self.SetCellValue(row, 1, "DEL")
+      self.SetCellBackgroundColour(row,1,wx.RED)
+      coloured = True
+    self.SetCellValue(row, 2, song[2])
+    self.SetCellValue(row, 3, song[3])
+    self.SetCellValue(row, 4, song[4])
+    self.SetCellValue(row, 5, song[5])
     
   def on_cell_click(self, event):
     #print("Cell clicked:", event.GetRow(), event.GetCol())
@@ -258,7 +263,8 @@ class SongGrid(wx.grid.Grid):
       else:
         self.songs = sorted(self.songs, key=lambda x: x[col])
       self.gridsongs(self.songs)
-      self.SetColLabelValue(self.currentsortcol, self.collables[self.currentsortcol])
+      if self.currentsortcol >= 0:
+        self.SetColLabelValue(self.currentsortcol, self.collables[self.currentsortcol])
       self.SetColLabelValue(col, self.colsortlables[col])
       self.currentsortcol = col
 

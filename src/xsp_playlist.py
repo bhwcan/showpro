@@ -1,12 +1,12 @@
 import wx
-from xsp_songgrid import SongGrid
+from xsp_playlistgrid import PlayListGrid
 
 class ListPanel(wx.Panel):
   def __init__(self, parent, mainframe, db):
     wx.Panel.__init__(self, parent)
     self.mf = mainframe
     self.SetSize(1200,800)
-    self.numrows = 100
+    self.numrows = 1
     self.editlist = [ "Unsaved" ]
     self.playlists = {}
     self.currentplaylist = "Unsaved"
@@ -22,7 +22,7 @@ class ListPanel(wx.Panel):
     self.clearbutton.Bind(wx.EVT_BUTTON, self.on_clear)
     self.editbox.Bind(wx.EVT_COMBOBOX, self.listselect)
 
-    self.grid = SongGrid(self, self.numrows, self.db, self.mf) 
+    self.grid = PlayListGrid(self, self.numrows, self.db, self.mf) 
     self.grid.SetColSize(0, 50)
     self.grid.SetColSize(1, 50)
     self.grid.SetColSize(2, 300)
@@ -47,8 +47,9 @@ class ListPanel(wx.Panel):
     self.grid.gridsongs(self.playlists[self.currentplaylist])
 
   def on_clear(self, event):
-    self.playlists[self.currentplaylist] = []
     self.grid.gridclear()
+    self.playlists[self.currentplaylist] = []
+    self.statussongs()
    
   def on_save(self, event):
     self.grid.gridsongs()
@@ -59,6 +60,11 @@ class ListPanel(wx.Panel):
 
   def showsongs(self):
     self.grid.gridsongs(self.playlists[self.currentplaylist])
+    self.statussongs()
+    
+  def statussongs(self):
+    self.Parent.Parent.Parent.setstatus(str(len(self.playlists[self.currentplaylist])) + " playlist songs")
+    self.Parent.Parent.Parent.setstatus2("")
     
   def on_key_pressed(self,event):
     key = event.GetKeyCode()
@@ -73,3 +79,4 @@ class ListPanel(wx.Panel):
         notebook.GetParent().GetParent().pages[value].grid.SetFocus()
     else:
       event.Skip()
+

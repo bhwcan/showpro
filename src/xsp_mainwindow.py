@@ -52,8 +52,7 @@ class MainWindow(wx.Frame):
   def pagechanged(self, event):
     page = event.GetSelection()
     #print("new page:", page)
-    if page == 2:
-      self.pages[2].showsongs()
+    self.pages[page].showsongs()
       
   def setstatus(self, text):
     #print(text)

@@ -32,6 +32,7 @@ class SongPanel(wx.Panel):
     self.editbook.Bind(wx.EVT_COMBOBOX, self.bookselect)
     self.Bind(wx.EVT_KEY_DOWN, self.on_key_pressed)
     self.rebuildbutton.Bind(wx.EVT_BUTTON, self.rebuildindexes)
+    self.grid.Bind(wx.grid.EVT_GRID_CELL_RIGHT_CLICK, self.on_right_click)
 
     topsizer = wx.BoxSizer(wx.HORIZONTAL)
     topsizer.Add(self.editbook, 0, wx.EXPAND|wx.ALL, 10)
@@ -71,7 +72,7 @@ class SongPanel(wx.Panel):
       self.mf.Parent.Close(True)
     elif key == 13 and event.AltDown():
       #print("Alt Enter")
-      song = self.addtoplaylist()
+      self.addtoplaylist()
     elif key > 48 and key < 52 and event.AltDown(): # Alt 1,2,4 for window tabs
       notebook = self.GetParent()
       value = key - 49
@@ -81,6 +82,9 @@ class SongPanel(wx.Panel):
     else:
       event.Skip()
 
+  def on_right_click(self, event):
+    self.addtoplaylist()
+    
   def addtoplaylist(self):
       song = self.grid.getcurrentsong()
       if song:
@@ -92,7 +96,11 @@ class SongPanel(wx.Panel):
       self.books[self.currentbook] = self.db.getSongs(self.currentbook)
     self.books[self.currentbook] = sorted(self.db.getSongs(self.currentbook), key=lambda x: x[self.grid.getcurrentsortcol()])
     self.grid.gridsongs(self.books[self.currentbook])
+    self.showsongs()
+
+  def showsongs(self):
     self.Parent.Parent.Parent.setstatus(str(len(self.books[self.currentbook])) + " book songs")
+    self.Parent.Parent.Parent.setstatus2("")
 
   def bookselect(self, event):
     self.currentbook = self.editbook.GetValue()
