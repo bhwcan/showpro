@@ -28,6 +28,9 @@ It uses chordpro files installed in subdirectories under the users Documents fol
                 - booksidx.dat : book index file
                 - songs.dat : songs database
                 - songsidx.dat : songs word index file
+                - playlists
+                    - list1.plf
+                    - list2.plf
 
 ## Windows
 
@@ -37,63 +40,71 @@ The song view is a simple window that displays the chordpro file. The chords are
 
 ![image](https://github.com/user-attachments/assets/49b3ccae-3713-4e48-863e-1b6ff23b3d9d)
 
-#### Song View Menu
-
-- File
-  - About - simple message
-- Zoom
-  - Zoom In - increase font size
-  - Zoom Out - decrease font size
-- Color
-  - Bold - bold the chords
-  - Red - bold and red chords
-  - Blue - bold and blue chords
-  - Green - bold and green chords
-
 ### Song List
 
 The song list windows displays a grid with the databasse Id; chordpro Title, and Subtitile; the Book with subdirectory name; and the relative path name. Move around the grid using standard directional keys and mouse clicks. Left clicking in the file name cell will pop up a simple edit window.
 
-![image](https://github.com/user-attachments/assets/2c396471-5b90-42a1-8329-4c800abc4ad6)
+![image](https://github.com/user-attachments/assets/101ecf72-7459-458b-a2aa-d57d647733ad)
 
-#### Song List Buttons
+#### Books Tab Buttons
 
-Book - drop down list of available books. These are subdirectories in the showpro directory. In book mode the status will state the the number with book songs.
+Book List - drop down list of available books. These are subdirectories in the showpro directory. In book mode the status will state the the number with book songs.
 
-Search - does an indexed word search of all the songs in the database. It uses a full word, not a wild card, so enter a full word to get expected results. The search can use up to two different words with the operator relationship between them. The operators are And, Or, AndNot, OrNot. In search mode the status will state the number with search songs.
+Rebuild - rebuids the database and indexes. This is required when adding or removing new songs or books from the showpro directory. It will update the song database and indexes. This will recreate the song ids based on the input files.
+
+#### Search Tab Buttons
+
+Search - does an indexed word search of all the songs in the database. It uses a full word, not a wild card, so enter a full word to get expected results. The search can use up to two different words with the operator relationship between them. The operators are And, Or, or Not. In search mode the status will state the number with search songs.
+
+First word - first word of search.
+
+Operator List - drop down list of operators.
+
+Second word - second word of search.
 
 Clear - clear the search mode and return to book mode.
 
-Reload - reload the database and indexes. This is required when adding or removing new songs or books from the showpro directory. It will update the song database and indexes.
+#### PlayList Buttons
 
-Column Headings - will order (sort) the column by entry.
+Play List - drop down list of open playlists. The Unsaved list is always available to capture new songs. It must be saved to be reused in another session.
+
+Open - open a play list file. A playlist just references songs in the books.
+
+Save - save the play list. It can be saved to a different file name which will create a copy. The default extension is plf for play, list, file.
+
+Clear - clears the file list songs. It does not save so the original is available unless replaced by save.
+
+Delete - clears the file list songs and deletes the playlist file.
 
 #### Song List Hot Keys
 
-The hot keys allow the operator to modify the song view window and the buttons without needing mouse clicks or continuing to change window focus between the list and view.
+The hot keys allow the operator to modify the song view window and the buttons without needing mouse clicks or continuing to change window focus between the list and view. Column Headings will sort the column by entry.
 
-| Key     | Action                                                                                                                            |
-| ------- | --------------------------------------------------------------------------------------------------------------------------------- |
-| enter   | Display song in view window                                                                                                       |
-| del     | Mark song as DEL                                                                                                                  |
-| b       | Enter the book drop down to select a new book                                                                                     |
-| s       | Enter the first word box for search. To move between buttons use tab and shift-tab.                                               |
-| c       | Clear the search mode and return to book mode.                                                                                    |
-| e       | Edit will pop up a simple edit window to modify cordpro file                                                                      |
-| 0       | Set stars to zero                                                                                                                 |
-| 1       | Set stars to one                                                                                                                  |
-| 2       | Set stars to two                                                                                                                  |
-| 3       | Set stars to three                                                                                                                |
-| z       | Zoom In on view window                                                                                                            |
-| x       | Zoom out on view window                                                                                                           |
-| t       | Transpose up on view window                                                                                                       |
-| y       | Transpose down on view window                                                                                                     |
-| u       | Save transpose to song file                                                                                                       |
-| v       | Toggle chord colors                                                                                                               |
-| m       | Scroll view window down one line                                                                                                  |
-| k       | Scroll view window up one line                                                                                                    |
-| o       | Order (sort) the column containing selected.                                                                                      |
-| q       | Quit and close XshowPro.                                                                                                          |
+| Key        | Action                                                                                                                            |
+| ---------- | --------------------------------------------------------------------------------------------------------------------------------- |
+| enter      | Display song in view window or Left Mouse click any column but File. On File will open edit window.                               |
+| Alt-enter  | Add current selection to active playlist or Right Mouse click.                                                                    |
+| del        | Mark song as DEL, on PlayList remove from playlist.                                                                               |
+| Alt 1-3    | Switch tabs. 1 - Book, 2 - Search, 3 - Playlist or Left Mouse click on tab.                                                       |
+| A-Z        | In Title or Subtitle will sort column and go to first entry starting with the letter pressed. Disabled on Playlist.               |
+| `          | Backquote will pop up a simple edit window to modify cordpro file.                                                                |
+| 0, 1, 2, 3 | Set stars to zero (white), one (yellow), two (green), or three (green).                                                           |
+| [          | Left square bracket will transpose down one step on view window.                                                                  |
+| ]          | Right square backet will transpose up one step on view window.                                                                    |
+| /          | Back Slash will save transpose to song file.                                                                                      |
+| ,          | Comma will toggle chord colors                                                                                                    |
+| .          | Period will sort the column containing selected.                                                                                  |
+| <          | Less than will go to first row.                                                                                                   |
+| >          | Greater than will go to last row.                                                                                                 |
+| Ctrl-Left  | Zoom In on view window                                                                                                            |
+| Ctrl-Right | Zoom out on view window                                                                                                           |
+| Ctrl-Down  | Scroll view window down one line                                                                                                  |
+| Ctrl-Up    | Scroll view window up one line                                                                                                    |
+| Alt-Down   | Next song                                                                                                                         |
+| Alt-Up     | Previous song                                                                                                                     |
+| Shirt-Down | Playlist only: move song down in list.                                                                                            |
+| Shift-Up   | Playlist only: move song up in list.                                                                                              |
+| esc        | Quit and close XshowPro.                                                                                                          |
 
 ## Chordpro
 
@@ -108,6 +119,8 @@ The subtitle {subtitle: text} or {st: text} will display the text on the next li
 The square bracess [ ] for chrods are bolded and displayed inline.
 
 The chorus {start_of_chorus} ... {end_of_chorus} or the short form {soc} ... {eoc} will indent the text.
+
+The bridge {start_of_bridge} ... {end_of_bridge} or the short form {sob} ... {eob} will shade highlight the text. It is sometimes used for non-singing lyrics for timing and melody for instrumentals.
 
 The comment {comment: text}, {c: text}, {comment_italic: text}, or {ci: text} all will display the text in italics.
 
