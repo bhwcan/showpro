@@ -102,7 +102,7 @@ The hot keys allow the operator to modify the song view window and the buttons w
 | Ctrl-Up    | Scroll view window up one line                                                                                                    |
 | Alt-Down   | Next song                                                                                                                         |
 | Alt-Up     | Previous song                                                                                                                     |
-| Shirt-Down | Playlist only: move song down in list.                                                                                            |
+| Shift-Down | Playlist only: move song down in list.                                                                                            |
 | Shift-Up   | Playlist only: move song up in list.                                                                                              |
 | esc        | Quit and close XshowPro.                                                                                                          |
 
