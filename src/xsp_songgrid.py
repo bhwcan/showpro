@@ -30,7 +30,7 @@ class SongGrid(wx.grid.Grid):
 
   def on_key_pressed(self,event):
     key = event.GetKeyCode()
-    #print(key, chr(key))
+    print(key, chr(key))
     if key == 13 and not event.AltDown(): # Enter to show
       row = self.GetGridCursorRow()
       filevalue = self.GetCellValue(row,5)
@@ -48,14 +48,6 @@ class SongGrid(wx.grid.Grid):
         size[0] -= 200
         size[1] -= 200
         editframe = EditWindow(self, self.db.getsongpath(self.GetCellValue(row,4), filevalue), pos, size)
-    elif key == 44: # , comma for view color (sick)
-      if self.mf.song != None:
-        color = self.mf.chordcolor
-        color += 1
-        if color > 3:
-          color = 0
-        self.mf.chordcolor = color
-        self.mf.song.setchordcolor(color)
     elif key == 314 and event.ControlDown(): # ctrl-leftarrow zoom in
       self.mf.OnZoomIn(event)
     elif key == 316 and event.ControlDown(): # ctrl-rightarrow zoom out
@@ -96,6 +88,24 @@ class SongGrid(wx.grid.Grid):
       self.mf.control.ScrollLines(1)
     elif key == 315 and event.ControlDown(): # ctrl-uparrow  move up
       self.mf.control.ScrollLines(-1)
+    elif key == 60 or (key == 44 and event.ShiftDown()): # < first
+      col = self.GetGridCursorCol()
+      row =  0
+      self.SetGridCursor(row,col)
+      self.MakeCellVisible(row,col)
+    elif key == 62 or (key == 46 and event.ShiftDown()): # >  last
+      col = self.GetGridCursorCol()
+      row =  len(self.songs) - 1
+      self.SetGridCursor(row,col)
+      self.MakeCellVisible(row,col)
+    elif key == 44: # , comma for view color (sick)
+      if self.mf.song != None:
+        color = self.mf.chordcolor
+        color += 1
+        if color > 3:
+          color = 0
+        self.mf.chordcolor = color
+        self.mf.song.setchordcolor(color)
     elif key == 46: # . period for order
       col = self.GetGridCursorCol()
       self.sortcol(col)
@@ -110,16 +120,6 @@ class SongGrid(wx.grid.Grid):
         value = key - 48
         self.songs[row][1] = value
         self.setstars(sid, book, filevalue, value)
-    elif key == 60: # < first
-      col = self.GetGridCursorCol()
-      row =  0
-      self.SetGridCursor(row,col)
-      self.MakeCellVisible(row,col)
-    elif key == 62: # >  last
-      col = self.GetGridCursorCol()
-      row =  len(self.songs) - 1
-      self.SetGridCursor(row,col)
-      self.MakeCellVisible(row,col)
     elif key > 64 and key < 91: # A - Z
       col = self.GetGridCursorCol()
       if col > 1 and col < 4:
