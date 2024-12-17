@@ -28,9 +28,15 @@ class Database():
   def getrootpath(self):
     return self.path
 
+  def getplaylistpath(self):
+    return(os.path.join(self.path, "playlists"))
+
   def getsongpath(self, book, songfile):
     return(os.path.join(self.path, book, songfile))
 
+  def deletefile(self, filename):
+    os.remove(filename)
+    
   def readsong(self, book, songfile):
     filename = self.getsongpath(book, songfile)
     f = open(filename, 'r', encoding="utf-8", errors='ignore')

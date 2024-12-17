@@ -244,8 +244,11 @@ class SongGrid(wx.grid.Grid):
       filename = self.db.getsongpath(bookvalue, filevalue)
       if col != 5:
         #print("filename:", filename)
-        self.mf.opensong(self.db.readsong(bookvalue, filevalue))
-        self.mf.song.display()
+        try:
+          self.mf.opensong(self.db.readsong(bookvalue, filevalue))
+          self.mf.song.display()
+        except:
+          wx.LogError("Cannot open current data in file '%s'." % filename)
       else:
         pos = self.Parent.Parent.GetPosition()
         pos[0] += 100

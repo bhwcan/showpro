@@ -19,7 +19,7 @@ class SongPanel(wx.Panel):
     books = self.db.getBooks()
     for book in books:
       self.booklist.append(book[0])
-    self.editbook = wx.ComboBox(self, choices=self.booklist, style=wx.CB_DROPDOWN|wx.TE_READONLY)
+    self.editbook = wx.ComboBox(self, choices=self.booklist, size=(200,-1), style=wx.CB_DROPDOWN|wx.TE_READONLY)
     self.editbook.SetValue(self.currentbook)
     self.rebuildbutton = wx.Button(self, label="Rebuild")
 
