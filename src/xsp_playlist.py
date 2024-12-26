@@ -35,12 +35,6 @@ class ListPanel(wx.Panel):
     self.editbox.Bind(wx.EVT_COMBOBOX, self.listselect)
 
     self.grid = PlayListGrid(self, self.numrows, self.db, self.mf) 
-    self.grid.SetColSize(0, 50)
-    self.grid.SetColSize(1, 50)
-    self.grid.SetColSize(2, 300)
-    self.grid.SetColSize(3, 310)
-    self.grid.SetColSize(4, 100)
-    self.grid.SetColSize(5, 310)
 
     topsizer = wx.BoxSizer(wx.HORIZONTAL)
     topsizer.Add(self.editbox, 2, wx.EXPAND|wx.ALL, 10)

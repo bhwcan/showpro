@@ -22,6 +22,8 @@ class SongPanel(wx.Panel):
     self.editbook = wx.ComboBox(self, choices=self.booklist, size=(200,-1), style=wx.CB_DROPDOWN|wx.TE_READONLY)
     self.editbook.SetValue(self.currentbook)
     self.rebuildbutton = wx.Button(self, label="Rebuild")
+    self.newbutton = wx.Button(self, label="New Song")
+    self.newbutton.SetBackgroundColour(wx.Colour(200,200,200))
 
     self.books[self.currentbook] = self.db.getSongs(self.currentbook)
     self.numrows = len(self.books[self.currentbook])
@@ -37,6 +39,7 @@ class SongPanel(wx.Panel):
     topsizer = wx.BoxSizer(wx.HORIZONTAL)
     topsizer.Add(self.editbook, 0, wx.EXPAND|wx.ALL, 10)
     topsizer.Add(self.rebuildbutton, 0, wx.ALL, 10)
+    topsizer.Add(self.newbutton, 0, wx.ALL, 10)
 
     sizer = wx.BoxSizer(wx.VERTICAL)
     sizer.Add(topsizer, 0, wx.ALIGN_LEFT)
@@ -94,6 +97,10 @@ class SongPanel(wx.Panel):
   def loadbook(self):
     if self.currentbook not in self.books:
       self.books[self.currentbook] = self.db.getSongs(self.currentbook)
+    if self.currentbook != "All":
+      self.newbutton.SetBackgroundColour(wx.WHITE)
+    else:
+      self.newbutton.SetBackgroundColour(wx.Colour(200,200,200))
     self.books[self.currentbook] = sorted(self.db.getSongs(self.currentbook), key=lambda x: x[self.grid.getcurrentsortcol()])
     self.grid.gridsongs(self.books[self.currentbook])
     self.showsongs()

@@ -15,7 +15,7 @@ class MainWindow(wx.Frame):
 
     self.statusbar = self.CreateStatusBar() # A Statusbar in the bottom of the window
     self.statusbar.SetFieldsCount(2)
-    self.statusbar.SetStatusWidths([-1,-3])
+    self.statusbar.SetStatusWidths([-1,-4])
 
     displays = Displays()
     viewrect = displays.getViewRect()

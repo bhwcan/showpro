@@ -23,13 +23,29 @@ class EditWindow(wx.Frame):
 
     self.Bind(wx.EVT_MENU, self.OnExit, menuExit)
     self.Bind(wx.EVT_MENU, self.OnSave, menuSave)
+    self.Bind(wx.EVT_KEY_DOWN, self.on_key_pressed)
 
     self.Show()
 
+  def on_key_pressed(self,event):
+    if key == 83 and event.ControlDown(): # ctrl-s save
+      self.saveFile()
+    elif key == 81 and event.ControlDown(): # ctrl-q quit
+      self.OnExit(self, event)
+    else:
+      event.Skip()
+      
   def OnSave(self,e):
+    self.saveFile()
+
+
+  def saveFile(self):
     if self.control.IsModified:
       self.control.SaveFile(self.filename)
+      self.Parent.Parent.Parent.Parent.Parent.setstatus2(self.filename + " saved")
+
 
   def OnExit(self,e):
+    print("editwindow exit")
     self.Close(True)  # Close the frame.
 

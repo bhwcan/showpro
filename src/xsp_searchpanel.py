@@ -27,12 +27,6 @@ class SearchPanel(wx.Panel):
     self.searchclear = wx.Button(self, label="Clear")
 
     self.grid = SongGrid(self, self.numrows, self.db, self.mf) 
-    self.grid.SetColSize(0, 50)
-    self.grid.SetColSize(1, 50)
-    self.grid.SetColSize(2, 300)
-    self.grid.SetColSize(3, 310)
-    self.grid.SetColSize(4, 100)
-    self.grid.SetColSize(5, 310)
 
     self.searchbutton.Bind(wx.EVT_BUTTON, self.on_button_click)
     self.searchtxt1.Bind(wx.EVT_TEXT_ENTER, self.on_button_click)

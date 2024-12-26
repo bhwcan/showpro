@@ -175,7 +175,7 @@ class Database():
 
     while low <= high:
       mid = (low + high) // 2
-      first_element = songset[mid][col][0].upper()
+      first_element = self.searchchar(songset[mid][col])
       if first_element == target:
         found =  mid  # found the target array
         break
@@ -186,11 +186,18 @@ class Database():
 
     if found >= 0:
       first = found
-      while songset[first][col][0].upper() == target:
+      while self.searchchar(songset[first][col]) == target:
         first -= 1
       first += 1
       
     return first
+
+  def searchchar(self, s):
+    if len(s) > 0:
+      return(s[0].upper())
+    else:
+      return chr(ord('A')-1)
+  
     
   def searchindex(self, target):
     arrays = self.titleidx
