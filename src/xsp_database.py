@@ -80,8 +80,8 @@ class Database():
             star = 0
         if star < -1:
           star = -1
-        if star > 3:
-          star = 3
+        if star > 5:
+          star = 5
       #print(line)
       start = line.find("{")
       if start >= 0:
