@@ -217,7 +217,7 @@ class SongGrid(wx.grid.Grid):
         currentcol = self.GetGridCursorCol()
         currentrow = self.GetGridCursorRow()
         #print(currentrow)
-        if currentrow >= 0 and currentrow < self.numrows:
+        if currentrow >= 0 and currentrow < self.numrows and currentrow < len(self.songs):
           index = self.songs[currentrow][0]
     else:
       currentcol = self.filecol # index only set for new song
@@ -268,9 +268,11 @@ class SongGrid(wx.grid.Grid):
   def on_cell_click(self, event):
     #print("Cell clicked:", event.GetRow(), event.GetCol())
     row = event.GetRow()
-    col = event.GetCol()
-    filevalue = self.songs[row][self.filecol+1]
+    filevalue = ""
+    if row < len(self.songs):
+      filevalue = self.songs[row][self.filecol+1]
     if len(filevalue) > 0:
+      col = event.GetCol()
       bookvalue = self.songs[row][self.bookcol+1]
       filename = self.db.getsongpath(bookvalue, filevalue)
       if col != self.filecol:
