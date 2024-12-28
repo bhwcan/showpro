@@ -36,6 +36,24 @@ class SongGrid(wx.grid.Grid):
     self.Bind(wx.grid.EVT_GRID_LABEL_LEFT_CLICK, self.on_label_click)
     self.Bind(wx.EVT_KEY_DOWN, self.on_key_pressed)
 
+#  def postolastfile(self):
+#    col = self.filecol
+#    #print("postolastfile:", len(self.songs))
+#    row =  len(self.songs) - 1
+#    if row < 0:
+#      row = 0
+#    self.SetGridCursor(row,col)
+#    self.MakeCellVisible(row,col)
+
+  def editsong(self, bookvalue, filevalue):
+    pos = self.Parent.Parent.GetPosition()
+    pos[0] += 100
+    pos[1] += 100
+    size = self.Parent.Parent.GetSize()
+    size[0] -= 200
+    size[1] -= 200
+    editframe = EditWindow(self, self.db.getsongpath(bookvalue, filevalue), pos, size)
+    
   def on_key_pressed(self,event):
     key = event.GetKeyCode()
     #print(key, chr(key))
@@ -43,19 +61,22 @@ class SongGrid(wx.grid.Grid):
       row = self.GetGridCursorRow()
       filevalue = self.GetCellValue(row,self.filecol)
       if len(filevalue) > 0:
-        self.mf.opensong(self.db.readsong(self.GetCellValue(row,self.bookcol), filevalue))
-        self.mf.song.display()
+        col = self.GetGridCursorCol()
+        bookvalue = self.GetCellValue(row, self.bookcol)
+        if col == self.filecol:
+          self.editsong(bookvalue, filevalue)
+        else:
+          try:
+            self.mf.opensong(self.db.readsong(bookvalue, filevalue))
+            self.mf.song.display()
+          except:
+            wx.LogError("Cannot open current data in file '%s'." %  self.db.getsongpath(bookvalue, filevalue))
     elif key == 96: # ` backquote for edit
       row = self.GetGridCursorRow()
       filevalue = self.GetCellValue(row,self.filecol)
       if len(filevalue) > 0:
-        pos = self.Parent.Parent.GetPosition()
-        pos[0] += 100
-        pos[1] += 100
-        size = self.Parent.Parent.GetSize()
-        size[0] -= 200
-        size[1] -= 200
-        editframe = EditWindow(self, self.db.getsongpath(self.GetCellValue(row,self.bookcol), filevalue), pos, size)
+        bookvalue = self.GetCellValue(row, self.bookcol)
+        self.editsong(bookvalue, filevalue)
     elif key == 314 and event.ControlDown(): # ctrl-leftarrow zoom in
       self.mf.OnZoomIn(event)
     elif key == 316 and event.ControlDown(): # ctrl-rightarrow zoom out
@@ -188,16 +209,18 @@ class SongGrid(wx.grid.Grid):
     for cr in range(len(self.songs)):
         self.SetCellBackgroundColour(cr,0,wx.WHITE)
     
-  def gridsongs(self, book=None):
+  def gridsongs(self, book=None, index=-1):
     currentcol = 0
     currentrow = 0
-    index = -1
-    if len(self.songs) > 0:
-      currentcol = self.GetGridCursorCol()
-      currentrow = self.GetGridCursorRow()
-      #print(currentrow)
-      if currentrow >= 0 and currentrow < self.numrows:
-        index = self.songs[currentrow][0]
+    if index == -1:
+      if len(self.songs) > 0:
+        currentcol = self.GetGridCursorCol()
+        currentrow = self.GetGridCursorRow()
+        #print(currentrow)
+        if currentrow >= 0 and currentrow < self.numrows:
+          index = self.songs[currentrow][0]
+    else:
+      currentcol = self.filecol # index only set for new song
     self.gridclear()
     if book != None:
       self.songs = book
@@ -246,9 +269,9 @@ class SongGrid(wx.grid.Grid):
     #print("Cell clicked:", event.GetRow(), event.GetCol())
     row = event.GetRow()
     col = event.GetCol()
-    bookvalue = self.songs[row][self.bookcol+1]
     filevalue = self.songs[row][self.filecol+1]
     if len(filevalue) > 0:
+      bookvalue = self.songs[row][self.bookcol+1]
       filename = self.db.getsongpath(bookvalue, filevalue)
       if col != self.filecol:
         #print("filename:", filename)
@@ -258,21 +281,19 @@ class SongGrid(wx.grid.Grid):
         except:
           wx.LogError("Cannot open current data in file '%s'." % filename)
       else:
-        pos = self.Parent.Parent.GetPosition()
-        pos[0] += 100
-        pos[1] += 100
-        size = self.Parent.Parent.GetSize()
-        size[0] -= 200
-        size[1] -= 200
-        editframe = EditWindow(self, self.db.getsongpath(bookvalue, filevalue), pos, size)
+        self.editsong(bookvalue, filevalue)
     event.Skip()
 
+  def sortsongs(self, songs, gridcol):
+    col = gridcol + 1  # sid is hidden
+    if col > 1:
+      return sorted(songs, key=lambda x: x[col].lower())
+    else:
+      return sorted(songs, key=lambda x: x[col])
+    
   def sortcol(self, col):
     if col != self.currentsortcol:
-      if col > 0:
-        self.songs = sorted(self.songs, key=lambda x: x[col+1].lower())
-      else:
-        self.songs = sorted(self.songs, key=lambda x: x[col+1])
+      self.songs = self.sortsongs(self.songs, col)
       self.gridsongs(self.songs)
       if self.currentsortcol >= 0:
         self.SetColLabelValue(self.currentsortcol, self.collables[self.currentsortcol])

@@ -1,5 +1,6 @@
 import wx
 from xsp_songgrid import SongGrid
+from xsp_newfile import NewFile
 
 class SongPanel(wx.Panel):
   def __init__(self, parent, mainframe, db, pp):
@@ -10,20 +11,14 @@ class SongPanel(wx.Panel):
     self.currentbook = "All"
     self.pp = pp
     self.db = db
-    #self.db.open()
-
-#    fontattr = wx.Font(14, wx.FONTFAMILY_MODERN, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False)
+    self.booklist = None
     
     # the combobox Control
-    self.booklist = []
-    books = self.db.getBooks()
-    for book in books:
-      self.booklist.append(book[0])
+    self.loadbooklist()
     self.editbook = wx.ComboBox(self, choices=self.booklist, size=(200,-1), style=wx.CB_DROPDOWN|wx.TE_READONLY)
     self.editbook.SetValue(self.currentbook)
     self.rebuildbutton = wx.Button(self, label="Rebuild")
     self.newbutton = wx.Button(self, label="New Song")
-    self.newbutton.SetBackgroundColour(wx.Colour(200,200,200))
 
     self.books[self.currentbook] = self.db.getSongs(self.currentbook)
     self.numrows = len(self.books[self.currentbook])
@@ -35,11 +30,12 @@ class SongPanel(wx.Panel):
     self.Bind(wx.EVT_KEY_DOWN, self.on_key_pressed)
     self.rebuildbutton.Bind(wx.EVT_BUTTON, self.rebuildindexes)
     self.grid.Bind(wx.grid.EVT_GRID_CELL_RIGHT_CLICK, self.on_right_click)
+    self.newbutton.Bind(wx.EVT_BUTTON, self.newsong)
 
     topsizer = wx.BoxSizer(wx.HORIZONTAL)
     topsizer.Add(self.editbook, 0, wx.EXPAND|wx.ALL, 10)
-    topsizer.Add(self.rebuildbutton, 0, wx.ALL, 10)
     topsizer.Add(self.newbutton, 0, wx.ALL, 10)
+    topsizer.Add(self.rebuildbutton, 0, wx.ALL, 10)
 
     sizer = wx.BoxSizer(wx.VERTICAL)
     sizer.Add(topsizer, 0, wx.ALIGN_LEFT)
@@ -49,24 +45,64 @@ class SongPanel(wx.Panel):
 
     self.Show()
 
-  def rebuildindexes(self,event):
-    currentfound = False
-    self.db.rebuild(self.GetParent().GetParent().GetParent())
+  def newsong(self, event):
+    book = ""
+    newlist = []
+    if self.currentbook != "All":
+      book = self.currentbook
+    for nb in self.booklist:
+      if nb != "All":
+        newlist.append(nb)
+
+    with NewFile(self, newlist, book) as dlg:
+      dlg.ShowModal()
+      
+    rvalue = dlg.GetReturnCode()
+    if rvalue != wx.ID_OK:
+      return
+    if dlg.book == "All" or not dlg.book or not dlg.title:
+      errordlg = wx.MessageDialog(self,
+                                  "Must have valid book and title",
+                                  "Invalid Song",
+                                  wx.OK|wx.ICON_ERROR)
+      errordlg.ShowModal() # Shows it
+      errordlg.Destroy() # finally destroy it when finished.
+      return
+    index = self.db.newsong(dlg.book, dlg.title, dlg.subtitle)
+    self.currentbook = dlg.book
+    if dlg.book not in self.booklist:
+      self.loadbooklist()
+      self.loadeditbook()
+    self.editbook.SetValue(self.currentbook)
+    self.books = {}
+    self.loadbook(index)
+      
+  def loadbooklist(self):
     self.booklist = []
     books = self.db.getBooks()
-    self.editbook.Clear()
     for book in books:
-      if self.currentbook == book[0]:
+      if book[0] != "All":
+        self.booklist.append(book[0])
+    self.booklist = sorted(self.booklist)
+    self.booklist.insert(0, "All")
+
+  def loadeditbook(self):
+    self.editbook.Clear()
+    for be in self.booklist:
+      self.editbook.Append(be)
+      if self.currentbook == be:
         currentfound = True
-      self.booklist.append(book[0])
-      self.editbook.Append(book[0])
-    #slprint(self.currentbook, books)
     if not currentfound:
       self.currentbook = "All"
     self.editbook.SetValue(self.currentbook)
+    
+  def rebuildindexes(self,event):
+    currentfound = False
+    self.db.rebuild(self.GetParent().GetParent().GetParent())
+    self.loadbooklist()
+    self.loadeditbook()
     self.books = {}
     self.loadbook()
-    self.insearch = False
     
   def on_key_pressed(self,event):
     key = event.GetKeyCode()
@@ -94,15 +130,11 @@ class SongPanel(wx.Panel):
         playlist = self.pp.addsong(song)
         self.Parent.Parent.Parent.setstatus2(song[4] + " - " + song[2] + " added to playlist [" + playlist + "]")
 
-  def loadbook(self):
+  def loadbook(self, index=-1):
     if self.currentbook not in self.books:
       self.books[self.currentbook] = self.db.getSongs(self.currentbook)
-    if self.currentbook != "All":
-      self.newbutton.SetBackgroundColour(wx.WHITE)
-    else:
-      self.newbutton.SetBackgroundColour(wx.Colour(200,200,200))
-    self.books[self.currentbook] = sorted(self.db.getSongs(self.currentbook), key=lambda x: x[self.grid.getcurrentsortcol()])
-    self.grid.gridsongs(self.books[self.currentbook])
+    self.books[self.currentbook] = self.grid.sortsongs(self.db.getSongs(self.currentbook), self.grid.getcurrentsortcol())
+    self.grid.gridsongs(self.books[self.currentbook], index)
     self.showsongs()
 
   def showsongs(self):

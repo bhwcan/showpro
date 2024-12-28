@@ -46,6 +46,6 @@ class EditWindow(wx.Frame):
 
 
   def OnExit(self,e):
-    print("editwindow exit")
+    #print("editwindow exit")
     self.Close(True)  # Close the frame.
 

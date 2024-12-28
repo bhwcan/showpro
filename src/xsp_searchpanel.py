@@ -90,8 +90,7 @@ class SearchPanel(wx.Panel):
     self.operator = self.searchop.GetValue()
     self.search2 = self.searchtxt2.GetValue().strip().lower()
     self.searchlist = self.db.search(self.search, self.operator, self.search2)
-    if self.grid.getcurrentsortcol() != 0:
-      self.searchlist = sorted(self.searchlist, key=lambda x: x[self.grid.getcurrentsortcol()])
+    self.searchlist = self.grid.sortsongs(self.searchlist, self.grid.getcurrentsortcol())
     self.grid.gridsongs(self.searchlist)
     self.showsongs()
     

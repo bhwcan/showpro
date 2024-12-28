@@ -158,6 +158,7 @@ class Song:
     boldattr = wx.TextAttr(wx.BLACK, font=wx.Font(self.textsize, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, False, face))
     fontattr = wx.TextAttr(wx.BLACK, font=wx.Font(self.textsize, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, face))
     itlcattr = wx.TextAttr(wx.BLACK, font=wx.Font(self.textsize, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_SLANT, wx.FONTWEIGHT_NORMAL, False, face))
+    boldattr.SetBackgroundColour(wx.WHITE)
     highlight = wx.Colour(200,200,200) #grey
 
     cd = 0
@@ -168,7 +169,7 @@ class Song:
     rtc.Hide()
     rtc.Clear()
     rtc.SetDefaultStyle(boldattr)
-    rtc.WriteText(self.title.center(self.width) + "\n" + self.subtitle.center(self.width) + "\n")
+    rtc.WriteText(self.tab + self.title.center(self.width) + "\n" + self.tab + self.subtitle.center(self.width) + "\n")
     rtc.SetDefaultStyle(fontattr)
     self.mx.SetTitle(self.title + " - " + self.subtitle);
     l = 0
