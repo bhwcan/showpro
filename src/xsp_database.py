@@ -34,6 +34,11 @@ class Database():
   def getsongpath(self, book, songfile):
     return(os.path.join(self.path, book, songfile))
 
+  def deletesongs(self):
+    for song in self.songs:
+      if song[0] == -1:  # stars -1 is deleted
+        self.deletefile(self.getsongpath(song[3], song[4]))
+
   def deletefile(self, filename):
     os.remove(filename)
     
@@ -308,10 +313,15 @@ class Database():
       booklast = self.booksidx[-1][2]
       #print("\tnewbook: ", book, self.booksidx[-1][0])
       dirpath = os.path.join(self.path, book)
-      try:
-        os.mkdir(dirpath)
-      except:
-        return rvalue    
+      if os.path.exists(dirpath):
+        if not os.path.isdir(dirpath):
+          rvalue = -2
+          return rvalue
+      else:
+        try:
+          os.mkdir(dirpath)
+        except:
+          return rvalue    
     #print("\tbooklast:", booklast, len(self.songs))
     titleline = "#showpro: 0\n"
     if not subtitle:

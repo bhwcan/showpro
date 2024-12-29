@@ -19,6 +19,7 @@ class SongPanel(wx.Panel):
     self.editbook.SetValue(self.currentbook)
     self.rebuildbutton = wx.Button(self, label="Rebuild")
     self.newbutton = wx.Button(self, label="New Song")
+    self.delbutton = wx.Button(self, label="Delete")
 
     self.books[self.currentbook] = self.db.getSongs(self.currentbook)
     self.numrows = len(self.books[self.currentbook])
@@ -31,11 +32,13 @@ class SongPanel(wx.Panel):
     self.rebuildbutton.Bind(wx.EVT_BUTTON, self.rebuildindexes)
     self.grid.Bind(wx.grid.EVT_GRID_CELL_RIGHT_CLICK, self.on_right_click)
     self.newbutton.Bind(wx.EVT_BUTTON, self.newsong)
+    self.delbutton.Bind(wx.EVT_BUTTON, self.delsongs)
 
     topsizer = wx.BoxSizer(wx.HORIZONTAL)
     topsizer.Add(self.editbook, 0, wx.EXPAND|wx.ALL, 10)
     topsizer.Add(self.newbutton, 0, wx.ALL, 10)
     topsizer.Add(self.rebuildbutton, 0, wx.ALL, 10)
+    topsizer.Add(self.delbutton, 0, wx.ALL, 10)
 
     sizer = wx.BoxSizer(wx.VERTICAL)
     sizer.Add(topsizer, 0, wx.ALIGN_LEFT)
@@ -45,6 +48,17 @@ class SongPanel(wx.Panel):
 
     self.Show()
 
+  def delsongs(self, event):
+    deldlg = wx.MessageDialog(self,
+                              "This will delete songs marked as deleted.\nIt cannot be undone.\nDo you wish to proceed?",
+                              "Delete Songs",
+                              wx.OK|wx.CANCEL)
+    rvalue = deldlg.ShowModal() # Shows it
+    deldlg.Destroy() # finally destroy it when finished.
+    if rvalue == wx.ID_OK:
+      self.db.deletesongs()
+      self.rebuildindexes(event)
+    
   def newsong(self, event):
     book = ""
     newlist = []
@@ -62,13 +76,21 @@ class SongPanel(wx.Panel):
       return
     if dlg.book == "All" or not dlg.book or not dlg.title:
       errordlg = wx.MessageDialog(self,
-                                  "Must have valid book and title",
+                                  "Must have valid book and title.",
                                   "Invalid Song",
                                   wx.OK|wx.ICON_ERROR)
       errordlg.ShowModal() # Shows it
       errordlg.Destroy() # finally destroy it when finished.
       return
     index = self.db.newsong(dlg.book, dlg.title, dlg.subtitle)
+    if index < 0:
+      errordlg = wx.MessageDialog(self,
+                                  "Song name or book name did not allow creation of file.",
+                                  "Unable to Create Song",
+                                  wx.OK|wx.ICON_ERROR)
+      errordlg.ShowModal() # Shows it
+      errordlg.Destroy() # finally destroy it when finished.
+      return
     self.currentbook = dlg.book
     if dlg.book not in self.booklist:
       self.loadbooklist()
@@ -87,6 +109,7 @@ class SongPanel(wx.Panel):
     self.booklist.insert(0, "All")
 
   def loadeditbook(self):
+    currentfound = False
     self.editbook.Clear()
     for be in self.booklist:
       self.editbook.Append(be)
