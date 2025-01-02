@@ -37,20 +37,22 @@ It uses chordpro files installed in subdirectories under the users Documents fol
 ### Song View
 
 The song view is a simple window that displays the chordpro file. The chords are presented inline as bolded.
-
-![image](https://github.com/user-attachments/assets/49b3ccae-3713-4e48-863e-1b6ff23b3d9d)
+![image](https://github.com/user-attachments/assets/da309fdf-dabb-4782-8fd7-fa5252e18041)
 
 ### Song List
 
 The song list windows displays a grid with the databasse Id; chordpro Title, and Subtitile; the Book with subdirectory name; and the relative path name. Move around the grid using standard directional keys and mouse clicks. Left clicking in the file name cell will pop up a simple edit window.
-
-![image](https://github.com/user-attachments/assets/101ecf72-7459-458b-a2aa-d57d647733ad)
+![image](https://github.com/user-attachments/assets/a9bbe1c5-62b0-443b-b60c-5d7372fe7448)
 
 #### Books Tab Buttons
 
 Book List - drop down list of available books. These are subdirectories in the showpro directory. In book mode the status will state the the number with book songs.
 
+New Song - create a new song and add to database. It will create a new song with just the title and subtitle in the specified book. If a new book name is typed in then the book will be created. After creation the cursor is on the filename so a select with [ENTER] or mouse click will open the edit window to complete the song.
+
 Rebuild - rebuids the database and indexes. This is required when adding or removing new songs or books from the showpro directory. It will update the song database and indexes. This will recreate the song ids based on the input files.
+
+Delete - really delete the songs. This will delete the song files and remove the song from the database for all the songs that have been marked deleted. Use with CAUTION as this action cannot be undone.
 
 #### Search Tab Buttons
 
@@ -91,20 +93,22 @@ The hot keys allow the operator to modify the song view window and the buttons w
 | 0-5        | Set stars to zero (white), one (yellow) scaled to five (green).                                                           |
 | [          | Left square bracket will transpose down one step on view window.                                                                  |
 | ]          | Right square backet will transpose up one step on view window.                                                                    |
-| /          | Back Slash will save transpose to song file.                                                                                      |
+| \          | Forward Slash will save transpose to song file.                                                                                      |
 | ,          | Comma will toggle chord colors                                                                                                    |
 | .          | Period will sort the column containing selected.                                                                                  |
 | <          | Less than will go to first row.                                                                                                   |
 | >          | Greater than will go to last row.                                                                                                 |
+| /          | Back Slash will change focus between the view window and the song list window                                                     |
 | Ctrl-Left  | Zoom In on view window                                                                                                            |
 | Ctrl-Right | Zoom out on view window                                                                                                           |
-| Ctrl-Down  | Scroll view window down one line                                                                                                  |
-| Ctrl-Up    | Scroll view window up one line                                                                                                    |
+| Ctrl-Down  | Scroll view window down one line (does not work on Mac, use / to change focus and then up/down arrows)                            |
+| Ctrl-Up    | Scroll view window up one line   (does not work on Mac, use / to change focus and then up/down arrows)                            |
 | Alt-Down   | Next song                                                                                                                         |
 | Alt-Up     | Previous song                                                                                                                     |
 | Shift-Down | Playlist only: move song down in list.                                                                                            |
 | Shift-Up   | Playlist only: move song up in list.                                                                                              |
 | esc        | Quit and close XshowPro.                                                                                                          |
+| F11        | Toggle view window to full screen mode (does not work on Mac)                                                                     |
 
 ## Chordpro
 
