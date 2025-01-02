@@ -1,2 +1,8 @@
 __pycache__/
 \#*\#
+
+# build
+*.ico
+build/
+dist/
+*.spec
