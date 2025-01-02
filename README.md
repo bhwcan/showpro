@@ -88,7 +88,7 @@ The hot keys allow the operator to modify the song view window and the buttons w
 | Alt 1-3    | Switch tabs. 1 - Book, 2 - Search, 3 - Playlist or Left Mouse click on tab.                                                       |
 | A-Z        | In Title or Subtitle will sort column and go to first entry starting with the letter pressed. Disabled on Playlist.               |
 | `          | Backquote will pop up a simple edit window to modify cordpro file.                                                                |
-| 0, 1, 2, 3 | Set stars to zero (white), one (yellow), two (green), or three (green).                                                           |
+| 0-5        | Set stars to zero (white), one (yellow) scaled to five (green).                                                           |
 | [          | Left square bracket will transpose down one step on view window.                                                                  |
 | ]          | Right square backet will transpose up one step on view window.                                                                    |
 | /          | Back Slash will save transpose to song file.                                                                                      |
