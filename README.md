@@ -1,4 +1,4 @@
-# XshowPro
+# Xshowpro
 
 ## Summary
 
@@ -6,7 +6,7 @@ XshowPro is an application to display chordpro file formats on a large display f
 
 ## Requirements
 
-XshowPro is a python script using wxPython. It will run on any supported platform. It has been tested on MacOS, Ubuntu, and Windows. There is a built xshowpro.exe file available for Windows. For other platforms download the source and run the python script. See the python documentation for installation of python and wsPython. 
+XshowPro is a python script using wxPython. It will run on any supported platform. It has been tested on MacOS, Ubuntu, and Windows. There is a built xshowpro.exe file available for Windows. For other platforms download the source and run the python script. See the python documentation for installation of python and wxPython. 
 
 It works best from a laptop connected to a large display so it has the large display for the song view and the song list can be operated by the the group leader or designated member.
 
