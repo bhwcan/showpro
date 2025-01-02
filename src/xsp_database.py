@@ -173,6 +173,15 @@ class Database():
     with open(os.path.join(self.path, "songsidx.dat"), "w") as fh:
       json.dump(self.titleidx, fh)
 
+    #playlists
+    plpath = self.getplaylistpath()
+    if not os.path.isdir(plpath):
+      try:
+        os.mkdir(plpath)
+      except:
+        pass    
+    
+
   def searchset(self, songset, col, target):
     # obviously assumes sorted set
     first = -1
