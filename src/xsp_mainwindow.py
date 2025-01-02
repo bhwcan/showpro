@@ -12,6 +12,7 @@ class MainWindow(wx.Frame):
     self.db = db
     self.db.open()
     self.pages = []
+    self.currentpage = 0
 
     self.statusbar = self.CreateStatusBar() # A Statusbar in the bottom of the window
     self.statusbar.SetFieldsCount(2)
@@ -50,9 +51,9 @@ class MainWindow(wx.Frame):
     p.SetSizer(sizer)
 
   def pagechanged(self, event):
-    page = event.GetSelection()
+    self.currentpage = event.GetSelection()
     #print("new page:", page)
-    self.pages[page].showsongs()
+    self.pages[self.currentpage].showsongs()
       
   def setstatus(self, text):
     #print(text)

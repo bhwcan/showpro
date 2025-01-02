@@ -15,6 +15,9 @@ class ViewWindow(wx.Frame):
     parent.vf = self
 
     wx.Frame.__init__(self, parent, size=(1200,800), style=wx.DEFAULT_FRAME_STYLE &~ wx.CLOSE_BOX) #wx.MAXIMIZE_BOX | wx.RESIZE_BORDER | wx.CAPTION)
+
+    #self.EnableFullScreenView()
+
     self.control = wx.TextCtrl(self, style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_RICH | wx.TE_AUTO_URL)
     #self.CreateStatusBar() # A Statusbar in the bottom of the window
     # self.control.Bind(wx.EVT_KEY_DOWN, self.on_key_pressed)
@@ -22,10 +25,32 @@ class ViewWindow(wx.Frame):
      # Events.
     #self.Bind(wx.EVT_MENU, self.OnOpen, menuOpen)
     self.Bind(wx.EVT_TEXT_URL, self.OnTextURL)
+    self.control.Bind(wx.EVT_KEY_DOWN, self.on_key_pressed)
 
     self.Raise()
     self.Show()
-    
+
+  def ToggleFullScreen(self, event):
+    self.ShowFullScreen(not self.IsFullScreen())
+
+  def ChangeFocus(self, event):
+    p = self.GetParent()
+    p.pages[p.currentpage].SetFocus()
+    p.Raise()
+  
+  def on_key_pressed(self,event):
+    key = event.GetKeyCode()
+    #print(key, chr(key))
+    if key == 350: #F11 - does not work on mac
+      self.ToggleFullScreen(event)
+    elif key == 47: #/ slash to change focus
+      self.ChangeFocus(event)
+    else:
+     p = self.GetParent()
+     p.pages[p.currentpage].grid.on_key_pressed(event)
+     self.control.SetFocus()
+     #event.Skip()
+
   def OnTextURL(self, event):
     #print('OnTextURL')
     if event.MouseEvent.LeftUp():

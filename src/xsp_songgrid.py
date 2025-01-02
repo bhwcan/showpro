@@ -164,9 +164,16 @@ class SongGrid(wx.grid.Grid):
         self.SetGridCursor(row,col)
         self.MakeCellVisible(row,col)
           #print("search:", row, chr(key), self.GetColLabelValue(col))
+    elif key == 47: # / slash change focus
+      self.ChangeFocus(event)
     else:
       event.Skip()
 
+  def ChangeFocus(self, event):
+    p = self.GetParent().GetParent().GetParent().GetParent()
+    p.vf.control.SetFocus()
+    p.vf.Raise()
+    
   def delrequested(self):
     row = self.GetGridCursorRow()
     filevalue = self.songs[row][self.filecol+1]
