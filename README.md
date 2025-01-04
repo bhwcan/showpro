@@ -8,9 +8,9 @@ XshowPro is an application to display chordpro file formats on a large display f
 
 XshowPro is a python script using wxPython. It will run on any supported platform. It has been tested on MacOS, Ubuntu, and Windows. There is a built xshowpro.exe file available for Windows. For other platforms download the source and run the python script. See the python documentation for installation of python and wxPython. 
 
-It works best from a laptop connected to a large display so it has the large display for the song view and the song list can be operated by the the group leader or designated member.
+It works best with a large display like a wall mounted TV for the song view. The song list from the laptop display can be operated by the the group leader or designated member.
 
-For first time usage copy your cordpro files to one or more subdirectoris in the "showpro" folder. Execute xshowpro and click on the [Rebuild] button to create your first database and indexes. Any time files or directories are added or removed you will need to rebuild. It only supports one level of subdrectories which are displayed in the song list window as Books.
+For first time usage create a showpro directory in your home Documents folder. Then copy your cordpro files to one or more subdirectoris in the "showpro" folder. Execute xshowpro and click on the [Rebuild] button to create your first database and indexes. Any time files or directories are added or removed you will need to rebuild. It only supports one level of subdrectories which are displayed in the song list window as Books.
 
 ## File System
 
@@ -90,10 +90,10 @@ The hot keys allow the operator to modify the song view window and the buttons w
 | Alt 1-3    | Switch tabs. 1 - Book, 2 - Search, 3 - Playlist or Left Mouse click on tab.                                                       |
 | A-Z        | In Title or Subtitle will sort column and go to first entry starting with the letter pressed. Disabled on Playlist.               |
 | `          | Backquote will pop up a simple edit window to modify cordpro file.                                                                |
-| 0-5        | Set stars to zero (white), one (yellow) scaled to five (green).                                                           |
+| 0-5        | Set stars to zero (white), one (yellow) scaled to five (green).                                                                   |
 | [          | Left square bracket will transpose down one step on view window.                                                                  |
 | ]          | Right square backet will transpose up one step on view window.                                                                    |
-| \          | Forward Slash will save transpose to song file.                                                                                      |
+| \          | Forward Slash will save transpose to song file.                                                                                   |
 | ,          | Comma will toggle chord colors                                                                                                    |
 | .          | Period will sort the column containing selected.                                                                                  |
 | <          | Less than will go to first row.                                                                                                   |
@@ -126,7 +126,9 @@ The chorus {start_of_chorus} ... {end_of_chorus} or the short form {soc} ... {eo
 
 The bridge {start_of_bridge} ... {end_of_bridge} or the short form {sob} ... {eob} will shade highlight the text. It is sometimes used for non-singing lyrics for timing and melody for instrumentals.
 
-The comment {comment: text}, {c: text}, {comment_italic: text}, or {ci: text} all will display the text in italics.
+The comment {comment: text}, {c: text} will display the text bolded.
+
+The {comment_italic: text}, or {ci: text} will display the text in italics.
 
 All other single line directives are ignored.
 

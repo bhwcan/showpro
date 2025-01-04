@@ -196,8 +196,13 @@ class Song:
           #fontattr.SetBackgroundColour(wx.WHITE)
           #choruson = False
           #print("end_of_chorus");
-        if d.name == "comment" or d.name == "c" or\
-           d.name == "comment_italic" or d.name == "ci":
+        if d.name == "comment" or d.name == "c":
+          rtc.SetDefaultStyle(boldattr)
+          if choruson:
+            rtc.WriteText(self.tab)
+          rtc.WriteText(self.tab + d.text + "\n")
+          rtc.SetDefaultStyle(fontattr)       
+        if d.name == "comment_italic" or d.name == "ci":
           #print("comment:", d.text)
           rtc.SetDefaultStyle(itlcattr)
           if choruson:
