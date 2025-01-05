@@ -21,6 +21,7 @@ class SongGrid(wx.grid.Grid):
     self.subtitlecol = 2
     self.filecol = 4
     self.bookcol = 3
+    self.rowbuff = 10
    
     self.CreateGrid(rows, self.numcols)  # 20 rows, 4 columns
     self.EnableEditing(False)
@@ -35,15 +36,6 @@ class SongGrid(wx.grid.Grid):
     self.Bind(wx.grid.EVT_GRID_CELL_LEFT_CLICK, self.on_cell_click)
     self.Bind(wx.grid.EVT_GRID_LABEL_LEFT_CLICK, self.on_label_click)
     self.Bind(wx.EVT_KEY_DOWN, self.on_key_pressed)
-
-#  def postolastfile(self):
-#    col = self.filecol
-#    #print("postolastfile:", len(self.songs))
-#    row =  len(self.songs) - 1
-#    if row < 0:
-#      row = 0
-#    self.SetGridCursor(row,col)
-#    self.MakeCellVisible(row,col)
 
   def editsong(self, bookvalue, filevalue):
     pos = self.Parent.Parent.GetPosition()
@@ -231,14 +223,12 @@ class SongGrid(wx.grid.Grid):
     self.gridclear()
     if book != None:
       self.songs = book
-    #print(book)
-    #print('['+sindex+']', type(sindex), index)
-    #index = int(sindex)
-    #index = int(self.grid.GetCellValue(currentrow, 0))
     row = 0
     currentrow = 0
+    #print("resize grid:", len(self.songs), self.numrows)
     if len(self.songs) > self.numrows:
-      appendrows = len(self.songs) - self.numrows
+      appendrows = len(self.songs) - self.numrows + self.rowbuff
+      #print("appendrows:", appendrows)
       self.AppendRows(appendrows)
       self.numrows += appendrows
     for song in self.songs:

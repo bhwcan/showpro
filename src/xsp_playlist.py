@@ -9,7 +9,7 @@ class ListPanel(wx.Panel):
     wx.Panel.__init__(self, parent)
     self.mf = mainframe
     self.SetSize(1200,800)
-    self.numrows = 1
+    self.numrows = 30
     self.editlist = [ "Unsaved" ]
     self.playlists = {}
     self.currentplaylist = "Unsaved"
