@@ -13,7 +13,11 @@ class Song:
     self.width = 0
     self.textsize = textsize
     self.chordcolor = chordcolor
+    self.chords = []
+    self.instrument = "undefined"
     self.tab = "    "
+    self.guitardefs = []
+    self.ukuleledefs = []
     self.scalelookup = [ \
                          { "chord": "A#", "index": 2 }, 
                          { "chord": "Bb", "index": 2 }, 
@@ -35,6 +39,7 @@ class Song:
     self.scale = [ "NC", "A", "Bb", "B", "C", "Db", "D", "Eb", "E", "F", "F#", "G", "G#" ]  
 
   def transform(self, value):
+    self.chords = []
     newlyrics = []
     for lyric in self.lyrics:
       newlyric = ""
@@ -64,6 +69,7 @@ class Song:
               if newidx > 12:
                 newidx = 1
               newchord = self.scale[newidx] + oldchord[oldlen:]
+              self.setchord(newchord)
               break
           if oldfound:
             newlyric += newchord
@@ -102,6 +108,13 @@ class Song:
       self.title = text
     if name == "st" or name == "subtitle":
       self.subtitle = text
+    if name == "instrument":
+      self.instrument = text.strip()
+    if dtive.define:
+      if len(dtive.chorddef["frets"]) == 4:
+        self.ukuleledefs.append(dtive.chorddef)
+      else:
+        self.guitardefs.append(dtive.chorddef)
     self.directives.append(dtive)
     
   def process(self):
@@ -230,6 +243,8 @@ class Song:
           rtc.WriteText(lyric[s:cs])
           rtc.SetDefaultStyle(cordattr)
           rtc.WriteText(lyric[cs:ce+1])
+          chord = lyric[cs+1:ce]
+          self.setchord(chord)
           rtc.SetDefaultStyle(fontattr)
           s = ce + 1
           if s >= len(lyric):
@@ -239,3 +254,13 @@ class Song:
     rtc.SetInsertionPoint(0) # PC hac
     rtc.Show()
   
+  def setchord(self, cs):
+    # remove timing and strumming directives
+    while cs[-1] == '/' or cs[-1] == '^' or cs[-1] == ' ' or cs[-1] == '↓' or cs[-1] == '↑' or cs[-1] == '*' or cs[-1] == '|':
+      if len(cs) > 1:
+        cs = cs[:-1]
+      else:
+        break
+    if cs not in self.chords:
+      self.chords.append(cs)
+      

@@ -2,19 +2,24 @@ import wx
 import webbrowser
 
 from xsp_song import Song
+from xsp_chords import ChordWindow
 
 class ViewWindow(wx.Frame):
-  def __init__(self, parent):
+  def __init__(self, parent, db, viewrect):
+    self.db = db
     self.dirname=""
     self.filename=""
     self.song = None
     self.textsize = 20
     self.chordcolor = 0
     self.row = 0
+    self.viewrect = viewrect
 
     parent.vf = self
 
     wx.Frame.__init__(self, parent, size=(1200,800), style=wx.DEFAULT_FRAME_STYLE &~ wx.CLOSE_BOX) #wx.MAXIMIZE_BOX | wx.RESIZE_BORDER | wx.CAPTION)
+    self.SetPosition(wx.Point(viewrect[0], viewrect[1]+30)) # for mac top bar
+    self.SetSize(wx.Size(viewrect[2],viewrect[3]-70)) # for mac top bar and window bottom
 
     #self.EnableFullScreenView()
 
@@ -45,6 +50,10 @@ class ViewWindow(wx.Frame):
       self.ToggleFullScreen(event)
     elif key == 47: #/ slash to change focus
       self.ChangeFocus(event)
+    elif key == 59: #; print chords
+      self.displayUkuleleChords()
+    elif key == 39: #; print chords
+      self.displayGuitarChords()
     else:
      p = self.GetParent()
      p.pages[p.currentpage].grid.on_key_pressed(event)
@@ -60,6 +69,50 @@ class ViewWindow(wx.Frame):
         webbrowser.open_new_tab(url)
     event.Skip()
 
+  def displayGuitarChords(self):
+    chorddefs = []
+    undefined = []
+
+    for cn in self.song.chords:
+      found = False
+      for cl in self.song.guitardefs: # check song defines for chord
+        if cl["name"] == cn:
+          found = True
+          chorddefs.append(cl)
+          break
+      #print(cn)
+      if not found:
+        cd = self.db.find_guitardef(cn)
+        if cd == None:
+          undefined.append(cn)
+        else:
+          chorddefs.append(cd)
+
+    chordframe = ChordWindow(self, "Guitar Chords", self.db.get_guitartunning(), undefined, chorddefs)
+    chordframe.SetPosition(wx.Point(self.viewrect[2]-401, self.viewrect[1]+30)) # for mac top bar
+    
+  def displayUkuleleChords(self):
+    chorddefs = []
+    undefined = []
+
+    for cn in self.song.chords:
+      found = False
+      for cl in self.song.ukuleledefs: # check song defines for chord
+        if cl["name"] == cn:
+          found = True
+          chorddefs.append(cl)
+          break
+      #print(cn)
+      if not found:
+        cd = self.db.find_ukuleledef(cn)
+        if cd == None:
+          undefined.append(cn)
+        else:
+          chorddefs.append(cd)
+
+    chordframe = ChordWindow(self, "Ukulele Chords", self.db.get_ukuleletunning(), undefined, chorddefs)
+    chordframe.SetPosition(wx.Point(self.viewrect[2]-401, self.viewrect[1]+30)) # for mac top bar
+    
   def OnBold(self,e):
     self.chordcolor = 0
     if self.song != None:

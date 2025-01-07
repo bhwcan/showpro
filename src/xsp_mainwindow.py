@@ -23,9 +23,7 @@ class MainWindow(wx.Frame):
     listrect = displays.getListRect()
 
     self.SetPosition(wx.Point(listrect[0], listrect[1]+30))
-    self.vf = ViewWindow(self)
-    self.vf.SetPosition(wx.Point(viewrect[0], viewrect[1]+30)) # for mac top bar
-    self.vf.SetSize(wx.Size(viewrect[2],viewrect[3]-70)) # for mac top bar and window bottom
+    self.vf = ViewWindow(self, db, viewrect)
 
     # Here we create a panel and a notebook on the panel
     p = wx.Panel(self)

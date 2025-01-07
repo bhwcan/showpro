@@ -10,6 +10,7 @@ class Database():
     self.songs = []
     self.titleidx = []
     self.booksidx = []
+    self.chorddefs = []
     self.readsize = 120
     self.nonidx = [
       "the",
@@ -67,8 +68,32 @@ class Database():
         self.titleidx = json.load(sf)
       with open(os.path.join(self.path, "booksidx.dat"), "r") as sf:
         self.booksidx = json.load(sf)
+      with open(os.path.join(self.path, "chords.dat"), "r") as cf:
+        self.chorddefs = json.load(cf)
     else:
       self.rebuild(None)
+    return rvalue
+
+  def get_ukuleletunning(self):
+    return self.chorddefs["U0"]["tuning"]
+  
+  def find_ukuleledef(self, name):
+    rvalue = None
+    for d in self.chorddefs["U0"]["chords"]:
+      if d["name"] == name:
+        rvalue = d
+        break
+    return rvalue
+
+  def get_guitartunning(self):
+    return self.chorddefs["G0"]["tuning"]
+
+  def find_guitardef(self, name):
+    rvalue = None
+    for d in self.chorddefs["G0"]["chords"]:
+      if d["name"] == name:
+        rvalue = d
+        break
     return rvalue
 
   def gettitles(self, data):

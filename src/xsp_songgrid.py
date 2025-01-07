@@ -284,11 +284,11 @@ class SongGrid(wx.grid.Grid):
       filename = self.db.getsongpath(bookvalue, filevalue)
       if col != self.filecol:
         #print("filename:", filename)
-        try:
-          self.mf.opensong(self.db.readsong(bookvalue, filevalue))
-          self.mf.song.display()
-        except:
-          wx.LogError("Cannot open current data in file '%s'." % filename)
+        self.mf.opensong(self.db.readsong(bookvalue, filevalue))
+        self.mf.song.display()
+#        try:
+#        except:
+#          wx.LogError("Cannot open current data in file '%s'." % filename)
       else:
         self.editsong(bookvalue, filevalue)
     event.Skip()
