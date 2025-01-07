@@ -261,7 +261,9 @@ class Song:
   
   def setchord(self, cs):
     # remove timing and strumming directives
-    while cs[-1] == '/' or cs[-1] == '^' or cs[-1] == ' ' or cs[-1] == '↓' or cs[-1] == '↑' or cs[-1] == '*' or cs[-1] == '|':
+    if (cs[0] < 'A' or cs[0] > 'G') and (cs[0] < 'a' or cs[0] > 'g'):
+      return
+    while cs[-1] == '/' or cs[-1] == '^' or cs[-1] == ' ' or cs[-1] == '↓' or cs[-1] == '↑' or cs[-1] == '*' or cs[-1] == '|' or cs[-1] == '~':
       if len(cs) > 1:
         cs = cs[:-1]
       else:

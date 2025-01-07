@@ -50,10 +50,6 @@ class ViewWindow(wx.Frame):
       self.ToggleFullScreen(event)
     elif key == 47: #/ slash to change focus
       self.ChangeFocus(event)
-    elif key == 59: #; print chords
-      self.displayUkuleleChords()
-    elif key == 39: #; print chords
-      self.displayGuitarChords()
     else:
      p = self.GetParent()
      p.pages[p.currentpage].grid.on_key_pressed(event)

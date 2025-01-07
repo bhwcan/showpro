@@ -73,6 +73,10 @@ class SongGrid(wx.grid.Grid):
       self.mf.OnZoomIn(event)
     elif key == 316 and event.ControlDown(): # ctrl-rightarrow zoom out
       self.mf.OnZoomOut(event)
+    elif key == 59: #; print chords
+      self.mf.displayUkuleleChords()
+    elif key == 39: #; print chords
+      self.mf.displayGuitarChords()
     elif key == 93: # ] tranpose up
       self.mf.song.transform(1)
     elif key == 91: # [ transpose down
