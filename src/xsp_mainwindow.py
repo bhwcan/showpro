@@ -49,6 +49,10 @@ class MainWindow(wx.Frame):
     p.SetSizer(sizer)
 
   def pagechanged(self, event):
+    grid = self.pages[self.currentpage].grid
+    if grid.chordframe != None:
+      grid.chordframe.Close(True)
+      grid.chordframe = None
     self.currentpage = event.GetSelection()
     #print("new page:", page)
     self.pages[self.currentpage].showsongs()

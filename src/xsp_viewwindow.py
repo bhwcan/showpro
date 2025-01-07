@@ -84,8 +84,8 @@ class ViewWindow(wx.Frame):
         else:
           chorddefs.append(cd)
 
-    chordframe = ChordWindow(self, "Guitar Chords", self.db.get_guitartunning(), undefined, chorddefs)
-    chordframe.SetPosition(wx.Point(self.viewrect[2]-401, self.viewrect[1]+30)) # for mac top bar
+    chordframe = ChordWindow(self, "Guitar Chords", self.db.get_guitartunning(), undefined, chorddefs, self.viewrect)
+    return chordframe
     
   def displayUkuleleChords(self):
     chorddefs = []
@@ -106,8 +106,8 @@ class ViewWindow(wx.Frame):
         else:
           chorddefs.append(cd)
 
-    chordframe = ChordWindow(self, "Ukulele Chords", self.db.get_ukuleletunning(), undefined, chorddefs)
-    chordframe.SetPosition(wx.Point(self.viewrect[2]-401, self.viewrect[1]+30)) # for mac top bar
+    chordframe = ChordWindow(self, "Ukulele Chords", self.db.get_ukuleletunning(), undefined, chorddefs, self.viewrect)
+    return chordframe
     
   def OnBold(self,e):
     self.chordcolor = 0

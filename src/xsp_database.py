@@ -197,6 +197,8 @@ class Database():
     self.titleidx = sorted(self.titleidx, key=lambda x: x[0])
     with open(os.path.join(self.path, "songsidx.dat"), "w") as fh:
       json.dump(self.titleidx, fh)
+    with open(os.path.join(self.path, "chords.dat"), "r") as cf:
+      self.chorddefs = json.load(cf)
 
     #playlists
     plpath = self.getplaylistpath()

@@ -22,6 +22,7 @@ class SongGrid(wx.grid.Grid):
     self.filecol = 4
     self.bookcol = 3
     self.rowbuff = 10
+    self.chordframe = None
    
     self.CreateGrid(rows, self.numcols)  # 20 rows, 4 columns
     self.EnableEditing(False)
@@ -58,6 +59,9 @@ class SongGrid(wx.grid.Grid):
         if col == self.filecol:
           self.editsong(bookvalue, filevalue)
         else:
+          if self.chordframe != None:
+            self.chordframe.Close(True)
+            self.chordframe = None
           try:
             self.mf.opensong(self.db.readsong(bookvalue, filevalue))
             self.mf.song.display()
@@ -74,9 +78,19 @@ class SongGrid(wx.grid.Grid):
     elif key == 316 and event.ControlDown(): # ctrl-rightarrow zoom out
       self.mf.OnZoomOut(event)
     elif key == 59: #; print chords
-      self.mf.displayUkuleleChords()
+      if self.chordframe == None:
+        self.chordframe = self.mf.displayUkuleleChords()
+      else:
+        self.chordframe.Close(True)
+        self.chordframe = None
+      self.SetFocus()
     elif key == 39: #; print chords
-      self.mf.displayGuitarChords()
+      if self.chordframe == None:
+        self.chordframe = self.mf.displayGuitarChords()
+      else:
+        self.chordframe.Close(True)
+        self.chordframe = None
+      self.SetFocus()
     elif key == 93: # ] tranpose up
       self.mf.song.transform(1)
     elif key == 91: # [ transpose down
@@ -277,12 +291,14 @@ class SongGrid(wx.grid.Grid):
       bookvalue = self.songs[row][self.bookcol+1]
       filename = self.db.getsongpath(bookvalue, filevalue)
       if col != self.filecol:
-        #print("filename:", filename)
-        self.mf.opensong(self.db.readsong(bookvalue, filevalue))
-        self.mf.song.display()
-#        try:
-#        except:
-#          wx.LogError("Cannot open current data in file '%s'." % filename)
+        if self.chordframe != None:
+          self.chordframe.Close(True)
+          self.chordframe = None
+        try:
+          self.mf.opensong(self.db.readsong(bookvalue, filevalue))
+          self.mf.song.display()
+        except:
+          wx.LogError("Cannot open current data in file '%s'." % filename)
       else:
         self.editsong(bookvalue, filevalue)
     event.Skip()

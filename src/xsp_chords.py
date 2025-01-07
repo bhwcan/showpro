@@ -2,15 +2,16 @@ import wx
 import wx.lib.scrolledpanel as scrolled
 
 class ChordWindow(wx.Frame):
-  def __init__(self, parent, name, strings, undefined, chorddefs):
-    super().__init__(parent, title=name, size=(400, 1050))
+  def __init__(self, parent, name, strings, undefined, chorddefs, viewrect):
+    super().__init__(parent, title=name,style=(wx.DEFAULT_FRAME_STYLE | wx.STAY_ON_TOP) & ~(wx.CLOSE_BOX | wx.MAXIMIZE_BOX | wx.MINIMIZE_BOX))
     self.undefined = undefined
     self.chorddefs = chorddefs
     self.strings = strings
-    self.gridcols = len(self.chorddefs) // 3
-    if (len(self.chorddefs) % 3) != 0:
+    height = viewrect[3]-viewrect[1]
+    ch = height // 300
+    self.gridcols = len(self.chorddefs) // ch
+    if (len(self.chorddefs) % ch) != 0:
       self.gridcols += 1
-
     self.panel = wx.Panel(self)
     self.sizer = wx.BoxSizer(wx.VERTICAL)
         
@@ -34,6 +35,10 @@ class ChordWindow(wx.Frame):
     self.sizer.Add(self.chords, 1, wx.EXPAND | wx.ALL, 5)
   
     self.panel.SetSizer(self.sizer)
+    w = self.gridcols * 200
+    h = ch * 300
+    self.SetPosition(wx.Point(viewrect[2]-w-30, viewrect[1]+70)) # for mac top bar
+    self.SetSize(w,h)
     self.Show()
     
 class DisplayChord(wx.Panel):
