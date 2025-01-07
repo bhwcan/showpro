@@ -107,6 +107,9 @@ class SongGrid(wx.grid.Grid):
         row += 1
         filevalue = self.GetCellValue(row,self.filecol)
         if len(filevalue) > 0:
+          if self.chordframe != None:
+            self.chordframe.Close(True)
+            self.chordframe = None
           self.mf.opensong(self.db.readsong(self.GetCellValue(row,self.bookcol), filevalue))
           self.mf.song.display()
           col = self.GetGridCursorCol()
@@ -118,6 +121,9 @@ class SongGrid(wx.grid.Grid):
         row -= 1
         filevalue = self.GetCellValue(row,self.filecol)
         if len(filevalue) > 0:
+          if self.chordframe != None:
+            self.chordframe.Close(True)
+            self.chordframe = None
           self.mf.opensong(self.db.readsong(self.GetCellValue(row,self.bookcol), filevalue))
           self.mf.song.display()
           col = self.GetGridCursorCol()
