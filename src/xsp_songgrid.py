@@ -83,14 +83,14 @@ class SongGrid(wx.grid.Grid):
       else:
         self.chordframe.Close(True)
         self.chordframe = None
-      self.SetFocus()
+      self.ResetFocus()
     elif key == 39: #; print chords
       if self.chordframe == None:
         self.chordframe = self.mf.displayGuitarChords()
       else:
         self.chordframe.Close(True)
         self.chordframe = None
-      self.SetFocus()
+      self.ResetFocus()
     elif key == 93: # ] tranpose up
       self.mf.song.transform(1)
     elif key == 91: # [ transpose down
@@ -184,6 +184,11 @@ class SongGrid(wx.grid.Grid):
       self.ChangeFocus(event)
     else:
       event.Skip()
+
+  def ResetFocus(self):
+    self.SetFocus()
+    p = self.GetParent().GetParent().GetParent().GetParent()
+    p.Raise()
 
   def ChangeFocus(self, event):
     p = self.GetParent().GetParent().GetParent().GetParent()

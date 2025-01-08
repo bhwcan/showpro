@@ -32,7 +32,6 @@ class ViewWindow(wx.Frame):
     self.Bind(wx.EVT_TEXT_URL, self.OnTextURL)
     self.control.Bind(wx.EVT_KEY_DOWN, self.on_key_pressed)
 
-    self.Raise()
     self.Show()
 
   def ToggleFullScreen(self, event):

@@ -24,6 +24,7 @@ class MainWindow(wx.Frame):
 
     self.SetPosition(wx.Point(listrect[0], listrect[1]+30))
     self.vf = ViewWindow(self, db, viewrect)
+    self.vf.Raise()
 
     # Here we create a panel and a notebook on the panel
     p = wx.Panel(self)
