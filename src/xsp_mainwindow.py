@@ -10,13 +10,19 @@ class MainWindow(wx.Frame):
     wx.Frame.__init__(self, None, title="XshowPro", size=(1200,780))
 
     self.db = db
-    self.db.open()
     self.pages = []
     self.currentpage = 0
 
     self.statusbar = self.CreateStatusBar() # A Statusbar in the bottom of the window
     self.statusbar.SetFieldsCount(2)
     self.statusbar.SetStatusWidths([-1,-4])
+
+    if (not db.open()):
+      dlg = wx.MessageDialog(None,
+        "System may require a rebuild to operate.\n",
+        "Database Open Error.", wx.OK|wx.ICON_ERROR)
+      dlg.ShowModal() # Shows it
+      dlg.Destroy() # finally destroy it when finished.
 
     displays = Displays()
     viewrect = displays.getViewRect()

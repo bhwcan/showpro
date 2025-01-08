@@ -83,7 +83,7 @@ class ViewWindow(wx.Frame):
         else:
           chorddefs.append(cd)
 
-    chordframe = ChordWindow(self, "Guitar Chords", self.db.get_guitartunning(), undefined, chorddefs, self.viewrect)
+    chordframe = ChordWindow(self, "Guitar Chords", 6, undefined, chorddefs, self.viewrect)
     return chordframe
     
   def displayUkuleleChords(self):
@@ -105,7 +105,7 @@ class ViewWindow(wx.Frame):
         else:
           chorddefs.append(cd)
 
-    chordframe = ChordWindow(self, "Ukulele Chords", self.db.get_ukuleletunning(), undefined, chorddefs, self.viewrect)
+    chordframe = ChordWindow(self, "Ukulele Chords", 4, undefined, chorddefs, self.viewrect)
     return chordframe
     
   def OnBold(self,e):

@@ -35,8 +35,12 @@ class ChordWindow(wx.Frame):
     self.sizer.Add(self.chords, 1, wx.EXPAND | wx.ALL, 5)
   
     self.panel.SetSizer(self.sizer)
-    w = self.gridcols * 200
-    h = ch * 300
+    w = 400
+    if self.gridcols > 0:
+      w = self.gridcols * 200
+    h = 600
+    if ch > 0:
+      h = ch * 300
     self.SetPosition(wx.Point(viewrect[2]-w-30, viewrect[1]+70)) # for mac top bar
     self.SetSize(w,h)
     self.Show()
@@ -56,8 +60,7 @@ class DisplayChord(wx.Panel):
   def on_paint(self, event):
     dc = wx.PaintDC(self)
     
-    strings = self.strings
-    num_strings = len(strings)
+    num_strings = self.strings
     num_frets = 4
     width, height = self.GetSize()
     fret_gap = int(height / (num_frets + 3))  # Extra gap for chord name
@@ -104,11 +107,6 @@ class DisplayChord(wx.Panel):
     # Draw base fret number only if greater than 0
     if self.base_fret > 1:
       dc.DrawText(str(self.base_fret), int(string_gap * 0.1), int(fret_gap * 1.1))
-        
-    # Draw string labels just below the last fret
-    #for i, string in enumerate(strings):
-    #  x = int((i + 1) * string_gap)
-    #  dc.DrawText(string, x - 5, int((num_frets + 1.2) * fret_gap))
         
     # Draw chord name below the grid
     font = wx.Font(14, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD)

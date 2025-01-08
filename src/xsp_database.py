@@ -21,8 +21,14 @@ class Database():
     rvalue = False
     if newpath == None:
       newpath = os.path.join(Path.home(), "Documents", "showpro")
-    if os.path.exists(newpath) and os.path.isdir(newpath):
-      rvalue = True
+      if os.path.exists(newpath) and os.path.isdir(newpath):
+        rvalue = True
+      else:
+        try:
+          os.mkdir(newpath)
+          rvalue = True
+        except:
+          pass
     self.path = newpath
     return rvalue
 
@@ -61,39 +67,40 @@ class Database():
   def open(self):
     rvalue = True
     songfile = os.path.join(self.path, "songs.dat")
-    if os.path.exists(songfile):
+    songidxfile = os.path.join(self.path, "songsidx.dat")
+    bookidxfile = os.path.join(self.path, "booksidx.dat")
+    if  os.path.exists(songfile) and \
+        os.path.exists(songidxfile) and \
+        os.path.exists(bookidxfile): 
       with open(songfile, "r") as sf:
         self.songs = json.load(sf)
-      with open(os.path.join(self.path, "songsidx.dat"), "r") as sf:
+      with open(songidxfile, "r") as sf:
         self.titleidx = json.load(sf)
-      with open(os.path.join(self.path, "booksidx.dat"), "r") as sf:
+      with open(bookidxfile, "r") as sf:
         self.booksidx = json.load(sf)
+    else:
+      rvalue = False
+    if os.path.exists(os.path.join(self.path, "chords.dat")):
       with open(os.path.join(self.path, "chords.dat"), "r") as cf:
         self.chorddefs = json.load(cf)
-    else:
-      self.rebuild(None)
     return rvalue
-
-  def get_ukuleletunning(self):
-    return self.chorddefs["U0"]["tuning"]
   
   def find_ukuleledef(self, name):
     rvalue = None
-    for d in self.chorddefs["U0"]["chords"]:
-      if d["name"] == name:
-        rvalue = d
-        break
+    if "U0" in self.chorddefs:
+      for d in self.chorddefs["U0"]["chords"]:
+        if d["name"] == name:
+          rvalue = d
+          break
     return rvalue
-
-  def get_guitartunning(self):
-    return self.chorddefs["G0"]["tuning"]
 
   def find_guitardef(self, name):
     rvalue = None
-    for d in self.chorddefs["G0"]["chords"]:
-      if d["name"] == name:
-        rvalue = d
-        break
+    if "G0" in self.chorddefs:
+      for d in self.chorddefs["G0"]["chords"]:
+        if d["name"] == name:
+          rvalue = d
+          break
     return rvalue
 
   def gettitles(self, data):
@@ -197,8 +204,9 @@ class Database():
     self.titleidx = sorted(self.titleidx, key=lambda x: x[0])
     with open(os.path.join(self.path, "songsidx.dat"), "w") as fh:
       json.dump(self.titleidx, fh)
-    with open(os.path.join(self.path, "chords.dat"), "r") as cf:
-      self.chorddefs = json.load(cf)
+    if os.path.exists(os.path.join(self.path, "chords.dat")):
+      with open(os.path.join(self.path, "chords.dat"), "r") as cf:
+        self.chorddefs = json.load(cf)
 
     #playlists
     plpath = self.getplaylistpath()
