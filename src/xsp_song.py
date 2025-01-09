@@ -38,6 +38,36 @@ class Song:
                          { "chord": "G", "index": 11 } ]
     self.scale = [ "NC", "A", "Bb", "B", "C", "Db", "D", "Eb", "E", "F", "F#", "G", "G#" ]  
 
+  def transposeChord(self, inchord, value):
+    newchords = []
+    split = ""
+    if inchord.find("add") > 0: # if it is 0 invalid
+      split = "add"
+      oldchords = inchord.split("add")
+    elif inchord.find("/") > 0:
+      split = "/"
+      oldchords = inchord.split("/")
+    else:
+      oldchords = []
+      oldchords.append(inchord)
+    for oldchord in oldchords:
+      newchord = ""
+      for look in self.scalelookup:
+        if oldchord.find(look["chord"]) == 0:
+          oldlen = len(look["chord"])
+          oldidx = look["index"]
+          newidx = oldidx + value
+          if newidx < 1:
+            newidx = 12
+          if newidx > 12:
+            newidx = 1
+          newchord = self.scale[newidx] + oldchord[oldlen:]
+          newchords.append(newchord)
+          break
+    outchord = split.join(newchords)
+    #print("transpose:", inchord, outchord)
+    return outchord
+  
   def transform(self, value):
     self.chords = []
     newlyrics = []
@@ -56,25 +86,13 @@ class Song:
             break
           newlyric += lyric[s:cs+1] # include brace
           oldchord = lyric[cs+1:ce]
-          oldfound = False
-          newchord = ""
-          for look in self.scalelookup:
-            if oldchord.find(look["chord"]) == 0:
-              oldfound = True
-              oldlen = len(look["chord"])
-              oldidx = look["index"]
-              newidx = oldidx + value
-              if newidx < 1:
-                newidx = 12
-              if newidx > 12:
-                newidx = 1
-              newchord = self.scale[newidx] + oldchord[oldlen:]
-              self.setchord(newchord)
-              break
-          if oldfound:
+          newchord = self.transposeChord(oldchord, value)
+          if newchord:
             newlyric += newchord
+            self.setchord(newchord)
           else:
             newlyric += oldchord
+            #self.setchord(newchord) it the transpose didn't work not valid chord
           newlyric += "]" # add back the brace
           s = ce + 1
           if s >= len(lyric):
