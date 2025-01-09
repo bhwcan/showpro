@@ -2,7 +2,7 @@
 
 ## Summary
 
-XshowPro is an application to display chordpro file formats on a large display for guitar or ukulele groups. It consists of two windows: one for the song view, typically on a large TV screen or monitor, and a song list window to select and search from your library of chordpro files, typically on a laptop display. If you have only one display both windows can be displayed on the same screen. 
+Xshowpro is an application to display chordpro file formats on a large display for guitar or ukulele groups. It consists of two windows: one for the song view, typically on a large TV screen or monitor, and a song list window to select and search from your library of chordpro files, typically on a laptop display. If you have only one display both windows can be displayed on the same screen. 
 
 ## Requirements
 
@@ -28,6 +28,7 @@ It uses chordpro files installed in subdirectories under the users Documents fol
                 - booksidx.dat : book index file
                 - songs.dat : songs database
                 - songsidx.dat : songs word index file
+                - chords.dat : chords database not generated need to download
                 - playlists
                     - list1.plf
                     - list2.plf
@@ -98,6 +99,8 @@ The hot keys allow the operator to modify the song view window and the buttons w
 | .          | Period will sort the column containing selected.                                                                                  |
 | <          | Less than will go to first row.                                                                                                   |
 | >          | Greater than will go to last row.                                                                                                 |
+| ;          | Semi colon will toggle diplay Ukulele chords                                                                                             |
+| '          | Quote will toggle display Guitar chords                                                                                                  |
 | /          | Back Slash will change focus between the view window and the song list window                                                     |
 | Ctrl-Left  | Zoom In on view window                                                                                                            |
 | Ctrl-Right | Zoom out on view window                                                                                                           |
@@ -129,6 +132,8 @@ The bridge {start_of_bridge} ... {end_of_bridge} or the short form {sob} ... {eo
 The comment {comment: text}, {c: text} will display the text bolded.
 
 The {comment_italic: text}, or {ci: text} will display the text in italics.
+
+The {define-ukulele: C base-fret 1 frets 0,0,0,3} or its variations define-guitar and define will define chords that will show up in the chord pop up window overriding database chords. This is valid for different voicing of chords or if the chord is not in the database.
 
 All other single line directives are ignored.
 
