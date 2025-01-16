@@ -23,6 +23,7 @@ class SongGrid(wx.grid.Grid):
     self.bookcol = 3
     self.rowbuff = 10
     self.chordframe = None
+    self.pf = self.GetParent().GetParent().GetParent().GetParent()
    
     self.CreateGrid(rows, self.numcols)  # 20 rows, 4 columns
     self.EnableEditing(False)
@@ -39,13 +40,13 @@ class SongGrid(wx.grid.Grid):
     self.Bind(wx.EVT_KEY_DOWN, self.on_key_pressed)
 
   def editsong(self, bookvalue, filevalue):
-    pos = self.Parent.Parent.GetPosition()
+    pos = self.pf.GetPosition()
     pos[0] += 100
     pos[1] += 100
-    size = self.Parent.Parent.GetSize()
+    size = self.pf.GetSize()
     size[0] -= 200
     size[1] -= 200
-    editframe = EditWindow(self, self.db.getsongpath(bookvalue, filevalue), pos, size)
+    editframe = EditWindow(self, bookvalue, filevalue, pos, size)
     
   def on_key_pressed(self,event):
     key = event.GetKeyCode()
@@ -187,13 +188,11 @@ class SongGrid(wx.grid.Grid):
 
   def ResetFocus(self):
     self.SetFocus()
-    p = self.GetParent().GetParent().GetParent().GetParent()
-    p.Raise()
+    self.pf.Raise()
 
   def ChangeFocus(self, event):
-    p = self.GetParent().GetParent().GetParent().GetParent()
-    p.vf.control.SetFocus()
-    p.vf.Raise()
+    self.pf.vf.control.SetFocus()
+    self.pf.vf.Raise()
     
   def delrequested(self):
     row = self.GetGridCursorRow()

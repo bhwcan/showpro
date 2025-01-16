@@ -1,15 +1,24 @@
 import wx
+from xsp_editfind import EditFind
 
 class EditWindow(wx.Frame):
-  def __init__(self, parent, filename, pos, size):
-    self.filename = filename
+  def __init__(self, parent, bookvalue, filevalue, pos, size):
+    self.filevalue = filevalue
+    self.bookvalue = bookvalue
+    self.findopen = False
+    self.finddata = wx.FindReplaceData()
+    self.db = parent.db
 
+    filename = self.db.getsongpath(bookvalue, filevalue)
     wx.Frame.__init__(self, parent, title=filename, pos=pos,size=size, style=wx.DEFAULT_FRAME_STYLE)
 
     self.control = wx.TextCtrl(self, style=wx.TE_MULTILINE)
     font=wx.Font(12, wx.FONTFAMILY_TELETYPE, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False)
     self.control.SetFont(font)
-    self.control.LoadFile(filename)
+    data = self.db.readsong(bookvalue, filevalue)
+    self.control.SetValue(data)
+    #self.control.LoadFile(filename)
+    self.control.Bind(wx.EVT_KEY_DOWN, self.on_key_pressed)
 
     # Setting up the menu.
     filemenu= wx.Menu()
@@ -28,10 +37,15 @@ class EditWindow(wx.Frame):
     self.Show()
 
   def on_key_pressed(self,event):
+    key = event.GetKeyCode()
     if key == 83 and event.ControlDown(): # ctrl-s save
       self.saveFile()
     elif key == 81 and event.ControlDown(): # ctrl-q quit
-      self.OnExit(self, event)
+      self.Close(event)
+    elif key == 70 and event.ControlDown(): # ctrl-f find
+      if not self.findopen:
+        dlg = EditFind(self.control)
+        self.findopen = True
     else:
       event.Skip()
       
@@ -41,7 +55,7 @@ class EditWindow(wx.Frame):
 
   def saveFile(self):
     if self.control.IsModified:
-      self.control.SaveFile(self.filename)
+      self.db.writesong(self.bookvalue, self.filevalue, self.control.GetValue())
       self.Parent.Parent.Parent.Parent.Parent.setstatus2(self.filename + " saved")
 
 
