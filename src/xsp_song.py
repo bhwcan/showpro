@@ -105,18 +105,19 @@ class Song:
     output = ""
     cd = 0
     while cd < len(self.directives) and self.directives[cd].y <= 0:
-      output += self.directives[cd].line
+      output += self.directives[cd].line + "\n"
       cd += 1
     l = 0
     for lyric in self.lyrics:
       while cd < len(self.directives) and self.directives[cd].y == l:
-        output += self.directives[cd].line
+        output += self.directives[cd].line + "\n"
         cd += 1
-      output += lyric
+      output += lyric + "\n"
       l += 1
     while cd < len(self.directives):
-      output += self.directives[cd].line
+      output += self.directives[cd].line + "\n"
       cd += 1
+    #print(output)
     return(output)
     
   def command(self, line, lineno):
@@ -138,7 +139,7 @@ class Song:
   def process(self):
     rvalue = True
     lineno = 0 # before lyrics
-    self.lines = self.data.splitlines(True)
+    self.lines = self.data.splitlines()
     for line in self.lines:
       #print(line)
       if line.find("#") == 0 or line.find("{") >= 0:
@@ -283,6 +284,15 @@ class Song:
           s = ce + 1
           if s >= len(lyric):
             break
+          
+      # stop highlight for new line
+      fontattr.SetBackgroundColour(wx.WHITE)
+      rtc.SetDefaultStyle(fontattr)
+      rtc.WriteText("\n")
+      if highlighton:
+        fontattr.SetBackgroundColour(highlight)
+        rtc.SetDefaultStyle(fontattr)
+  
       l += 1
     #if wx.Platform == "__WXMSW__":
     rtc.SetInsertionPoint(0) # PC hac

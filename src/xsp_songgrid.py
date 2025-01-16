@@ -100,8 +100,10 @@ class SongGrid(wx.grid.Grid):
       row = self.GetGridCursorRow()
       filevalue = self.GetCellValue(row,self.filecol)
       if len(filevalue) > 0:
-        self.db.writesong(self.GetCellValue(row,self.bookcol), filevalue, self.mf.song.save())
+        bookvalue = self.GetCellValue(row,self.bookcol)
+        self.db.writesong(bookvalue, filevalue, self.mf.song.save())
         self.mf.song.display()
+        self.pf.setstatus2(self.db.getsongpath(bookvalue, filevalue) + " saved")
     elif key == 317 and event.AltDown(): # alt-downarrow next song
       row = self.GetGridCursorRow()
       if row < len(self.songs)-1:

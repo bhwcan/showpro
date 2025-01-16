@@ -9,8 +9,8 @@ class EditWindow(wx.Frame):
     self.finddata = wx.FindReplaceData()
     self.db = parent.db
 
-    filename = self.db.getsongpath(bookvalue, filevalue)
-    wx.Frame.__init__(self, parent, title=filename, pos=pos,size=size, style=wx.DEFAULT_FRAME_STYLE)
+    self.filename = self.db.getsongpath(bookvalue, filevalue)
+    wx.Frame.__init__(self, parent, title=self.filename, pos=pos,size=size, style=wx.DEFAULT_FRAME_STYLE)
 
     self.control = wx.TextCtrl(self, style=wx.TE_MULTILINE)
     font=wx.Font(12, wx.FONTFAMILY_TELETYPE, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False)
