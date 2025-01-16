@@ -41,11 +41,11 @@ class SongGrid(wx.grid.Grid):
 
   def editsong(self, bookvalue, filevalue):
     pos = self.pf.GetPosition()
-    pos[0] += 100
-    pos[1] += 100
+    pos[0] += 50
+    pos[1] += 50
     size = self.pf.GetSize()
-    size[0] -= 200
-    size[1] -= 200
+    size[0] -= 250
+    size[1] -= 100
     editframe = EditWindow(self, bookvalue, filevalue, pos, size)
     
   def on_key_pressed(self,event):

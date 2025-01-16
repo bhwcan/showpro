@@ -3,9 +3,13 @@ import wx
 class EditFind(wx.FindReplaceDialog):
   def __init__(self, parent):
     self.data = wx.FindReplaceData()
+    self.control = parent.control
     self.data.SetFlags(wx.FR_MATCHCASE|wx.FR_DOWN)
     wx.FindReplaceDialog.__init__(self, parent, self.data, "Find", wx.FR_NOUPDOWN | wx.FR_NOMATCHCASE | wx.FR_NOWHOLEWORD)
     #wx.FindReplaceDialog.__init__(self, parent, self.data, "Find", wx.FR_NOUPDOWN | wx.FR_NOWHOLEWORD)
+    wpos = parent.GetPosition()
+    wsize = parent.GetSize()
+    self.SetPosition(wx.Point(wpos[0]+wsize[0]+1,wpos[1])) 
 
     self.pos = 0
     
@@ -19,7 +23,7 @@ class EditFind(wx.FindReplaceDialog):
 
   def on_find(self, event):
     self.pos = 0
-    self.text = self.GetParent().GetValue()
+    self.text = self.control.GetValue()
     self.on_next(event)
 
   def fixpos(self, data, newpos):
@@ -32,13 +36,15 @@ class EditFind(wx.FindReplaceDialog):
   def on_next(self, event):
     findstr = self.data.GetFindString()
     newpos = self.text.find(findstr, self.pos)
+    #print("newpos:", newpos, "self.pos:", self.pos)
     if newpos >= self.pos:
-      self.GetParent().SetInsertionPoint(self.fixpos(self.text,newpos))
+      self.control.SetInsertionPoint(self.fixpos(self.text,newpos))
       self.pos = newpos + 1
-      self.GetParent().SetFocus()
+      self.control.SetFocus()
+      self.Parent.Raise()
     else:
-      self.on_close(event)
-    event.Skip()
+      self.on_find(event)
+#    event.Skip()
 
 #  def on_find_replace(self, event):
 #    findstr = self.data.GetFindString()
@@ -53,6 +59,8 @@ class EditFind(wx.FindReplaceDialog):
 #    event.Skip()
 
   def on_close(self, event):
-    self.GetParent().GetParent().findopen = False
-    self.Close(True)  # Close the frame.
+    self.Parent.findopen = False
+#    self.Close(True)  # Close the frame.
+#    print("on_close")
+    event.Skip()
 

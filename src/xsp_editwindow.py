@@ -44,7 +44,7 @@ class EditWindow(wx.Frame):
       self.Close(event)
     elif key == 70 and event.ControlDown(): # ctrl-f find
       if not self.findopen:
-        dlg = EditFind(self.control)
+        dlg = EditFind(self)
         self.findopen = True
     else:
       event.Skip()
