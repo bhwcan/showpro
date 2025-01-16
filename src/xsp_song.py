@@ -253,6 +253,16 @@ class Song:
         rtc.SetDefaultStyle(fontattr)
       else:
         cordattr.SetBackgroundColour(wx.WHITE)
+      # if no chords then remove intro outro lines
+      if self.chordcolor < 0:
+        if lyric.lower().find("intro:") >= 0 or lyric.lower().find("outro:") >= 0:
+          l += 1
+          continue
+        # remove timing hints for no chords
+        lyric = lyric.replace('/','');
+        lyric = lyric.replace('↑','')
+        lyric = lyric.replace('↓','')
+        lyric = lyric.replace('|', '')
       while True:
         cs = lyric.find('[',s)
         if cs < 0:
@@ -264,11 +274,12 @@ class Song:
             rtc.WriteText(lyric[s:])
             break
           rtc.WriteText(lyric[s:cs])
-          rtc.SetDefaultStyle(cordattr)
-          rtc.WriteText(lyric[cs:ce+1])
-          chord = lyric[cs+1:ce]
-          self.setchord(chord)
-          rtc.SetDefaultStyle(fontattr)
+          if self.chordcolor >= 0:
+            rtc.SetDefaultStyle(cordattr)
+            rtc.WriteText(lyric[cs:ce+1])
+            chord = lyric[cs+1:ce]
+            self.setchord(chord)
+            rtc.SetDefaultStyle(fontattr)
           s = ce + 1
           if s >= len(lyric):
             break

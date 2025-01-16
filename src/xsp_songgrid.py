@@ -149,7 +149,7 @@ class SongGrid(wx.grid.Grid):
         color = self.mf.chordcolor
         color += 1
         if color > 3:
-          color = 0
+          color = -1
         self.mf.chordcolor = color
         self.mf.song.setchordcolor(color)
     elif key == 46: # . period for order
