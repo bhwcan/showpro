@@ -217,12 +217,12 @@ class Song:
         if d.name == "end_of_chorus" or d.name == "eoc":
           choruson = False
           #print("end_of_chorus");
-        if d.name == "start_of_bridge" or d.name == "sob":
+        if d.name == "start_of_bridge" or d.name == "sob" or d.name == "start_of_highlight" or d.name == "soh":
           highlighton = True
           #print("start_of_chorus");
           #cordattr.SetBackgroundColour(highlight)
           #fontattr.SetBackgroundColour(highlight)
-        if d.name == "end_of_bridge" or d.name == "eob":
+        if d.name == "end_of_bridge" or d.name == "eob" or d.name == "end_of_highlight" or d.name == "eoh":
           highlighton = False
           #cordattr.SetBackgroundColour(wx.WHITE)
           #fontattr.SetBackgroundColour(wx.WHITE)
