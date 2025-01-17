@@ -49,6 +49,10 @@ class ViewWindow(wx.Frame):
       self.ToggleFullScreen(event)
     elif key == 47: #/ slash to change focus
       self.ChangeFocus(event)
+    elif key == 317 and wx.Platform == "__WXMSW__": # override on windows
+      self.control.ScrollLines(1)
+    elif key == 315 and wx.Platform == "__WXMSW__":
+      self.control.ScrollLines(-1)
     else:
      p = self.GetParent()
      p.pages[p.currentpage].grid.on_key_pressed(event)

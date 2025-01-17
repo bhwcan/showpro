@@ -180,6 +180,7 @@ class Song:
       face = "Menlo"
     choruson = False
     highlighton = False
+    tabon = False
     cordattr = wx.TextAttr(wx.BLACK, font=wx.Font(self.textsize, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, False, face))
     if self.chordcolor == 1:
       cordattr = wx.TextAttr(wx.Colour(180,0,0), font=wx.Font(self.textsize, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, False, face))
@@ -216,6 +217,12 @@ class Song:
           choruson = True
         if d.name == "end_of_chorus" or d.name == "eoc":
           choruson = False
+          #print("end_of_chorus");
+        if d.name == "start_of_tab" or d.name == "sot":
+          #print("start_of_chorus");
+          tabon = True
+        if d.name == "end_of_tab" or d.name == "eot":
+          tabon = False
           #print("end_of_chorus");
         if d.name == "start_of_bridge" or d.name == "sob" or d.name == "start_of_highlight" or d.name == "soh":
           highlighton = True
@@ -258,7 +265,7 @@ class Song:
         cordattr.SetBackgroundColour(wx.WHITE)
       # if no chords then remove intro outro lines
       if self.chordcolor < 0:
-        if lyric.lower().find("intro:") >= 0 or lyric.lower().find("outro:") >= 0:
+        if tabon or lyric.lower().find("intro:") >= 0 or lyric.lower().find("outro:") >= 0 or lyric.find("<") == 0:
           l += 1
           continue
         # remove timing hints for no chords
