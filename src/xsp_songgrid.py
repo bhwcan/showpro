@@ -104,7 +104,7 @@ class SongGrid(wx.grid.Grid):
         self.db.writesong(bookvalue, filevalue, self.mf.song.save())
         self.mf.song.display()
         self.pf.setstatus2(self.db.getsongpath(bookvalue, filevalue) + " saved")
-    elif key == 317 and event.AltDown(): # alt-downarrow next song
+    elif key == 367 or (key == 317 and event.AltDown()): # alt-downarrow next song
       row = self.GetGridCursorRow()
       if row < len(self.songs)-1:
         row += 1
@@ -118,7 +118,7 @@ class SongGrid(wx.grid.Grid):
           col = self.GetGridCursorCol()
           self.SetGridCursor(row,col)
           self.MakeCellVisible(row,col)
-    elif key == 315 and event.AltDown(): # alt-uparrow  previos song
+    elif key == 366 or (key == 315 and event.AltDown()): # alt-uparrow  previos song
       row = self.GetGridCursorRow()
       if row > 0:
         row -= 1

@@ -17,7 +17,7 @@ class ViewWindow(wx.Frame):
 
     parent.vf = self
 
-    wx.Frame.__init__(self, parent, size=(1200,800), style=wx.DEFAULT_FRAME_STYLE &~ wx.CLOSE_BOX) #wx.MAXIMIZE_BOX | wx.RESIZE_BORDER | wx.CAPTION)
+    wx.Frame.__init__(self, parent, size=(1200,800), style=wx.DEFAULT_FRAME_STYLE &~ wx.CLOSE_BOX)
     self.SetPosition(wx.Point(viewrect[0], viewrect[1]+30)) # for mac top bar
     self.SetSize(wx.Size(viewrect[2],viewrect[3]-70)) # for mac top bar and window bottom
 
@@ -44,20 +44,26 @@ class ViewWindow(wx.Frame):
   
   def on_key_pressed(self,event):
     key = event.GetKeyCode()
-    #print(key, chr(key))
+    print(key, chr(key))
     if key == 350: #F11 - does not work on mac
       self.ToggleFullScreen(event)
     elif key == 47: #/ slash to change focus
       self.ChangeFocus(event)
+    elif key == 314: # ctrl-leftarrow zoom in
+      self.OnZoomIn(event)
+      self.control.SetFocus()
+    elif key == 316: # ctrl-rightarrow zoom out
+      self.OnZoomOut(event)
+      self.control.SetFocus()
     elif key == 317 and wx.Platform == "__WXMSW__": # override on windows
       self.control.ScrollLines(1)
     elif key == 315 and wx.Platform == "__WXMSW__":
       self.control.ScrollLines(-1)
     else:
-     p = self.GetParent()
-     p.pages[p.currentpage].grid.on_key_pressed(event)
-     self.control.SetFocus()
-     #event.Skip()
+      p = self.GetParent()
+      p.pages[p.currentpage].grid.on_key_pressed(event)
+      self.control.SetFocus()
+      #event.Skip()
 
   def OnTextURL(self, event):
     #print('OnTextURL')
@@ -69,6 +75,10 @@ class ViewWindow(wx.Frame):
     event.Skip()
 
   def displayGuitarChords(self):
+
+    if self.song == None:
+      return
+    
     chorddefs = []
     undefined = []
 
@@ -91,6 +101,10 @@ class ViewWindow(wx.Frame):
     return chordframe
     
   def displayUkuleleChords(self):
+
+    if self.song == None:
+      return
+    
     chorddefs = []
     undefined = []
 
