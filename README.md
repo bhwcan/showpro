@@ -95,15 +95,17 @@ The hot keys allow the operator to modify the song view window and the buttons w
 | [          | Left square bracket will transpose down one step on view window.                                                                  |
 | ]          | Right square backet will transpose up one step on view window.                                                                    |
 | \          | Forward Slash will save transpose to song file.                                                                                   |
-| ,          | Comma will toggle chord colors                                                                                                    |
+| ,          | Comma will toggle chord colors (black, red, blue, green, no chords (lyrics only)                                                  |
 | .          | Period will sort the column containing selected.                                                                                  |
 | <          | Less than will go to first row.                                                                                                   |
 | >          | Greater than will go to last row.                                                                                                 |
-| ;          | Semi colon will toggle diplay Ukulele chords                                                                                             |
-| '          | Quote will toggle display Guitar chords                                                                                                  |
+| ;          | Semi colon will toggle diplay Ukulele chords                                                                                      |
+| '          | Quote will toggle display Guitar chords                                                                                           |
 | /          | Back Slash will change focus between the view window and the song list window                                                     |
+| = (+)      | Zoom In on view window make text bigger                                                                                           |
+| -          | Zoom Out on view window make text smaller                                                                                         |
 | Ctrl-Left  | Zoom In on view window                                                                                                            |
-| Ctrl-Right | Zoom out on view window                                                                                                           |
+| Ctrl-Right | Zoom Out on view window                                                                                                           |
 | Ctrl-Down  | Scroll view window down one line (does not work on Mac, use / to change focus and then up/down arrows)                            |
 | Ctrl-Up    | Scroll view window up one line   (does not work on Mac, use / to change focus and then up/down arrows)                            |
 | Alt-Down   | Next song                                                                                                                         |
@@ -112,6 +114,10 @@ The hot keys allow the operator to modify the song view window and the buttons w
 | Shift-Up   | Playlist only: move song up in list.                                                                                              |
 | esc        | Quit and close XshowPro.                                                                                                          |
 | F11        | Toggle view window to full screen mode (does not work on Mac)                                                                     |
+| Left       | In song view focus only will go to previous song (for foot pedal)                                                                 |
+| Right      | In song view focus only will go to next song (for foot pedal)                                                                     |
+| Down       | In song view focus only will scroll down 1 line (for foot pedal)                                                                  |
+| Up         | In song view focus only will scroll up 1 line (for foot pedal)                                                                    |
 
 ## Chordpro
 
@@ -139,7 +145,9 @@ All other single line directives are ignored.
 
 For the range directives that contain start and end the containing text is displayed in the current font. Since the view window uses a mono space font tab lines are displayed correctly.
 
-The only non-chordpro feature is the support for imbedded urls. If the song view window is in focus and the url is clicked the application will open your default browser with the link.
+The non-chordpro features: 
+* the support for imbedded urls. If the song view window is in focus and the url is clicked the application will open your default browser with the link.
+* {start_of_highlight) ... {end_of_highlight}, or the short form {soh} ... {eoh} does the same highlight as bridge. For compatability with Songbook.
 
 
 
