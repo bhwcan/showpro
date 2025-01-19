@@ -254,9 +254,6 @@ class Song:
       s = 0
       fontattr.SetBackgroundColour(wx.WHITE)
       rtc.SetDefaultStyle(fontattr)
-      rtc.WriteText(self.tab) # normal tab
-      if choruson:
-        rtc.WriteText(self.tab) # chorus tab
       if highlighton:
         fontattr.SetBackgroundColour(highlight)
         cordattr.SetBackgroundColour(highlight)
@@ -273,6 +270,9 @@ class Song:
         lyric = lyric.replace('↑','')
         lyric = lyric.replace('↓','')
         lyric = lyric.replace('|', '')
+      rtc.WriteText(self.tab) # normal tab
+      if choruson:
+        rtc.WriteText(self.tab) # chorus tab
       while True:
         cs = lyric.find('[',s)
         if cs < 0:

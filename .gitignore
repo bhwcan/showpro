@@ -7,4 +7,5 @@ __pycache__/
 *.ico
 build/
 dist/
+.DS_Store
 *.spec
