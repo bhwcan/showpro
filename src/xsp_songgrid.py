@@ -22,7 +22,6 @@ class SongGrid(wx.grid.Grid):
     self.filecol = 4
     self.bookcol = 3
     self.rowbuff = 10
-    self.chordframe = None
     self.pf = self.GetParent().GetParent().GetParent().GetParent()
    
     self.CreateGrid(rows, self.numcols)  # 20 rows, 4 columns
@@ -60,9 +59,6 @@ class SongGrid(wx.grid.Grid):
         if col == self.filecol:
           self.editsong(bookvalue, filevalue)
         else:
-          if self.chordframe != None:
-            self.chordframe.Close(True)
-            self.chordframe = None
           try:
             self.mf.opensong(self.db.readsong(bookvalue, filevalue))
             self.mf.song.display()
@@ -74,23 +70,15 @@ class SongGrid(wx.grid.Grid):
       if len(filevalue) > 0:
         bookvalue = self.GetCellValue(row, self.bookcol)
         self.editsong(bookvalue, filevalue)
-    elif key == 314 and event.ControlDown(): # ctrl-leftarrow zoom in
+    elif key == 61 or (key == 314 and event.ControlDown()): # ctrl-leftarrow zoom in
       self.mf.OnZoomIn(event)
-    elif key == 316 and event.ControlDown(): # ctrl-rightarrow zoom out
+    elif key == 45 or (key == 316 and event.ControlDown()): # ctrl-rightarrow zoom out
       self.mf.OnZoomOut(event)
     elif key == 59: #; print chords
-      if self.chordframe == None:
-        self.chordframe = self.mf.displayUkuleleChords()
-      else:
-        self.chordframe.Close(True)
-        self.chordframe = None
+      self.mf.displayUkuleleChords()
       self.ResetFocus()
     elif key == 39: #; print chords
-      if self.chordframe == None:
-        self.chordframe = self.mf.displayGuitarChords()
-      else:
-        self.chordframe.Close(True)
-        self.chordframe = None
+      self.mf.displayGuitarChords()
       self.ResetFocus()
     elif key == 93: # ] tranpose up
       self.mf.song.transform(1)
@@ -104,34 +92,10 @@ class SongGrid(wx.grid.Grid):
         self.db.writesong(bookvalue, filevalue, self.mf.song.save())
         self.mf.song.display()
         self.pf.setstatus2(self.db.getsongpath(bookvalue, filevalue) + " saved")
-    elif key == 367 or (key == 317 and event.AltDown()): # alt-downarrow next song
-      row = self.GetGridCursorRow()
-      if row < len(self.songs)-1:
-        row += 1
-        filevalue = self.GetCellValue(row,self.filecol)
-        if len(filevalue) > 0:
-          if self.chordframe != None:
-            self.chordframe.Close(True)
-            self.chordframe = None
-          self.mf.opensong(self.db.readsong(self.GetCellValue(row,self.bookcol), filevalue))
-          self.mf.song.display()
-          col = self.GetGridCursorCol()
-          self.SetGridCursor(row,col)
-          self.MakeCellVisible(row,col)
-    elif key == 366 or (key == 315 and event.AltDown()): # alt-uparrow  previos song
-      row = self.GetGridCursorRow()
-      if row > 0:
-        row -= 1
-        filevalue = self.GetCellValue(row,self.filecol)
-        if len(filevalue) > 0:
-          if self.chordframe != None:
-            self.chordframe.Close(True)
-            self.chordframe = None
-          self.mf.opensong(self.db.readsong(self.GetCellValue(row,self.bookcol), filevalue))
-          self.mf.song.display()
-          col = self.GetGridCursorCol()
-          self.SetGridCursor(row,col)
-          self.MakeCellVisible(row,col)
+    elif key == 317 and event.AltDown(): # alt-downarrow next song
+      self.ChangeSong(1)
+    elif key == 315 and event.AltDown(): # alt-uparrow  previos song
+      self.ChangeSong(-1)
     elif key == 317 and event.ControlDown(): # ctrl-downarrow move down
       self.mf.control.ScrollLines(1)
     elif key == 315 and event.ControlDown(): # ctrl-uparrow  move up
@@ -188,6 +152,18 @@ class SongGrid(wx.grid.Grid):
     else:
       event.Skip()
 
+  def ChangeSong(self, next):
+    row = self.GetGridCursorRow()
+    row += next
+    if row >= 0 and row < len(self.songs):
+      filevalue = self.GetCellValue(row,self.filecol)
+      if len(filevalue) > 0:
+        self.mf.opensong(self.db.readsong(self.GetCellValue(row,self.bookcol), filevalue))
+        self.mf.song.display()
+        col = self.GetGridCursorCol()
+        self.SetGridCursor(row,col)
+        self.MakeCellVisible(row,col)
+    
   def ResetFocus(self):
     self.SetFocus()
     self.pf.Raise()
@@ -303,9 +279,6 @@ class SongGrid(wx.grid.Grid):
       bookvalue = self.songs[row][self.bookcol+1]
       filename = self.db.getsongpath(bookvalue, filevalue)
       if col != self.filecol:
-        if self.chordframe != None:
-          self.chordframe.Close(True)
-          self.chordframe = None
         try:
           self.mf.opensong(self.db.readsong(bookvalue, filevalue))
           self.mf.song.display()

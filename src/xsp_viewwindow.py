@@ -14,6 +14,7 @@ class ViewWindow(wx.Frame):
     self.chordcolor = 0
     self.row = 0
     self.viewrect = viewrect
+    self.chordframe = None
 
     parent.vf = self
 
@@ -21,19 +22,23 @@ class ViewWindow(wx.Frame):
     self.SetPosition(wx.Point(viewrect[0], viewrect[1]+30)) # for mac top bar
     self.SetSize(wx.Size(viewrect[2],viewrect[3]-70)) # for mac top bar and window bottom
 
-    #self.EnableFullScreenView()
-
     self.control = wx.TextCtrl(self, style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_RICH | wx.TE_AUTO_URL)
-    #self.CreateStatusBar() # A Statusbar in the bottom of the window
-    # self.control.Bind(wx.EVT_KEY_DOWN, self.on_key_pressed)
 
      # Events.
     #self.Bind(wx.EVT_MENU, self.OnOpen, menuOpen)
     self.Bind(wx.EVT_TEXT_URL, self.OnTextURL)
     self.control.Bind(wx.EVT_KEY_DOWN, self.on_key_pressed)
+    #self.control.Bind(wx.EVT_MOUSE_EVENTS, self.mouse)
 
     self.Show()
 
+#  def mouse(self, event):
+#    print("X", event.X)
+#    print("Y", event.Y)
+#    print("aux1", event.aux1IsDown)
+#    print("aux2", event.aux2IsDown)
+#    event.Skip()
+    
   def ToggleFullScreen(self, event):
     self.ShowFullScreen(not self.IsFullScreen())
 
@@ -41,29 +46,49 @@ class ViewWindow(wx.Frame):
     p = self.GetParent()
     p.pages[p.currentpage].SetFocus()
     p.Raise()
-  
+
   def on_key_pressed(self,event):
+    p = self.GetParent()
+    #print("current page:", p.currentpage)
+    grid = p.pages[p.currentpage].grid
     key = event.GetKeyCode()
-    print(key, chr(key))
+    #print(key, chr(key))
     if key == 350: #F11 - does not work on mac
       self.ToggleFullScreen(event)
     elif key == 47: #/ slash to change focus
       self.ChangeFocus(event)
-    elif key == 314: # ctrl-leftarrow zoom in
-      self.OnZoomIn(event)
-      self.control.SetFocus()
-    elif key == 316: # ctrl-rightarrow zoom out
+    elif key == 45: # dash zoom in
       self.OnZoomOut(event)
       self.control.SetFocus()
+    elif key == 61: # equal zoom out
+      self.OnZoomIn(event)
+      self.control.SetFocus()
+    elif key == 314: # leftarrow previous song
+      grid.ChangeSong(-1)
+      self.control.SetFocus()
+    elif key == 316: # rightarrow next song
+      grid.ChangeSong(1)
+      self.control.SetFocus()
+    elif key == 59: #; print chords
+      self.displayUkuleleChords()
+      self.ResetFocus()
+    elif key == 39: #; print chords
+      self.displayGuitarChords()
+      self.ResetFocus()
     elif key == 317 and wx.Platform == "__WXMSW__": # override on windows
       self.control.ScrollLines(1)
     elif key == 315 and wx.Platform == "__WXMSW__":
       self.control.ScrollLines(-1)
     else:
-      p = self.GetParent()
-      p.pages[p.currentpage].grid.on_key_pressed(event)
-      self.control.SetFocus()
+      grid.on_key_pressed(event)
+      self.ResetFocus()
+      #self.control.SetFocus()
       #event.Skip()
+
+  def ResetFocus(self):
+#    self.control.SetInsertionPoint(0)
+    self.control.SetFocus()
+    self.Raise()
 
   def OnTextURL(self, event):
     #print('OnTextURL')
@@ -77,6 +102,11 @@ class ViewWindow(wx.Frame):
   def displayGuitarChords(self):
 
     if self.song == None:
+      return
+
+    if self.chordframe != None:
+      self.chordframe.Close(True)
+      self.chordframe = None
       return
     
     chorddefs = []
@@ -97,12 +127,17 @@ class ViewWindow(wx.Frame):
         else:
           chorddefs.append(cd)
 
-    chordframe = ChordWindow(self, "Guitar Chords", 6, undefined, chorddefs, self.viewrect)
-    return chordframe
+    self.chordframe = ChordWindow(self, "Guitar Chords", 6, undefined, chorddefs, self.viewrect)
+    return
     
   def displayUkuleleChords(self):
 
     if self.song == None:
+      return
+    
+    if self.chordframe != None:
+      self.chordframe.Close(True)
+      self.chordframe = None
       return
     
     chorddefs = []
@@ -123,8 +158,8 @@ class ViewWindow(wx.Frame):
         else:
           chorddefs.append(cd)
 
-    chordframe = ChordWindow(self, "Ukulele Chords", 4, undefined, chorddefs, self.viewrect)
-    return chordframe
+    self.chordframe = ChordWindow(self, "Ukulele Chords", 4, undefined, chorddefs, self.viewrect)
+    return
     
   def OnBold(self,e):
     self.chordcolor = 0
@@ -169,6 +204,10 @@ class ViewWindow(wx.Frame):
     self.Close(True)  # Close the frame.
 
   def opensong(self, data):
+    if self.chordframe != None:
+      self.chordframe.Close(True)
+      self.chordframe = None
+    
     self.song = Song(self, self.textsize, self.chordcolor, data)
     rvalue = self.song.process()
     if not rvalue:
