@@ -43,7 +43,8 @@ class EditFind(wx.FindReplaceDialog):
       self.control.SetFocus()
       self.Parent.Raise()
     else:
-      self.on_find(event)
+      if newpos >= 0:
+        self.on_find(event)
 #    event.Skip()
 
 #  def on_find_replace(self, event):

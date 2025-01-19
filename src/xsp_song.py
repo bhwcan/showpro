@@ -182,12 +182,16 @@ class Song:
     highlighton = False
     tabon = False
     cordattr = wx.TextAttr(wx.BLACK, font=wx.Font(self.textsize, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, False, face))
+    commentattr = wx.TextAttr(wx.BLACK, font=wx.Font(self.textsize, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, False, face))
     if self.chordcolor == 1:
       cordattr = wx.TextAttr(wx.Colour(180,0,0), font=wx.Font(self.textsize, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, False, face))
+      commentattr = wx.TextAttr(wx.Colour(180,0,0), font=wx.Font(self.textsize, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, face))
     elif self.chordcolor == 2:
       cordattr = wx.TextAttr(wx.Colour(0,0,180), font=wx.Font(self.textsize, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, False, face))
+      commentattr = wx.TextAttr(wx.Colour(0,0,180), font=wx.Font(self.textsize, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, face))
     elif self.chordcolor == 3:
       cordattr = wx.TextAttr(wx.Colour(0,180,0), font=wx.Font(self.textsize, wx.FONTFAMILY_DEFAULT,  wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, False, face))
+      commentattr = wx.TextAttr(wx.Colour(0,180,0), font=wx.Font(self.textsize, wx.FONTFAMILY_DEFAULT,  wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, face))
     boldattr = wx.TextAttr(wx.BLACK, font=wx.Font(self.textsize, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, False, face))
     fontattr = wx.TextAttr(wx.BLACK, font=wx.Font(self.textsize, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, face))
     itlcattr = wx.TextAttr(wx.BLACK, font=wx.Font(self.textsize, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_SLANT, wx.FONTWEIGHT_NORMAL, False, face))
@@ -237,7 +241,7 @@ class Song:
           #print("end_of_chorus");
         if d.name == "comment" or d.name == "c":
           if self.chordcolor >= 0:
-            rtc.SetDefaultStyle(boldattr)
+            rtc.SetDefaultStyle(commentattr)
             if choruson:
               rtc.WriteText(self.tab)
             rtc.WriteText(self.tab + d.text + "\n")
@@ -262,7 +266,10 @@ class Song:
         cordattr.SetBackgroundColour(wx.WHITE)
       # if no chords then remove intro outro lines
       if self.chordcolor < 0:
-        if tabon or lyric.lower().find("intro:") >= 0 or lyric.lower().find("outro:") >= 0 or lyric.find("<") == 0:
+        if tabon or lyric.lower().find("intro:") >= 0 \
+           or lyric.lower().find("outro:") >= 0 \
+           or lyric.lower().find("riff:") >= 0 \
+           or lyric.find("<") == 0:
           l += 1
           continue
         # remove timing hints for no chords
@@ -309,6 +316,8 @@ class Song:
   
   def setchord(self, cs):
     # remove timing and strumming directives
+    if len(cs) < 1:
+      return
     if (cs[0] < 'A' or cs[0] > 'G') and (cs[0] < 'a' or cs[0] > 'g'):
       return
     while cs[-1] == '/' or cs[-1] == '^' or cs[-1] == ' ' or cs[-1] == '↓' or cs[-1] == '↑' or cs[-1] == '*' or cs[-1] == '|' or cs[-1] == '~':
