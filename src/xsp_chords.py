@@ -2,7 +2,7 @@ import wx
 import wx.lib.scrolledpanel as scrolled
 
 class ChordWindow(wx.Frame):
-  def __init__(self, parent, name, strings, undefined, chorddefs, viewrect):
+  def __init__(self, parent, name, strings, undefined, chorddefs, viewrect, color):
     super().__init__(parent, title=name,style=(wx.DEFAULT_FRAME_STYLE | wx.STAY_ON_TOP) & ~(wx.CLOSE_BOX | wx.MAXIMIZE_BOX | wx.MINIMIZE_BOX))
     self.undefined = undefined
     self.chorddefs = chorddefs
@@ -29,7 +29,7 @@ class ChordWindow(wx.Frame):
 #    self.chords.SetBackgroundColour(wx.BLACK)
     self.chordsizer = wx.GridSizer(self.gridcols)
     for cd in self.chorddefs:
-      cw = DisplayChord(self.chords, self.strings, cd)
+      cw = DisplayChord(self.chords, self.strings, cd, color)
       self.chordsizer.Add(cw, 0, wx.ALL, 5)
     self.chords.SetSizer(self.chordsizer)
     self.sizer.Add(self.chords, 1, wx.EXPAND | wx.ALL, 5)
@@ -46,13 +46,21 @@ class ChordWindow(wx.Frame):
     self.Show()
     
 class DisplayChord(wx.Panel):
-  def __init__(self, parent, strings, chorddef):
+  def __init__(self, parent, strings, chorddef, color):
     super().__init__(parent, size=(150, 250))
 
     self.frets = chorddef["frets"]
     self.chord_name = chorddef["name"]
     self.base_fret = chorddef["base"]
     self.strings = strings
+    self.colour = wx.BLACK
+
+    if color == 1:
+      self.colour = wx.Colour(180,0,0) 
+    elif color == 2:
+      self.colour = wx.Colour(0,0,180) 
+    elif color == 3:
+      self.colour = wx.Colour(0,180,0) 
         
     self.SetBackgroundColour(wx.WHITE)
     self.Bind(wx.EVT_PAINT, self.on_paint)
@@ -100,7 +108,7 @@ class DisplayChord(wx.Panel):
         dc.DrawText('O', x - 5, int(fret_gap * 0.5))
       elif isinstance(fret, int) and fret > 0:
         y = max(0, min(int((fret + 1) * fret_gap - (fret_gap / 2)), int((num_frets + 1) * fret_gap)))
-        dc.SetBrush(wx.Brush(wx.Colour(0, 0, 255), wx.BRUSHSTYLE_SOLID))
+        dc.SetBrush(wx.Brush(self.colour, wx.BRUSHSTYLE_SOLID))
         dc.DrawCircle(x, y, 8)
         dc.SetBrush(wx.NullBrush)
         

@@ -86,6 +86,7 @@ class ViewWindow(wx.Frame):
       #event.Skip()
 
   def ResetFocus(self):
+    #print("ViewWindow Reset Focus")
 #    self.control.SetInsertionPoint(0)
     self.control.SetFocus()
     self.Raise()
@@ -127,7 +128,7 @@ class ViewWindow(wx.Frame):
         else:
           chorddefs.append(cd)
 
-    self.chordframe = ChordWindow(self, "Guitar Chords", 6, undefined, chorddefs, self.viewrect)
+    self.chordframe = ChordWindow(self, "Guitar Chords", 6, undefined, chorddefs, self.viewrect, self.chordcolor)
     return
     
   def displayUkuleleChords(self):
@@ -158,7 +159,7 @@ class ViewWindow(wx.Frame):
         else:
           chorddefs.append(cd)
 
-    self.chordframe = ChordWindow(self, "Ukulele Chords", 4, undefined, chorddefs, self.viewrect)
+    self.chordframe = ChordWindow(self, "Ukulele Chords", 4, undefined, chorddefs, self.viewrect, self.chordcolor)
     return
     
   def OnBold(self,e):
