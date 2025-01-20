@@ -41,7 +41,7 @@ class EditWindow(wx.Frame):
     if key == 83 and event.ControlDown(): # ctrl-s save
       self.saveFile()
     elif key == 81 and event.ControlDown(): # ctrl-q quit
-      self.Close(event)
+      self.OnExit(event)
     elif key == 70 and event.ControlDown(): # ctrl-f find
       if not self.findopen:
         dlg = EditFind(self)

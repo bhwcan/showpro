@@ -49,7 +49,7 @@ class SongGrid(wx.grid.Grid):
     
   def on_key_pressed(self,event):
     key = event.GetKeyCode()
-    #print(key, chr(key))
+    #print(key, "alt:", event.AltDown())
     if key == 13 and not event.AltDown(): # Enter to show
       row = self.GetGridCursorRow()
       filevalue = self.GetCellValue(row,self.filecol)

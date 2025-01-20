@@ -256,14 +256,6 @@ class Song:
             rtc.SetDefaultStyle(fontattr)
         cd += 1
       s = 0
-      fontattr.SetBackgroundColour(wx.WHITE)
-      rtc.SetDefaultStyle(fontattr)
-      if highlighton:
-        fontattr.SetBackgroundColour(highlight)
-        cordattr.SetBackgroundColour(highlight)
-        rtc.SetDefaultStyle(fontattr)
-      else:
-        cordattr.SetBackgroundColour(wx.WHITE)
       # if no chords then remove intro outro lines
       if self.chordcolor < 0:
         if tabon or lyric.lower().find("intro:") >= 0 \
@@ -277,9 +269,17 @@ class Song:
         lyric = lyric.replace('↑','')
         lyric = lyric.replace('↓','')
         lyric = lyric.replace('|', '')
+      fontattr.SetBackgroundColour(wx.WHITE)
+      rtc.SetDefaultStyle(fontattr)
       rtc.WriteText(self.tab) # normal tab
       if choruson:
         rtc.WriteText(self.tab) # chorus tab
+      if highlighton:
+        fontattr.SetBackgroundColour(highlight)
+        cordattr.SetBackgroundColour(highlight)
+        rtc.SetDefaultStyle(fontattr)
+      else:
+        cordattr.SetBackgroundColour(wx.WHITE)
       while True:
         cs = lyric.find('[',s)
         if cs < 0:
