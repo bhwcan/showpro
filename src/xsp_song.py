@@ -198,9 +198,6 @@ class Song:
     boldattr.SetBackgroundColour(wx.WHITE)
     highlight = wx.Colour(200,200,200) #grey
 
-    cd = 0
-    while cd < len(self.directives) and self.directives[cd].y <= 0:
-      cd += 1
     rtc = self.mx.control
     #if wx.Platform == "__WXMSW__":
     rtc.Hide()
@@ -209,6 +206,13 @@ class Song:
     rtc.WriteText(self.tab + self.title.center(self.width) + "\n" + self.tab + self.subtitle.center(self.width) + "\n")
     rtc.SetDefaultStyle(fontattr)
     self.mx.SetTitle(self.title + " - " + self.subtitle);
+    cd = 0
+    while cd < len(self.directives) and self.directives[cd].y <= 0:
+      if self.directives[cd].name == "artist":
+        rtc.SetDefaultStyle(boldattr)
+        rtc.WriteText(self.tab + self.directives[cd].text.center(self.width) + "\n")
+        rtc.SetDefaultStyle(fontattr)
+      cd += 1
     l = 0
     for lyric in self.lyrics:
       #print(l,";",lyric[:-1])
