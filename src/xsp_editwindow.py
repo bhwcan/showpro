@@ -13,7 +13,12 @@ class EditWindow(wx.Frame):
     wx.Frame.__init__(self, parent, title=self.filename, pos=pos,size=size, style=wx.DEFAULT_FRAME_STYLE)
 
     self.control = wx.TextCtrl(self, style=wx.TE_MULTILINE)
-    font=wx.Font(12, wx.FONTFAMILY_TELETYPE, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False)
+    face = "Monospace"
+    if wx.Platform == "__WXMSW__":
+      face = "Lucida Console"
+    if wx.Platform == "__WXMAC__":
+      face = "Menlo"
+    font=wx.Font(14, wx.FONTFAMILY_TELETYPE, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, face)
     self.control.SetFont(font)
     data = self.db.readsong(bookvalue, filevalue)
     self.control.SetValue(data)
