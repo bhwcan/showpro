@@ -87,7 +87,7 @@ class DisplayChord(wx.Panel):
       dc.DrawLine(int(string_gap), y, int(num_strings * string_gap), y)
         
     # Draw nut if base fret is 0
-    if self.base_fret == 0:
+    if self.base_fret <= 1:
       dc.SetPen(wx.Pen(wx.Colour(0, 0, 0), width=8))
       dc.DrawLine(int(string_gap), fret_gap, int(num_strings * string_gap), fret_gap)
       dc.SetPen(wx.Pen(wx.Colour(0, 0, 0), width=2))
