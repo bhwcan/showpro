@@ -38,18 +38,23 @@ class Song:
                          { "chord": "G", "index": 11 } ]
     self.scale = [ "NC", "A", "Bb", "B", "C", "Db", "D", "Eb", "E", "F", "F#", "G", "G#" ]  
 
+  def splitChords(self, inchord):
+    oldchords = []
+    for split in ("/", "add"):
+      splitchords = inchord.split(split)
+      if len(splitchords) > 1 and len(splitchords[1]) > 0 \
+         and splitchords[1][0] >= 'A' and splitchords[1][0] <= 'G':
+        oldchords.append(splitchords[0])
+        oldchords.append(splitchords[1])
+        break
+    if len(oldchords) == 0:
+      split = ""
+      oldchords.append(inchord)
+    return split, oldchords
+
   def transposeChord(self, inchord, value):
     newchords = []
-    split = ""
-    if inchord.find("add") > 0: # if it is 0 invalid
-      split = "add"
-      oldchords = inchord.split("add")
-    elif inchord.find("/") > 0:
-      split = "/"
-      oldchords = inchord.split("/")
-    else:
-      oldchords = []
-      oldchords.append(inchord)
+    split, oldchords = self.splitChords(inchord)
     for oldchord in oldchords:
       newchord = ""
       for look in self.scalelookup:
