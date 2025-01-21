@@ -7,7 +7,7 @@ class ChordWindow(wx.Frame):
     self.undefined = undefined
     self.chorddefs = chorddefs
     self.strings = strings
-    height = viewrect[3]-viewrect[1]
+    height = viewrect[3]
     ch = height // 300
     self.gridcols = len(self.chorddefs) // ch
     if (len(self.chorddefs) % ch) != 0:
@@ -41,7 +41,8 @@ class ChordWindow(wx.Frame):
     h = 600
     if ch > 0:
       h = ch * 300
-    self.SetPosition(wx.Point(viewrect[2]-w-30, viewrect[1]+70)) # for mac top bar
+    #print(viewrect[0] + viewrect[2]-w-30, viewrect[1]+70, w, h)
+    self.SetPosition(wx.Point(viewrect[0] + viewrect[2]-w-30, viewrect[1]+70)) # for mac top bar
     self.SetSize(w,h)
     self.Show()
     
