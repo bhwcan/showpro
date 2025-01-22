@@ -7,7 +7,7 @@ from xsp_playlist import ListPanel
 
 class MainWindow(wx.Frame):
   def __init__(self, db):
-    wx.Frame.__init__(self, None, title="XshowPro", size=(1200,780))
+    wx.Frame.__init__(self, None, title="XshowPro")
 
     self.db = db
     self.pages = []
@@ -29,6 +29,7 @@ class MainWindow(wx.Frame):
     listrect = displays.getListRect()
 
     self.SetPosition(wx.Point(listrect[0], listrect[1]+30))
+    self.SetSize(listrect[2]-60, listrect[3]-120)
     self.vf = ViewWindow(self, db, viewrect)
     self.vf.Raise()
 
