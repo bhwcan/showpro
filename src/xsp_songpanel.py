@@ -20,6 +20,7 @@ class SongPanel(wx.Panel):
     self.rebuildbutton = wx.Button(self, label="Rebuild")
     self.newbutton = wx.Button(self, label="New Song")
     self.delbutton = wx.Button(self, label="Delete")
+    self.aboutbutton = wx.Button(self, label="About")
 
     self.books[self.currentbook] = self.db.getSongs(self.currentbook)
     self.numrows = len(self.books[self.currentbook])
@@ -33,12 +34,14 @@ class SongPanel(wx.Panel):
     self.grid.Bind(wx.grid.EVT_GRID_CELL_RIGHT_CLICK, self.on_right_click)
     self.newbutton.Bind(wx.EVT_BUTTON, self.newsong)
     self.delbutton.Bind(wx.EVT_BUTTON, self.delsongs)
+    self.aboutbutton.Bind(wx.EVT_BUTTON, self.OnAbout)
 
     topsizer = wx.BoxSizer(wx.HORIZONTAL)
     topsizer.Add(self.editbook, 0, wx.EXPAND|wx.ALL, 10)
     topsizer.Add(self.newbutton, 0, wx.ALL, 10)
     topsizer.Add(self.rebuildbutton, 0, wx.ALL, 10)
     topsizer.Add(self.delbutton, 0, wx.ALL, 10)
+    topsizer.Add(self.aboutbutton, 0, wx.ALL, 10)
 
     sizer = wx.BoxSizer(wx.VERTICAL)
     sizer.Add(topsizer, 0, wx.ALIGN_LEFT)
@@ -47,6 +50,18 @@ class SongPanel(wx.Panel):
     self.SetSizerAndFit(sizer)
 
     self.Show()
+
+  def OnAbout(self,e):
+    # Create a message dialog box
+    dlg = wx.MessageDialog(self,
+                           " A simple chordpro viewer and database\n"\
+                           " for large dislplay monitors \n\n"\
+                           "    Release V1.2\n"\
+                           "    (c) bhwcan\n"\
+                           "    https://github.com/bhwcan/showpro",
+                           "About XShowPro", wx.OK)
+    dlg.ShowModal() # Shows it
+    dlg.Destroy() # finally destroy it when finished.
 
   def delsongs(self, event):
     deldlg = wx.MessageDialog(self,
