@@ -44,8 +44,10 @@ class Song:
       splitchords = inchord.split(split)
       if len(splitchords) > 1 and len(splitchords[1]) > 0 \
          and splitchords[1][0] >= 'A' and splitchords[1][0] <= 'G':
+        splitchords[1] = split.join(splitchords[1:])
         oldchords.append(splitchords[0])
         oldchords.append(splitchords[1])
+        #print("oldchords:", splitchords[0], splitchords[1])
         break
     if len(oldchords) == 0:
       split = ""
@@ -250,19 +252,34 @@ class Song:
           #print("end_of_chorus");
         if d.name == "comment" or d.name == "c":
           if self.chordcolor >= 0:
-            rtc.SetDefaultStyle(commentattr)
+            fontattr.SetBackgroundColour(wx.WHITE)
+            rtc.SetDefaultStyle(fontattr)       
             if choruson:
               rtc.WriteText(self.tab)
-            rtc.WriteText(self.tab + d.text + "\n")
+            rtc.WriteText(self.tab)
+            if highlighton:
+              commentattr.SetBackgroundColour(highlight)
+            else:
+              commentattr.SetBackgroundColour(wx.WHITE)
+            rtc.SetDefaultStyle(commentattr)
+            rtc.WriteText(d.text)
             rtc.SetDefaultStyle(fontattr)       
+            rtc.WriteText("\n")
         if d.name == "comment_italic" or d.name == "ci":
           if self.chordcolor >= 0:
-            #print("comment:", d.text)
-            rtc.SetDefaultStyle(itlcattr)
+            fontattr.SetBackgroundColour(wx.WHITE)
+            rtc.SetDefaultStyle(fontattr)       
             if choruson:
               rtc.WriteText(self.tab)
-            rtc.WriteText(self.tab + d.text + "\n")
-            rtc.SetDefaultStyle(fontattr)
+            rtc.WriteText(self.tab)
+            if highlighton:
+              itlcattr.SetBackgroundColour(highlight)
+            else:
+              itlcattr.SetBackgroundColour(wx.WHITE)
+            rtc.SetDefaultStyle(itlcattr)
+            rtc.WriteText(d.text)
+            rtc.SetDefaultStyle(fontattr)       
+            rtc.WriteText("\n")
         cd += 1
       s = 0
       # if no chords then remove intro outro lines
