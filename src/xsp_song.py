@@ -172,6 +172,16 @@ class Song:
     if self.textsize > 52:
       self.textsize = 52
     #print (self.textsize)
+    if self.textsize < 24:
+      self.tab = "    "
+    elif self.textsize < 32:
+      self.tab = "   "
+    elif self.textsize < 40:
+      self.tab = "  "
+    elif self.textsize < 48:
+      self.tab = " "
+    else:
+      self.tab = ""
     self.display()
     return self.textsize    
 
@@ -230,8 +240,10 @@ class Song:
         if d.name == "start_of_chorus" or d.name == "soc":
           #print("start_of_chorus");
           choruson = True
+          highlighton = True
         if d.name == "end_of_chorus" or d.name == "eoc":
           choruson = False
+          highlighton = False
           #print("end_of_chorus");
         if d.name == "start_of_tab" or d.name == "sot":
           #print("start_of_chorus");

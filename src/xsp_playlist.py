@@ -25,11 +25,13 @@ class ListPanel(wx.Panel):
     self.saveasbutton = wx.Button(self, label="Save")
     self.openbutton = wx.Button(self, label="Open")
     self.deletebutton = wx.Button(self, label="Delete")
+    self.exportbutton = wx.Button(self, label="Export")
    
     self.Bind(wx.EVT_KEY_DOWN, self.on_key_pressed)
     #self.savebutton.Bind(wx.EVT_BUTTON, self.on_save)
     self.clearbutton.Bind(wx.EVT_BUTTON, self.on_clear)
     self.saveasbutton.Bind(wx.EVT_BUTTON, self.on_saveas)
+    self.exportbutton.Bind(wx.EVT_BUTTON, self.on_export)
     self.openbutton.Bind(wx.EVT_BUTTON, self.on_open)
     self.deletebutton.Bind(wx.EVT_BUTTON, self.on_delete)
     self.editbox.Bind(wx.EVT_COMBOBOX, self.listselect)
@@ -42,13 +44,15 @@ class ListPanel(wx.Panel):
     topsizer.Add(self.saveasbutton, 0, wx.ALL, 10)
     topsizer.Add(self.clearbutton, 0, wx.ALL, 10)
     topsizer.Add(self.deletebutton, 0, wx.ALL, 10)
+    topsizer.Add(self.exportbutton, 0, wx.ALL, 10)
  
     sizer = wx.BoxSizer(wx.VERTICAL)
     sizer.Add(topsizer, 0, wx.ALIGN_LEFT)
     sizer.Add(self.grid, 1, wx.EXPAND|wx.ALL, 10)
     self.SetSizerAndFit(sizer)
 
-    self.grid.gridsongs()
+    #self.grid.gridsongs()
+    self.showsongs()
     self.Show()
 
   def on_delete(self, event):
@@ -105,6 +109,33 @@ class ListPanel(wx.Panel):
         del self.playlists[name]
         wx.LogError("Cannot save current data in file '%s'." % pathname)
 
+  def on_export(self, event):
+    newopen = True
+    if self.currentplaylist == "Unsaved":
+      defaultfile = ""
+    else:
+      defaultfile = self.currentplaylist + ".lst"
+    with wx.FileDialog(self, "Export Playlist to Songbook", wildcard="Playlist files (*.lst)|*.lst",
+                       defaultFile=defaultfile,
+                       defaultDir=self.db.getrootpath(),
+                       style=wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT) as fileDialog:
+
+      if fileDialog.ShowModal() == wx.ID_CANCEL:
+        return     # the user changed their mind
+
+      # save the current contents in the file
+      pathname = fileDialog.GetPath()
+      lines = pathlib.Path(pathname).stem + "\n"
+      for song in self.playlists[self.currentplaylist]["songs"]:
+        #print(song)
+        lines += song[2] + " - " + song[3] + "\n"
+      try:
+        with open(pathname, 'w') as file:
+          file.writelines(lines)
+      except:
+        wx.LogError("Cannot save current data in file '%s'." % pathname)
+      self.Parent.Parent.Parent.setstatus2("Playlist exported to " + pathname)
+
   def on_open(self,event):
     with wx.FileDialog(self, "Save Playlist file", wildcard="Playlist files (*.plf)|*.plf",
                        defaultDir=self.defaultpath, style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST) as fileDialog:
@@ -128,14 +159,16 @@ class ListPanel(wx.Panel):
             self.editbox.Append(name)
           self.editbox.SetValue(name)
           self.currentplaylist = name
-          self.grid.gridsongs(self.playlists[self.currentplaylist]["songs"])
+          self.showsongs()
+          #self.grid.gridsongs(self.playlists[self.currentplaylist]["songs"])
       except:
         del self.playlists[name]
         wx.LogError("Cannot open current data in file '%s'." % pathname)
   
   def listselect(self, event):
     self.currentplaylist = self.editbox.GetValue()
-    self.grid.gridsongs(self.playlists[self.currentplaylist]["songs"])
+    self.showsongs()
+    #self.grid.gridsongs(self.playlists[self.currentplaylist]["songs"])
 
   def on_clear(self, event):
     self.grid.gridclear()
