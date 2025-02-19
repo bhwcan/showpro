@@ -13,21 +13,20 @@ class Displays:
     for dc in range(dcount):
       d = wx.Display(dc)
       geo = d.GetGeometry()
-      if geo[2] > widevalue:
-        widevalue = geo[2]
-        self.wideidx = dc
-      #print(geo)
+      if d.IsPrimary():
+        self.appidx = dc
+      else:
+        if geo[2] > widevalue:
+          widevalue = geo[2]
+          self.wideidx = dc
+          #print(geo)
       self.displays.append(geo)
 
-    if dcount > 1:
-      for dc in range(dcount):
-        if dc != self.wideidx:
-          self.appidx = dc
-          break
-    else:
+    if dcount < 2:
       half = int(self.displays[0][2]/2)
       self.displays[0][2] = half
       self.displays.append(wx.Rect([half, self.displays[0][1], half, self.displays[0][3]]))
+      self.wideidx = 0
       self.appidx = 1
 
   def getViewRect(self):

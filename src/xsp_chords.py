@@ -2,26 +2,35 @@ import wx
 import wx.lib.scrolledpanel as scrolled
 
 class ChordWindow(wx.Frame):
-  def __init__(self, parent, name, strings, undefined, chorddefs, viewrect, color):
+  def __init__(self, parent, name, strings, undefined, chorddefs, color):
     super().__init__(parent, title=name,style=(wx.DEFAULT_FRAME_STYLE | wx.STAY_ON_TOP) & ~(wx.CLOSE_BOX | wx.MAXIMIZE_BOX | wx.MINIMIZE_BOX))
     self.undefined = undefined
     self.chorddefs = chorddefs
     self.strings = strings
-    height = viewrect[3]
-    ch = height // 300
-    self.gridcols = len(self.chorddefs) // ch
-    if (len(self.chorddefs) % ch) != 0:
-      self.gridcols += 1
+    self.ch = 270
+    self.cw = 170
+    self.co = 20
+    #height = viewrect[3]
+
     self.panel = wx.Panel(self)
     self.sizer = wx.BoxSizer(wx.VERTICAL)
-        
+
+    viewrect = parent.GetScreenRect()
+    height = viewrect[3]
+    
     # UI Elements
     if len(self.undefined) > 0:
+      self.co += 70
       undefined_label = wx.StaticText(self.panel, label='Undefined Chords:')
       undefined_text = wx.TextCtrl(self.panel, style=wx.TE_READONLY)
       undefined_text.AppendText(",".join(self.undefined))
       self.sizer.Add(undefined_label, 0, wx.ALL, 5)
       self.sizer.Add(undefined_text, 0, wx.EXPAND | wx.ALL, 5)
+
+    ch = (height - self.co) // self.ch
+    self.gridcols = len(self.chorddefs) // ch
+    if (len(self.chorddefs) % ch) != 0:
+      self.gridcols += 1
 
     self.chords = scrolled.ScrolledPanel(self.panel)
     self.chords.SetAutoLayout(1)
@@ -35,14 +44,14 @@ class ChordWindow(wx.Frame):
     self.sizer.Add(self.chords, 1, wx.EXPAND | wx.ALL, 5)
   
     self.panel.SetSizer(self.sizer)
-    w = 400
+    w = self.cw * 2
     if self.gridcols > 0:
-      w = self.gridcols * 200
-    h = 600
+      w = self.gridcols * self.cw
+    h = self.ch * 2
     if ch > 0:
-      h = ch * 300
-    #print(viewrect[0] + viewrect[2]-w-30, viewrect[1]+70, w, h)
-    self.SetPosition(wx.Point(viewrect[0] + viewrect[2]-w-30, viewrect[1]+70)) # for mac top bar
+      h = (ch * self.ch) + self.co
+    #print(viewrect, w, h)
+    self.SetPosition(wx.Point(viewrect[0] + viewrect[2]-w-30, viewrect[1]+viewrect[3]-h)) # for mac top bar
     self.SetSize(w,h)
     self.Show()
     
@@ -121,4 +130,5 @@ class DisplayChord(wx.Panel):
     font = wx.Font(14, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD)
     dc.SetFont(font)
     dc.DrawText(self.chord_name, int(width / 2 - 20), int((num_frets + 1.8) * fret_gap))
+    
     
