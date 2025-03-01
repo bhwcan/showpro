@@ -28,11 +28,32 @@ class ViewWindow(wx.Frame):
     #self.Bind(wx.EVT_MENU, self.OnOpen, menuOpen)
     self.Bind(wx.EVT_TEXT_URL, self.OnTextURL)
     self.control.Bind(wx.EVT_KEY_DOWN, self.on_key_pressed)
-    #self.control.Bind(wx.EVT_MOUSE_EVENTS, self.mouse)
+    self.control.Bind(wx.EVT_MOUSE_EVENTS, self.mouse)
 
     self.Show()
 
-#  def mouse(self, event):
+  def mouse(self, event):
+    if event.IsButton() and \
+       event.GetButton() == 3:
+      if event.ButtonUp():
+        #print("Right Button Up")
+        viewrect = self.GetScreenRect()
+        divider = viewrect[3] // 3
+        #print("Rectangle:", viewrect)
+        #print("X", event.X, "divider:", divider)
+        grid = self.GetParent().pages[self.GetParent().currentpage].grid
+        if event.X > divider:
+          #print("Forward")
+          grid.ChangeSong(1)
+          self.control.SetFocus()
+        else:
+          #print("Back")
+          grid.ChangeSong(-1)
+          self.control.SetFocus()
+    else:
+      event.Skip()
+        
+#    print(event.GetButton())
 #    print("X", event.X)
 #    print("Y", event.Y)
 #    print("aux1", event.aux1IsDown)
