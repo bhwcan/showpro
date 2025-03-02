@@ -3,7 +3,7 @@ import webbrowser
 
 from xsp_song import Song
 from xsp_chords import ChordWindow
-
+  
 class ViewWindow(wx.Frame):
   def __init__(self, parent, db, viewrect):
     self.db = db
@@ -15,6 +15,8 @@ class ViewWindow(wx.Frame):
     self.row = 0
     self.viewrect = viewrect
     self.chordframe = None
+    self.songtitles = True
+    self.instrument = "ukulele"
 
     parent.vf = self
 
@@ -29,37 +31,80 @@ class ViewWindow(wx.Frame):
     self.Bind(wx.EVT_TEXT_URL, self.OnTextURL)
     self.control.Bind(wx.EVT_KEY_DOWN, self.on_key_pressed)
     self.control.Bind(wx.EVT_MOUSE_EVENTS, self.mouse)
+    self.control.Bind(wx.EVT_GESTURE_ZOOM, self.zoom)
 
     self.Show()
 
+  def zoom(self, event):
+#    if event.IsGestureStart():
+#      print("Start: ", event.GetZoomFactor())
+    if event.IsGestureEnd():
+      factor = event.GetZoomFactor()
+      if factor > 1.0:
+        self.OnZoomIn(event)
+      else:
+        self.OnZoomOut(event)
+    self.control.SetFocus()
+    #event.Skip()
+    
   def mouse(self, event):
-    if event.IsButton() and \
-       event.GetButton() == 3:
-      if event.ButtonUp():
-        #print("Right Button Up")
-        viewrect = self.GetScreenRect()
-        divider = viewrect[3] // 3
-        #print("Rectangle:", viewrect)
-        #print("X", event.X, "divider:", divider)
-        grid = self.GetParent().pages[self.GetParent().currentpage].grid
-        if event.X > divider:
-          #print("Forward")
-          grid.ChangeSong(1)
-          self.control.SetFocus()
-        else:
-          #print("Back")
-          grid.ChangeSong(-1)
-          self.control.SetFocus()
+    if event.IsButton() and event.GetButton() == 1:
+        if event.ButtonDown():
+          #print("Right Button Up")
+          viewrect = self.GetScreenRect()
+          xdivider = viewrect[2] // 4
+          ydivider = viewrect[3] // 5
+          #print("Rectangle:", viewrect)
+          #print("X", event.X, "divider:", xdivider, xdivider*3)
+          grid = self.GetParent().pages[self.GetParent().currentpage].grid
+          if event.X > xdivider * 3:
+            #print("Forward")
+            grid.ChangeSong(1)
+            self.control.SetFocus()
+          elif event.X > xdivider:
+            if event.Y < ydivider:
+              if self.instrument == "ukulele":
+                self.displayUkuleleChords()
+                self.ResetFocus()
+              elif self.instrument == "guitar":
+                self.displayGuitarChords()
+                self.ResetFocus()
+              else:
+                self.control.SetFocus()
+          else:
+            #print("Back")
+            grid.ChangeSong(-1)
+            self.control.SetFocus()
     else:
       event.Skip()
+
+# Right click for next song - shakes stand
+#  def mouse(self, event):
+#    if event.IsButton():
+#      if event.GetButton() == 3:
+#        if event.ButtonUp():
+#          #print("Right Button Up")
+#          viewrect = self.GetScreenRect()
+#          divider = viewrect[3] // 3
+#          #print("Rectangle:", viewrect)
+#          #print("X", event.X, "divider:", divider)
+#          grid = self.GetParent().pages[self.GetParent().currentpage].grid
+#          if event.X > divider:
+#            #print("Forward")
+#            grid.ChangeSong(1)
+#            self.control.SetFocus()
+#          else:
+#            #print("Back")
+#            grid.ChangeSong(-1)
+#            self.control.SetFocus()
+#      elif event.Button() == 1:
+#        if event.ButtonDown():
+#          self.control.SetFocus()
+#      else:
+#        event.Skip()  
+#    else:
+#      event.Skip()
         
-#    print(event.GetButton())
-#    print("X", event.X)
-#    print("Y", event.Y)
-#    print("aux1", event.aux1IsDown)
-#    print("aux2", event.aux2IsDown)
-#    event.Skip()
-    
   def ToggleFullScreen(self, event):
     self.ShowFullScreen(not self.IsFullScreen())
 
@@ -76,6 +121,19 @@ class ViewWindow(wx.Frame):
     #print(key, chr(key))
     if key == 350: #F11 - does not work on mac
       self.ToggleFullScreen(event)
+    elif key == 85 and event.ControlDown(): # ctrl-U
+      self.instrument = "ukulele"
+    elif key == 71 and event.ControlDown(): # ctrl-G
+      self.instrument = "guitar"
+    elif key == 84 and event.ControlDown(): # ctrl-T
+      if self.songtitles:
+        self.songtitles = False
+      else:
+        self.songtitles = True
+      if self.song != None:
+        self.song.settitles(self.songtitles)
+        self.song.display()
+        self.control.SetFocus()
     elif key == 47: #/ slash to change focus
       self.ChangeFocus(event)
     elif key == 45: # dash zoom in
@@ -205,11 +263,11 @@ class ViewWindow(wx.Frame):
 
   def OnZoomIn(self,e):
     if self.song != None:
-      self.textsize = self.song.zoom(4)
+      self.textsize = self.song.zoom(2)
 
   def OnZoomOut(self,e):
     if self.song != None:
-      self.textsize = self.song.zoom(-4)
+      self.textsize = self.song.zoom(-2)
       
   def OnAbout(self,e):
     # Create a message dialog box
@@ -231,6 +289,7 @@ class ViewWindow(wx.Frame):
       self.chordframe = None
     
     self.song = Song(self, self.textsize, self.chordcolor, data)
+    self.song.settitles(self.songtitles)
     rvalue = self.song.process()
     if not rvalue:
       dlg = wx.MessageDialog(self,

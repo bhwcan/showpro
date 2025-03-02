@@ -15,6 +15,8 @@ class Song:
     self.chordcolor = chordcolor
     self.chords = []
     self.instrument = "undefined"
+    self.showtitles = True
+    self.showtabs = True
     self.tab = "    "
     self.guitardefs = []
     self.ukuleledefs = []
@@ -167,18 +169,18 @@ class Song:
 
   def zoom(self, value):
     self.textsize += value
-    if self.textsize < 16:
-      self.textsize = 16
+    if self.textsize < 12:
+      self.textsize = 12
     if self.textsize > 52:
       self.textsize = 52
     #print (self.textsize)
-    if self.textsize < 24:
+    if self.textsize < 16:
       self.tab = "    "
-    elif self.textsize < 32:
+    elif self.textsize < 20:
       self.tab = "   "
-    elif self.textsize < 40:
+    elif self.textsize < 24:
       self.tab = "  "
-    elif self.textsize < 48:
+    elif self.textsize < 28:
       self.tab = " "
     else:
       self.tab = ""
@@ -189,6 +191,10 @@ class Song:
     self.chordcolor = value
     self.display()
 
+  def settitles(self, value):
+    self.showtitles = value
+    self.showtabs = value
+    
   def display(self):
     face = "Monospace"
     if wx.Platform == "__WXMSW__":
@@ -219,13 +225,14 @@ class Song:
     #if wx.Platform == "__WXMSW__":
     rtc.Hide()
     rtc.Clear()
-    rtc.SetDefaultStyle(boldattr)
-    rtc.WriteText(self.tab + self.title.center(self.width) + "\n" + self.tab + self.subtitle.center(self.width) + "\n")
+    if self.showtitles:
+      rtc.SetDefaultStyle(boldattr)
+      rtc.WriteText(self.tab + self.title.center(self.width) + "\n" + self.tab + self.subtitle.center(self.width) + "\n")
     rtc.SetDefaultStyle(fontattr)
     self.mx.SetTitle(self.title + " - " + self.subtitle);
     cd = 0
     while cd < len(self.directives) and self.directives[cd].y <= 0:
-      if self.directives[cd].name == "artist":
+      if self.showtitles and self.directives[cd].name == "artist":
         rtc.SetDefaultStyle(boldattr)
         rtc.WriteText(self.tab + self.directives[cd].text.center(self.width) + "\n")
         rtc.SetDefaultStyle(fontattr)
@@ -268,7 +275,8 @@ class Song:
             rtc.SetDefaultStyle(fontattr)       
             if choruson:
               rtc.WriteText(self.tab)
-            rtc.WriteText(self.tab)
+            if self.showtabs:
+              rtc.WriteText(self.tab)
             if highlighton:
               commentattr.SetBackgroundColour(highlight)
             else:
@@ -283,7 +291,8 @@ class Song:
             rtc.SetDefaultStyle(fontattr)       
             if choruson:
               rtc.WriteText(self.tab)
-            rtc.WriteText(self.tab)
+            if self.showtabs:
+              rtc.WriteText(self.tab)
             if highlighton:
               itlcattr.SetBackgroundColour(highlight)
             else:
@@ -309,7 +318,8 @@ class Song:
         lyric = lyric.replace('|', '')
       fontattr.SetBackgroundColour(wx.WHITE)
       rtc.SetDefaultStyle(fontattr)
-      rtc.WriteText(self.tab) # normal tab
+      if self.showtabs:
+        rtc.WriteText(self.tab) # normal tab
       if choruson:
         rtc.WriteText(self.tab) # chorus tab
       if highlighton:
