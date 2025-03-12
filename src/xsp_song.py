@@ -341,9 +341,12 @@ class Song:
           rtc.WriteText(lyric[s:cs])
           if self.chordcolor >= 0:
             rtc.SetDefaultStyle(cordattr)
-            rtc.WriteText(lyric[cs:ce+1])
             chord = lyric[cs+1:ce]
-            self.setchord(chord)
+            if self.setchord(chord):
+              rtc.WriteText(lyric[cs:ce+1])
+            else:
+              # if not valid chord remove square brackets
+              rtc.WriteText(lyric[cs+1:ce])
             rtc.SetDefaultStyle(fontattr)
           s = ce + 1
           if s >= len(lyric):
@@ -365,9 +368,9 @@ class Song:
   def setchord(self, cs):
     # remove timing and strumming directives
     if len(cs) < 1:
-      return
+      return False
     if (cs[0] < 'A' or cs[0] > 'G') and (cs[0] < 'a' or cs[0] > 'g'):
-      return
+      return False
     while cs[-1] == '/' or cs[-1] == '^' or cs[-1] == ' ' or cs[-1] == '↓' or cs[-1] == '↑' or cs[-1] == '*' or cs[-1] == '|' or cs[-1] == '~':
       if len(cs) > 1:
         cs = cs[:-1]
@@ -375,4 +378,5 @@ class Song:
         break
     if cs not in self.chords:
       self.chords.append(cs)
+    return True
       
