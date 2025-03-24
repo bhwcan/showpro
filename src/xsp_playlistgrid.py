@@ -37,6 +37,8 @@ class PlayListGrid(SongGrid):
           self.currentsortcol = -1
     elif key > 64 and key < 91: # A - Z disable for playlist
       pass
+    elif key > 47 and key < 54 and not event.AltDown(): # 0-5 for number of stars
+      pass # disable stars for playlist as a copy of song
     else:
       self.on_key_pressed(event)
     

@@ -155,15 +155,15 @@ class ListPanel(wx.Panel):
       try:
         with open(pathname, 'r') as file:
           self.playlists[name]["songs"] = json.load(file)
-          if newlist:
-            self.editbox.Append(name)
-          self.editbox.SetValue(name)
-          self.currentplaylist = name
-          self.showsongs()
-          #self.grid.gridsongs(self.playlists[self.currentplaylist]["songs"])
       except:
         del self.playlists[name]
         wx.LogError("Cannot open current data in file '%s'." % pathname)
+        return
+      if newlist:
+        self.editbox.Append(name)
+      self.editbox.SetValue(name)
+      self.currentplaylist = name
+      self.showsongs()
   
   def listselect(self, event):
     self.currentplaylist = self.editbox.GetValue()
