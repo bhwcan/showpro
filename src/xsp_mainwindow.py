@@ -71,3 +71,7 @@ class MainWindow(wx.Frame):
 
   def setstatus2(self, text):
     self.statusbar.SetStatusText(text, 1)
+
+  def start(self):
+    self.Show()
+    self.vf.Show()

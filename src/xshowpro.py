@@ -25,5 +25,5 @@ if not db.setrootpath():
 
 # open the windows
 mainframe = MainWindow(db)
-mainframe.Show()
+mainframe.start()
 app.MainLoop()

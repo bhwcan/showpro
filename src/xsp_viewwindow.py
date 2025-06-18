@@ -33,7 +33,7 @@ class ViewWindow(wx.Frame):
     self.control.Bind(wx.EVT_MOUSE_EVENTS, self.mouse)
     self.control.Bind(wx.EVT_GESTURE_ZOOM, self.zoom)
 
-    self.Show()
+    #self.Show()
 
   def zoom(self, event):
 #    if event.IsGestureStart():
