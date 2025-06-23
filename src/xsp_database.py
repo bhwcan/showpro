@@ -177,7 +177,7 @@ class Database():
           bookno += 1
           continue
         for rfile in filenames:
-          if rfile[-3:] == "pro":
+          if rfile[-3:] == "pro" or rfile[-3:] == "cho":
             data = self.readsong(bookname, rfile)
             (title, subtitle, star) = self.gettitles(data)
             if title != "":

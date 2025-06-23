@@ -130,7 +130,7 @@ class ListPanel(wx.Panel):
         #print(song)
         lines += song[2] + " - " + song[3] + "\n"
       try:
-        with open(pathname, 'w') as file:
+        with open(pathname, 'w', encoding="utf-8") as file:
           file.writelines(lines)
       except:
         wx.LogError("Cannot save current data in file '%s'." % pathname)
