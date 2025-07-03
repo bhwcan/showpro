@@ -22,9 +22,19 @@ class SongGrid(wx.grid.Grid):
     self.filecol = 4
     self.bookcol = 3
     self.rowbuff = 10
+    self.fontsize = 12
     self.pf = self.GetParent().GetParent().GetParent().GetParent()
    
     self.CreateGrid(rows, self.numcols)  # 20 rows, 4 columns
+
+    # fonts
+    font = self.GetLabelFont()
+    font.SetPointSize(self.fontsize)
+    self.SetLabelFont(font)
+    font.SetWeight(wx.FONTWEIGHT_NORMAL)
+    self.SetDefaultCellFont(font)
+    self.AutoSizeRows()
+
     self.EnableEditing(False)
     self.SetRowLabelSize(0)  # Hide row labels
     self.DisableDragRowSize()
@@ -62,6 +72,7 @@ class SongGrid(wx.grid.Grid):
           try:
             self.mf.opensong(self.db.readsong(bookvalue, filevalue))
             self.mf.song.display()
+            self.ChangeFocus(event)
           except:
             wx.LogError("Cannot open current data in file '%s'." %  self.db.getsongpath(bookvalue, filevalue))
     elif key == 96: # ` backquote for edit
@@ -205,9 +216,9 @@ class SongGrid(wx.grid.Grid):
   def sizeColumns(self):
     self.SetColSize(0, 70)
     self.SetColSize(1, 300)
-    self.SetColSize(2, 300)
+    self.SetColSize(2, 400)
     self.SetColSize(3, 100)
-    self.SetColSize(4, 300)
+    self.SetColSize(4, 400)
 
   def gridclear(self):
     self.ClearGrid()
@@ -282,6 +293,7 @@ class SongGrid(wx.grid.Grid):
         try:
           self.mf.opensong(self.db.readsong(bookvalue, filevalue))
           self.mf.song.display()
+          self.ChangeFocus(event)
         except:
           wx.LogError("Cannot open current data in file '%s'." % filename)
       else:

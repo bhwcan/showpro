@@ -11,7 +11,7 @@ class ViewWindow(wx.Frame):
     self.filename=""
     self.song = None
     self.textsize = 20
-    self.chordcolor = 0
+    self.chordcolor = 2
     self.row = 0
     self.viewrect = viewrect
     self.chordframe = None
