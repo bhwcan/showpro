@@ -176,11 +176,11 @@ class Song:
     #print (self.textsize)
     if self.textsize < 16:
       self.tab = "    "
-    elif self.textsize < 20:
-      self.tab = "   "
     elif self.textsize < 24:
+      self.tab = "   "
+    elif self.textsize < 32:
       self.tab = "  "
-    elif self.textsize < 28:
+    elif self.textsize < 40:
       self.tab = " "
     else:
       self.tab = ""
@@ -203,6 +203,7 @@ class Song:
       face = "Menlo"
     choruson = False
     highlighton = False
+    bluelighton = False
     tabon = False
     cordattr = wx.TextAttr(wx.BLACK, font=wx.Font(self.textsize, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, False, face))
     commentattr = wx.TextAttr(wx.BLACK, font=wx.Font(self.textsize, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, False, face))
@@ -220,6 +221,7 @@ class Song:
     itlcattr = wx.TextAttr(wx.BLACK, font=wx.Font(self.textsize, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_SLANT, wx.FONTWEIGHT_NORMAL, False, face))
     boldattr.SetBackgroundColour(wx.WHITE)
     highlight = wx.Colour(200,200,200) #grey
+    bluelight = wx.Colour(171,219,227)
 
     rtc = self.mx.control
     #if wx.Platform == "__WXMSW__":
@@ -258,12 +260,16 @@ class Song:
         if d.name == "end_of_tab" or d.name == "eot":
           tabon = False
           #print("end_of_chorus");
-        if d.name == "start_of_bridge" or d.name == "sob" or d.name == "start_of_highlight" or d.name == "soh":
+        if d.name == "start_of_bridge" or d.name == "sob":
+          bluelighton = True
+        if d.name == "start_of_highlight" or d.name == "soh":
           highlighton = True
           #print("start_of_chorus");
           #cordattr.SetBackgroundColour(highlight)
           #fontattr.SetBackgroundColour(highlight)
-        if d.name == "end_of_bridge" or d.name == "eob" or d.name == "end_of_highlight" or d.name == "eoh":
+        if d.name == "end_of_bridge" or d.name == "eob":
+          bluelighton = False
+        if d.name == "end_of_highlight" or d.name == "eoh":
           highlighton = False
           #cordattr.SetBackgroundColour(wx.WHITE)
           #fontattr.SetBackgroundColour(wx.WHITE)
@@ -322,10 +328,15 @@ class Song:
         rtc.WriteText(self.tab) # normal tab
       if choruson:
         rtc.WriteText(self.tab) # chorus tab
-      if highlighton:
-        fontattr.SetBackgroundColour(highlight)
-        cordattr.SetBackgroundColour(highlight)
-        rtc.SetDefaultStyle(fontattr)
+      if highlighton or bluelighton:
+        if highlighton:
+          fontattr.SetBackgroundColour(highlight)
+          cordattr.SetBackgroundColour(highlight)
+          rtc.SetDefaultStyle(fontattr)
+        if bluelighton:
+          fontattr.SetBackgroundColour(bluelight)
+          cordattr.SetBackgroundColour(bluelight)
+          rtc.SetDefaultStyle(fontattr)
       else:
         cordattr.SetBackgroundColour(wx.WHITE)
       while True:
@@ -358,6 +369,9 @@ class Song:
       rtc.WriteText("\n")
       if highlighton:
         fontattr.SetBackgroundColour(highlight)
+        rtc.SetDefaultStyle(fontattr)
+      if bluelighton:
+        fontattr.SetBackgroundColour(bluelight)
         rtc.SetDefaultStyle(fontattr)
   
       l += 1
