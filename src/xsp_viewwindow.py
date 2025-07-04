@@ -110,7 +110,7 @@ class ViewWindow(wx.Frame):
 
   def ChangeFocus(self, event):
     p = self.GetParent()
-    p.pages[p.currentpage].SetFocus()
+    p.pages[p.currentpage].grid.SetFocus()
     p.Raise()
 
   def on_key_pressed(self,event):
