@@ -47,63 +47,63 @@ class ViewWindow(wx.Frame):
     self.control.SetFocus()
     #event.Skip()
     
-  def mouse(self, event):
-    if event.IsButton() and event.GetButton() == 1:
-        if event.ButtonDown():
-          #print("Right Button Up")
-          viewrect = self.GetScreenRect()
-          xdivider = viewrect[2] // 4
-          ydivider = viewrect[3] // 5
-          #print("Rectangle:", viewrect)
-          #print("X", event.X, "divider:", xdivider, xdivider*3)
-          grid = self.GetParent().pages[self.GetParent().currentpage].grid
-          if event.X > xdivider * 3:
-            #print("Forward")
-            grid.ChangeSong(1)
-            self.control.SetFocus()
-          elif event.X > xdivider:
-            if event.Y < ydivider:
-              if self.instrument == "ukulele":
-                self.displayUkuleleChords()
-                self.ResetFocus()
-              elif self.instrument == "guitar":
-                self.displayGuitarChords()
-                self.ResetFocus()
-              else:
-                self.control.SetFocus()
-          else:
-            #print("Back")
-            grid.ChangeSong(-1)
-            self.control.SetFocus()
-    else:
-      event.Skip()
+  # def mouse(self, event):
+  #   if event.IsButton() and event.GetButton() == 1:
+  #       if event.ButtonDown():
+  #         #print("Right Button Up")
+  #         viewrect = self.GetScreenRect()
+  #         xdivider = viewrect[2] // 4
+  #         ydivider = viewrect[3] // 5
+  #         #print("Rectangle:", viewrect)
+  #         #print("X", event.X, "divider:", xdivider, xdivider*3)
+  #         grid = self.GetParent().pages[self.GetParent().currentpage].grid
+  #         if event.X > xdivider * 3:
+  #           #print("Forward")
+  #           grid.ChangeSong(1)
+  #           self.control.SetFocus()
+  #         elif event.X > xdivider:
+  #           if event.Y < ydivider:
+  #             if self.instrument == "ukulele":
+  #               self.displayUkuleleChords()
+  #               self.ResetFocus()
+  #             elif self.instrument == "guitar":
+  #               self.displayGuitarChords()
+  #               self.ResetFocus()
+  #             else:
+  #               self.control.SetFocus()
+  #         else:
+  #           #print("Back")
+  #           grid.ChangeSong(-1)
+  #           self.control.SetFocus()
+  #   else:
+  #     event.Skip()
 
-# Right click for next song - shakes stand
-#  def mouse(self, event):
-#    if event.IsButton():
-#      if event.GetButton() == 3:
-#        if event.ButtonUp():
-#          #print("Right Button Up")
-#          viewrect = self.GetScreenRect()
-#          divider = viewrect[3] // 3
-#          #print("Rectangle:", viewrect)
-#          #print("X", event.X, "divider:", divider)
-#          grid = self.GetParent().pages[self.GetParent().currentpage].grid
-#          if event.X > divider:
-#            #print("Forward")
-#            grid.ChangeSong(1)
-#            self.control.SetFocus()
-#          else:
-#            #print("Back")
-#            grid.ChangeSong(-1)
-#            self.control.SetFocus()
-#      elif event.Button() == 1:
-#        if event.ButtonDown():
-#          self.control.SetFocus()
-#      else:
-#        event.Skip()  
-#    else:
-#      event.Skip()
+#Right click for next song - shakes stand
+  def mouse(self, event):
+  #  if event.IsButton():
+  #    if event.GetButton() == 3:
+  #      if event.ButtonUp():
+  #        #print("Right Button Up")
+  #        viewrect = self.GetScreenRect()
+  #        divider = viewrect[3] // 3
+  #        #print("Rectangle:", viewrect)
+  #        #print("X", event.X, "divider:", divider)
+  #        grid = self.GetParent().pages[self.GetParent().currentpage].grid
+  #        if event.X > divider:
+  #          #print("Forward")
+  #          grid.ChangeSong(1)
+  #          self.control.SetFocus()
+  #        else:
+  #          #print("Back")
+  #          grid.ChangeSong(-1)
+  #          self.control.SetFocus()
+  #    elif event.Button() == 1:
+  #      if event.ButtonDown():
+  #        self.control.SetFocus()
+  #    else:
+  #      event.Skip()  
+  #  else:
+    event.Skip()
         
   def ToggleFullScreen(self, event):
     self.ShowFullScreen(not self.IsFullScreen())
