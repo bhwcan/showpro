@@ -59,6 +59,8 @@ class DisplayChord(wx.Panel):
   def __init__(self, parent, strings, chorddef, color):
     super().__init__(parent, size=(150, 250))
 
+    defaultbgcolour = wx.SystemSettings.GetColour(wx.SYS_COLOUR_WINDOW)
+
     self.frets = chorddef["frets"]
     self.chord_name = chorddef["name"]
     self.base_fret = chorddef["base"]
@@ -86,6 +88,7 @@ class DisplayChord(wx.Panel):
         
     # Clear canvas at the beginning of painting
     dc.SetBackground(wx.Brush('white'))
+    dc.SetTextForeground(wx.BLACK)
     dc.Clear()
         
     # Set thicker pen for grid lines
