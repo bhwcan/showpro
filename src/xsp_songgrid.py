@@ -264,6 +264,7 @@ class SongGrid(wx.grid.Grid):
   def gridrow(self, row, song):
     coloured = False
     #self.SetCellValue(row, 0, str(song[0]))
+    self.SetCellTextColour(row, 0, wx.BLACK)
     if song[1] < 0:
       self.SetCellValue(row, 0, " DEL ")
       self.SetCellBackgroundColour(row,0,wx.RED)

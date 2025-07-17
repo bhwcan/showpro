@@ -209,9 +209,18 @@ class Song:
     defaulttextcolour = wx.SystemSettings.GetColour(wx.SYS_COLOUR_WINDOWTEXT)
     defaultbgcolour = wx.SystemSettings.GetColour(wx.SYS_COLOUR_WINDOW)
 
-    red = wx.Colour(255,51,51)
-    blue = wx.Colour(51,137,255)
-    green = wx.Colour(0,180,0)
+    if defaultbgcolour[0] < 46:
+      highlight = wx.Colour(80,80,80) #grey
+      bluelight = wx.Colour(21,69,77)
+      red = wx.Colour(255,51,51)
+      blue = wx.Colour(51,137,255)
+      green = wx.Colour(0,180,0)
+    else:
+      highlight = wx.Colour(180,180,180) #grey
+      bluelight = wx.Colour(171,219,227)
+      red = wx.Colour(180,0,0)
+      blue = wx.Colour(0,0,180)
+      green = wx.Colour(0,90,0)
 
     cordattr = wx.TextAttr(defaulttextcolour, font=wx.Font(self.textsize, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, False, face))
     commentattr = wx.TextAttr(defaulttextcolour, font=wx.Font(self.textsize, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, False, face))
@@ -228,8 +237,6 @@ class Song:
     fontattr = wx.TextAttr(defaulttextcolour, font=wx.Font(self.textsize, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, face))
     itlcattr = wx.TextAttr(defaulttextcolour, font=wx.Font(self.textsize, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_SLANT, wx.FONTWEIGHT_NORMAL, False, face))
     boldattr.SetBackgroundColour(defaultbgcolour)
-    highlight = wx.Colour(150,150,150) #grey
-    bluelight = wx.Colour(121,169,177)
 
     #if wx.Platform == "__WXMSW__":
     rtc = self.mx.control
