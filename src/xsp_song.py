@@ -205,26 +205,34 @@ class Song:
     highlighton = False
     bluelighton = False
     tabon = False
-    cordattr = wx.TextAttr(wx.BLACK, font=wx.Font(self.textsize, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, False, face))
-    commentattr = wx.TextAttr(wx.BLACK, font=wx.Font(self.textsize, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, False, face))
-    if self.chordcolor == 1:
-      cordattr = wx.TextAttr(wx.Colour(180,0,0), font=wx.Font(self.textsize, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, False, face))
-      commentattr = wx.TextAttr(wx.Colour(180,0,0), font=wx.Font(self.textsize, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, face))
-    elif self.chordcolor == 2:
-      cordattr = wx.TextAttr(wx.Colour(0,0,180), font=wx.Font(self.textsize, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, False, face))
-      commentattr = wx.TextAttr(wx.Colour(0,0,180), font=wx.Font(self.textsize, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, face))
-    elif self.chordcolor == 3:
-      cordattr = wx.TextAttr(wx.Colour(0,180,0), font=wx.Font(self.textsize, wx.FONTFAMILY_DEFAULT,  wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, False, face))
-      commentattr = wx.TextAttr(wx.Colour(0,180,0), font=wx.Font(self.textsize, wx.FONTFAMILY_DEFAULT,  wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, face))
-    boldattr = wx.TextAttr(wx.BLACK, font=wx.Font(self.textsize, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, False, face))
-    fontattr = wx.TextAttr(wx.BLACK, font=wx.Font(self.textsize, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, face))
-    itlcattr = wx.TextAttr(wx.BLACK, font=wx.Font(self.textsize, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_SLANT, wx.FONTWEIGHT_NORMAL, False, face))
-    boldattr.SetBackgroundColour(wx.WHITE)
-    highlight = wx.Colour(200,200,200) #grey
-    bluelight = wx.Colour(171,219,227)
 
-    rtc = self.mx.control
+    defaulttextcolour = wx.SystemSettings.GetColour(wx.SYS_COLOUR_WINDOWTEXT)
+    defaultbgcolour = wx.SystemSettings.GetColour(wx.SYS_COLOUR_WINDOW)
+
+    red = wx.Colour(255,51,51)
+    blue = wx.Colour(51,137,255)
+    green = wx.Colour(0,180,0)
+
+    cordattr = wx.TextAttr(defaulttextcolour, font=wx.Font(self.textsize, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, False, face))
+    commentattr = wx.TextAttr(defaulttextcolour, font=wx.Font(self.textsize, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, False, face))
+    if self.chordcolor == 1:
+      cordattr = wx.TextAttr(red, font=wx.Font(self.textsize, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, False, face))
+      commentattr = wx.TextAttr(red, font=wx.Font(self.textsize, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, face))
+    elif self.chordcolor == 2:
+      cordattr = wx.TextAttr(blue, font=wx.Font(self.textsize, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, False, face))
+      commentattr = wx.TextAttr(blue, font=wx.Font(self.textsize, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, face))
+    elif self.chordcolor == 3:
+      cordattr = wx.TextAttr(green, font=wx.Font(self.textsize, wx.FONTFAMILY_DEFAULT,  wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, False, face))
+      commentattr = wx.TextAttr(green, font=wx.Font(self.textsize, wx.FONTFAMILY_DEFAULT,  wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, face))
+    boldattr = wx.TextAttr(defaulttextcolour, font=wx.Font(self.textsize, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, False, face))
+    fontattr = wx.TextAttr(defaulttextcolour, font=wx.Font(self.textsize, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, face))
+    itlcattr = wx.TextAttr(defaulttextcolour, font=wx.Font(self.textsize, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_SLANT, wx.FONTWEIGHT_NORMAL, False, face))
+    boldattr.SetBackgroundColour(defaultbgcolour)
+    highlight = wx.Colour(150,150,150) #grey
+    bluelight = wx.Colour(121,169,177)
+
     #if wx.Platform == "__WXMSW__":
+    rtc = self.mx.control
     rtc.Hide()
     rtc.Clear()
     if self.showtitles:
@@ -271,13 +279,13 @@ class Song:
           bluelighton = False
         if d.name == "end_of_highlight" or d.name == "eoh":
           highlighton = False
-          #cordattr.SetBackgroundColour(wx.WHITE)
-          #fontattr.SetBackgroundColour(wx.WHITE)
+          #cordattr.SetBackgroundColour(defaultbgcolour)
+          #fontattr.SetBackgroundColour(defaultbgcolour)
           #choruson = False
           #print("end_of_chorus");
         if d.name == "comment" or d.name == "c":
           if self.chordcolor >= 0:
-            fontattr.SetBackgroundColour(wx.WHITE)
+            fontattr.SetBackgroundColour(defaultbgcolour)
             rtc.SetDefaultStyle(fontattr)       
             if choruson:
               rtc.WriteText(self.tab)
@@ -286,14 +294,14 @@ class Song:
             if highlighton:
               commentattr.SetBackgroundColour(highlight)
             else:
-              commentattr.SetBackgroundColour(wx.WHITE)
+              commentattr.SetBackgroundColour(defaultbgcolour)
             rtc.SetDefaultStyle(commentattr)
             rtc.WriteText(d.text)
             rtc.SetDefaultStyle(fontattr)       
             rtc.WriteText("\n")
         if d.name == "comment_italic" or d.name == "ci":
           if self.chordcolor >= 0:
-            fontattr.SetBackgroundColour(wx.WHITE)
+            fontattr.SetBackgroundColour(defaultbgcolour)
             rtc.SetDefaultStyle(fontattr)       
             if choruson:
               rtc.WriteText(self.tab)
@@ -302,7 +310,7 @@ class Song:
             if highlighton:
               itlcattr.SetBackgroundColour(highlight)
             else:
-              itlcattr.SetBackgroundColour(wx.WHITE)
+              itlcattr.SetBackgroundColour(defaultbgcolour)
             rtc.SetDefaultStyle(itlcattr)
             rtc.WriteText(d.text)
             rtc.SetDefaultStyle(fontattr)       
@@ -322,7 +330,7 @@ class Song:
         lyric = lyric.replace('↑','')
         lyric = lyric.replace('↓','')
         lyric = lyric.replace('|', '')
-      fontattr.SetBackgroundColour(wx.WHITE)
+      fontattr.SetBackgroundColour(defaultbgcolour)
       rtc.SetDefaultStyle(fontattr)
       if self.showtabs:
         rtc.WriteText(self.tab) # normal tab
@@ -338,7 +346,7 @@ class Song:
           cordattr.SetBackgroundColour(bluelight)
           rtc.SetDefaultStyle(fontattr)
       else:
-        cordattr.SetBackgroundColour(wx.WHITE)
+        cordattr.SetBackgroundColour(defaultbgcolour)
       while True:
         cs = lyric.find('[',s)
         if cs < 0:
@@ -364,7 +372,7 @@ class Song:
             break
           
       # stop highlight for new line
-      fontattr.SetBackgroundColour(wx.WHITE)
+      fontattr.SetBackgroundColour(defaultbgcolour)
       rtc.SetDefaultStyle(fontattr)
       rtc.WriteText("\n")
       if highlighton:

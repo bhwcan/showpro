@@ -21,8 +21,8 @@ class ViewWindow(wx.Frame):
     parent.vf = self
 
     wx.Frame.__init__(self, parent, size=(1200,800), style=wx.DEFAULT_FRAME_STYLE &~ wx.CLOSE_BOX)
-    self.SetPosition(wx.Point(viewrect[0], viewrect[1]+30)) # for mac top bar
-    self.SetSize(wx.Size(viewrect[2],viewrect[3]-70)) # for mac top bar and window bottom
+    self.SetPosition(wx.Point(viewrect[0], viewrect[1])) # for mac top bar
+    self.SetSize(wx.Size(viewrect[2],viewrect[3])) # for mac top bar and window bottom
 
     self.control = wx.TextCtrl(self, style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_RICH | wx.TE_AUTO_URL)
 
