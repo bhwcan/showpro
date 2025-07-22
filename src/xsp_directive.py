@@ -20,7 +20,7 @@ class Directive:
       end = len(self.line)
     if colon > 0:
       self.name = self.line[self.x+1:colon].strip()
-      self.text = self.line[colon+1:end]
+      self.text = self.line[colon+1:end].strip()
       if self.name[:6] == "define":
         self.defines(self.name, self.text)
     else:

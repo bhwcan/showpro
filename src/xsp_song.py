@@ -223,6 +223,7 @@ class Song:
       green = wx.Colour(0,90,0)
 
     cordattr = wx.TextAttr(defaulttextcolour, font=wx.Font(self.textsize, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, False, face))
+    cordtabattr = wx.TextAttr(defaulttextcolour, font=wx.Font(self.textsize, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, face))
     commentattr = wx.TextAttr(defaulttextcolour, font=wx.Font(self.textsize, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, False, face))
     if self.chordcolor == 1:
       cordattr = wx.TextAttr(red, font=wx.Font(self.textsize, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, False, face))
@@ -261,10 +262,28 @@ class Song:
       while cd < len(self.directives) and self.directives[cd].y == l:
         #print("y == l:", cd, self.directives[cd].y, l)
         d = self.directives[cd]
+        if d.name == "start_of_verse" or d.name == "sov":
+          if d.text:
+            if self.showtabs:
+              rtc.WriteText(self.tab)
+            commentattr.SetBackgroundColour(defaultbgcolour)
+            rtc.SetDefaultStyle(commentattr)
+            rtc.WriteText(d.text)
+            rtc.WriteText("\n")
         if d.name == "start_of_chorus" or d.name == "soc":
           #print("start_of_chorus");
           choruson = True
           highlighton = True
+          if d.text:
+            #print("chorus text:", d.text)
+            if self.showtabs:
+              rtc.WriteText(self.tab)
+            rtc.WriteText(self.tab)
+            commentattr.SetBackgroundColour(highlight)
+            rtc.SetDefaultStyle(commentattr)
+            rtc.WriteText(d.text)
+            rtc.WriteText("\n")
+            commentattr.SetBackgroundColour(defaultbgcolour)
         if d.name == "end_of_chorus" or d.name == "eoc":
           choruson = False
           highlighton = False
@@ -272,11 +291,21 @@ class Song:
         if d.name == "start_of_tab" or d.name == "sot":
           #print("start_of_chorus");
           tabon = True
+          bluelighton = True
         if d.name == "end_of_tab" or d.name == "eot":
           tabon = False
+          bluelighton = False
           #print("end_of_chorus");
         if d.name == "start_of_bridge" or d.name == "sob":
           bluelighton = True
+          if d.text:
+            if self.showtabs:
+              rtc.WriteText(self.tab)
+            commentattr.SetBackgroundColour(bluelight)
+            rtc.SetDefaultStyle(commentattr)
+            rtc.WriteText(d.text)
+            rtc.WriteText("\n")
+            commentattr.SetBackgroundColour(defaultbgcolour)
         if d.name == "start_of_highlight" or d.name == "soh":
           highlighton = True
           #print("start_of_chorus");
@@ -366,7 +395,10 @@ class Song:
             break
           rtc.WriteText(lyric[s:cs])
           if self.chordcolor >= 0:
-            rtc.SetDefaultStyle(cordattr)
+            if tabon:
+              rtc.SetDefaultStyle(cordtabattr)
+            else:
+              rtc.SetDefaultStyle(cordattr)
             chord = lyric[cs+1:ce]
             if self.setchord(chord):
               rtc.WriteText(lyric[cs:ce+1])
@@ -400,6 +432,10 @@ class Song:
       return False
     if (cs[0] < 'A' or cs[0] > 'G') and (cs[0] < 'a' or cs[0] > 'g'):
       return False
+    # special case for chorus
+    if cs[0] == 'C' or cs[0] == "c":
+      if len(cs) > 1 and ( cs[1] == "H" or cs[1] == "h" ):
+        return False
     while cs[-1] == '/' or cs[-1] == '^' or cs[-1] == ' ' or cs[-1] == '↓' or cs[-1] == '↑' or cs[-1] == '*' or cs[-1] == '|' or cs[-1] == '~':
       if len(cs) > 1:
         cs = cs[:-1]
