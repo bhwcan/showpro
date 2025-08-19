@@ -276,6 +276,7 @@ class Song:
 
         # add chord
         chord = lyric[cs+1:ce]
+        self.setchord(chord)
         chordline += chord + ' '
         cl = len(chord) + 1
 
