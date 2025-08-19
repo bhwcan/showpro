@@ -17,6 +17,7 @@ class ViewWindow(wx.Frame):
     self.chordframe = None
     self.songtitles = True
     self.instrument = "ukulele"
+    self.inline = True
 
     parent.vf = self
 

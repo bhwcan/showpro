@@ -134,6 +134,8 @@ class SongGrid(wx.grid.Grid):
       self.sortcol(col)
     elif key == 127: # DEL
       self.delrequested()
+    elif key == 54:
+      self.mf.song.toggleinline()
     elif key > 47 and key < 54 and not event.AltDown(): # 0-5 for number of stars
       row = self.GetGridCursorRow()
       filevalue = self.GetCellValue(row,self.filecol)
@@ -291,12 +293,12 @@ class SongGrid(wx.grid.Grid):
       bookvalue = self.songs[row][self.bookcol+1]
       filename = self.db.getsongpath(bookvalue, filevalue)
       if col != self.filecol:
-        try:
+        #try:
           self.mf.opensong(self.db.readsong(bookvalue, filevalue))
           self.mf.song.display()
           self.ChangeFocus(event)
-        except:
-          wx.LogError("Cannot open current data in file '%s'." % filename)
+        #except:
+        #  wx.LogError("Cannot open current data in file '%s'." % filename)
       else:
         self.editsong(bookvalue, filevalue)
     event.Skip()

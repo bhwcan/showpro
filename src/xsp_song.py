@@ -40,6 +40,13 @@ class Song:
                          { "chord": "G", "index": 11 } ]
     self.scale = [ "NC", "A", "Bb", "B", "C", "Db", "D", "Eb", "E", "F", "F#", "G", "G#" ]  
 
+  def toggleinline(self):
+    if self.mx.inline == True:
+      self.mx.inline = False
+    else:
+      self.mx.inline = True
+    self.display()
+
   def splitChords(self, inchord):
     oldchords = []
     for split in ("/", "add"):
@@ -194,6 +201,105 @@ class Song:
   def settitles(self, value):
     self.showtitles = value
     self.showtabs = value
+
+  def displayinline(self, lyric, tabon, cordattr, cordtabattr, fontattr):
+    rtc = self.mx.control
+    s = 0
+    while True:
+      cs = lyric.find('[',s)
+      if cs < 0:
+        rtc.WriteText(lyric[s:])
+        break
+      else:
+        ce = lyric.find(']',s)
+        if ce < 0:
+          rtc.WriteText(lyric[s:])
+          break
+        rtc.WriteText(lyric[s:cs])
+        if self.chordcolor >= 0:
+          if tabon:
+            rtc.SetDefaultStyle(cordtabattr)
+          else:
+            rtc.SetDefaultStyle(cordattr)
+          chord = lyric[cs+1:ce]
+          if self.setchord(chord):
+            rtc.WriteText(lyric[cs:ce+1])
+          else:
+            # if not valid chord remove square brackets
+            rtc.WriteText(lyric[cs+1:ce])
+          rtc.SetDefaultStyle(fontattr)
+      s = ce + 1
+      if s >= len(lyric):
+        break
+
+  def displayabove(self, lyric, tabon, cordattr, cordtabattr, fontattr, choruson):
+    rtc = self.mx.control
+    s = 0
+    cl = 0
+
+    chordline = ""
+    lyricline = ""
+
+    #special case no chords
+    cs = lyric.find('[',s)
+    if cs < 0:
+      rtc.WriteText(lyric[s:])
+      return
+
+    while True:
+      cs = lyric.find('[',s)
+      if cs < 0:
+        # done chords
+        chordline += ' ' * (len(lyric[s:]) - cl)
+        cl = 0
+        lyricline += lyric[s:]
+        break
+      else:
+        ce = lyric.find(']',s)
+        if ce < 0:
+          # done chords no closing brace
+          chordline += ' ' * (len(lyric[s:]) - cl)
+          cl = 0
+          lyricline += lyric[s:]
+          break
+        # add lyric
+        ll = len(lyric[s:cs])
+        if cl > ll:
+          lyricline += lyric[s:cs].ljust(cl)
+        else:
+          lyricline += lyric[s:cs]
+          chordline += ' ' * (len(lyric[s:cs]) - cl)
+
+        #print("chord:", cl, "lyric:", ll)
+        #print("["+lyricline+"]")
+        #print("["+chordline+"]")
+
+        # add chord
+        chord = lyric[cs+1:ce]
+        chordline += chord + ' '
+        cl = len(chord) + 1
+
+      s = ce + 1
+      if s >= len(lyric):
+        break
+
+    # write lines
+    if self.chordcolor >= 0:
+      rtc.SetDefaultStyle(cordtabattr)
+      rtc.WriteText(chordline)
+      rtc.WriteText("\n")
+
+    if len(lyricline) > 0 and not lyricline.isspace():
+      bg = fontattr.GetBackgroundColour()
+      fontattr.SetBackgroundColour(wx.SystemSettings.GetColour(wx.SYS_COLOUR_WINDOW))
+      rtc.SetDefaultStyle(fontattr)
+      if self.showtabs:
+        rtc.WriteText(self.tab) # normal tab
+      if choruson:
+        rtc.WriteText(self.tab) # chorus tab
+      fontattr.SetBackgroundColour(bg)
+      rtc.SetDefaultStyle(fontattr)
+      rtc.WriteText(lyricline)
     
   def display(self):
     face = "Monospace"
@@ -227,12 +333,15 @@ class Song:
     commentattr = wx.TextAttr(defaulttextcolour, font=wx.Font(self.textsize, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, False, face))
     if self.chordcolor == 1:
       cordattr = wx.TextAttr(red, font=wx.Font(self.textsize, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, False, face))
+      cordtabattr = wx.TextAttr(red, font=wx.Font(self.textsize, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, face))
       commentattr = wx.TextAttr(red, font=wx.Font(self.textsize, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, face))
     elif self.chordcolor == 2:
       cordattr = wx.TextAttr(blue, font=wx.Font(self.textsize, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, False, face))
+      cordtabattr = wx.TextAttr(blue, font=wx.Font(self.textsize, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, face))
       commentattr = wx.TextAttr(blue, font=wx.Font(self.textsize, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, face))
     elif self.chordcolor == 3:
       cordattr = wx.TextAttr(green, font=wx.Font(self.textsize, wx.FONTFAMILY_DEFAULT,  wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, False, face))
+      cordtabattr = wx.TextAttr(green, font=wx.Font(self.textsize, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, face))
       commentattr = wx.TextAttr(green, font=wx.Font(self.textsize, wx.FONTFAMILY_DEFAULT,  wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, face))
     boldattr = wx.TextAttr(defaulttextcolour, font=wx.Font(self.textsize, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, False, face))
     fontattr = wx.TextAttr(defaulttextcolour, font=wx.Font(self.textsize, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, face))
@@ -352,7 +461,7 @@ class Song:
             rtc.SetDefaultStyle(fontattr)       
             rtc.WriteText("\n")
         cd += 1
-      s = 0
+#      s = 0
       # if no chords then remove intro outro lines
       if self.chordcolor < 0:
         if tabon or lyric.lower().find("intro:") >= 0 \
@@ -383,32 +492,11 @@ class Song:
           rtc.SetDefaultStyle(fontattr)
       else:
         cordattr.SetBackgroundColour(defaultbgcolour)
-      while True:
-        cs = lyric.find('[',s)
-        if cs < 0:
-          rtc.WriteText(lyric[s:])
-          break
-        else:
-          ce = lyric.find(']',s)
-          if ce < 0:
-            rtc.WriteText(lyric[s:])
-            break
-          rtc.WriteText(lyric[s:cs])
-          if self.chordcolor >= 0:
-            if tabon:
-              rtc.SetDefaultStyle(cordtabattr)
-            else:
-              rtc.SetDefaultStyle(cordattr)
-            chord = lyric[cs+1:ce]
-            if self.setchord(chord):
-              rtc.WriteText(lyric[cs:ce+1])
-            else:
-              # if not valid chord remove square brackets
-              rtc.WriteText(lyric[cs+1:ce])
-            rtc.SetDefaultStyle(fontattr)
-          s = ce + 1
-          if s >= len(lyric):
-            break
+
+      if self.mx.inline:
+        self.displayinline(lyric, tabon, cordattr, cordtabattr, fontattr)
+      else:
+        self.displayabove(lyric, tabon, cordattr, cordtabattr, fontattr, choruson)
           
       # stop highlight for new line
       fontattr.SetBackgroundColour(defaultbgcolour)
