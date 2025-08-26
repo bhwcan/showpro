@@ -271,7 +271,7 @@ class MainWindow(wx.Frame):
     self.filename=""
     self.song = None
     self.textsize = 14
-    self.chordcolor = 0
+    self.chordcolor = 2
 
     wx.Frame.__init__(self, parent, title=title, size=(1200,800))
     self.control = wx.TextCtrl(self, style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_RICH)
@@ -405,7 +405,7 @@ class MainWindow(wx.Frame):
 
   def OnOpen(self,e):
     """ Open a file"""
-    dlg = wx.FileDialog(self, "Choose a file", self.dirname, "", "*pro", wx.FD_OPEN)
+    dlg = wx.FileDialog(self, "Choose a file", self.dirname, "", "*pro;*.cho", wx.FD_OPEN)
     if dlg.ShowModal() == wx.ID_OK:
       self.filename = dlg.GetFilename()
       self.dirname = dlg.GetDirectory()
@@ -422,8 +422,8 @@ class MainWindow(wx.Frame):
 filename = None
 if len(sys.argv) > 1:
   filename = sys.argv[1]
-  if not filename.endswith("pro"):
-    filename = None
+  #if not filename.endswith("pro"):
+  #  filename = None
 app = wx.App(False)
 frame = MainWindow(None, "Chordpro Show", filename)
 app.MainLoop()
