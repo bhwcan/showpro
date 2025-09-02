@@ -2,268 +2,10 @@ import wx
 import os
 import sys
 
-class Directive:
-  def __init__(self, raw, pos):
-    self.line = raw
-    self.y = pos
-    self.x = 0
-    self.name = ""
-    self.text = ""
-
-  def process(self):
-    if self.line.find("#") == 0:
-      self.name = self.line[0:1]
-      self.text = self.line[1:]
-      return self.name, self.text
-    self.x = self.line.find("{")
-    colon = self.line.find(":")
-    end = self.line.find("}")
-    if end < 0:
-      end = len(self.line)
-    if colon > 0:
-      self.name = self.line[self.x+1:colon].strip().lower()
-      self.text = self.line[colon+1:end].strip()
-    else:
-      self.name = self.line[self.x+1:end].strip().lower()
-    return self.name, self.text    
-  
-class Song:
-  def __init__(self, parent, textsize, chordcolor, raw):
-    self.mx = parent
-    self.data = raw
-    self.lines = []
-    self.lyrics = []
-    self.directives = []
-    self.title = ""
-    self.subtitle = ""
-    self.width = 0
-    self.textsize = textsize
-    self.chordcolor = chordcolor
-    self.tab = "    "
-    self.scalelookup = [ \
-                         { "chord": "A#", "index": 2 }, 
-                         { "chord": "Bb", "index": 2 }, 
-                         { "chord": "C#", "index": 5 },
-                         { "chord": "Db", "index": 5 },
-                         { "chord": "D#", "index": 7 }, 
-                         { "chord": "Eb", "index": 7 }, 
-                         { "chord": "F#", "index": 10 }, 
-                         { "chord": "Gb", "index": 10 }, 
-                         { "chord": "G#", "index": 12 }, 
-                         { "chord": "Ab", "index": 12 }, 
-                         { "chord": "A", "index": 1 }, 
-                         { "chord": "B", "index": 3 }, 
-                         { "chord": "C", "index": 4 }, 
-                         { "chord": "D", "index": 6 }, 
-                         { "chord": "E", "index": 8 }, 
-                         { "chord": "F", "index": 9 }, 
-                         { "chord": "G", "index": 11 } ]
-    self.scale = [ "NC", "A", "Bb", "B", "C", "Db", "D", "Eb", "E", "F", "F#", "G", "G#" ]  
-
-  def transform(self, value):
-    newlyrics = []
-    for lyric in self.lyrics:
-      newlyric = ""
-      s = 0
-      while True:
-        cs = lyric.find('[',s)
-        if cs < 0:
-          newlyric += lyric[s:]
-          break
-        else:
-          ce = lyric.find(']',s)
-          if ce < 0:
-            newlyric += lyric[s:]
-            break
-          newlyric += lyric[s:cs+1] # include brace
-          oldchord = lyric[cs+1:ce]
-          oldfound = False
-          newchord = ""
-          for look in self.scalelookup:
-            if oldchord.find(look["chord"]) == 0:
-              oldfound = True
-              oldlen = len(look["chord"])
-              oldidx = look["index"]
-              newidx = oldidx + value
-              if newidx < 1:
-                newidx = 12
-              if newidx > 12:
-                newidx = 1
-              newchord = self.scale[newidx] + oldchord[oldlen:]
-              break
-          if oldfound:
-            newlyric += newchord
-          else:
-            newlyric += oldchord
-          newlyric += "]" # add back the brace
-          s = ce + 1
-          if s >= len(lyric):
-            break
-      newlyrics.append(newlyric)
-    self.lyrics = newlyrics
-    self.display()
-
-  def save(self): # rebuild the original with new lyrics
-    output = ""
-    cd = 0
-    while cd < len(self.directives) and self.directives[cd].y <= 0:
-      output += self.directives[cd].line
-      cd += 1
-    l = 0
-    for lyric in self.lyrics:
-      if cd < len(self.directives):
-        while self.directives[cd].y == l:
-          output += self.directives[cd].line
-          cd += 1
-      output += lyric
-      l += 1
-    while cd < len(self.directives):
-      output += self.directives[cd].line
-      cd += 1
-    return(output)
-    
-  def command(self, line, lineno):
-    dtive = Directive(line, lineno)
-    name, text = dtive.process()
-    if name == "t" or name == "title":
-      self.title = text
-    if name == "st" or name == "subtitle":
-      self.subtitle = text
-    self.directives.append(dtive)
-    
-  def process(self):
-    rvalue = True
-    lineno = 0 # before lyrics
-    self.lines = self.data.splitlines(True)
-    for line in self.lines:
-      #print(line)
-      if line.find("#") == 0 or line.find("{") >= 0:
-        self.command(line, lineno)
-      else:
-        lineno += 1
-        if len(line) > self.width:
-          self.width = len(line)
-        line = line.replace("", "↓")  # down arrows
-        line = line.replace("’", "\'") # fancy quotes
-        self.lyrics.append(line)
-      if lineno > 1 and self.title == "":
-        self.lyrics = []
-        rvalue = False
-        break
-    #print("process:", rvalue)
-    return rvalue
-
-  def zoom(self, value):
-    self.textsize += value
-    if self.textsize < 14:
-      self.textsize = 14
-    if self.textsize > 48:
-      self.textsize = 48
-    #print (self.textsize)
-    self.display()
-    return self.textsize    
-
-  def setchordcolor(self, value):
-    self.chordcolor = value
-    self.display()
-
-  def display(self):
-    face = "Monospace"
-    if wx.Platform == "__WXMSW__":
-      face = "Lucida Console"
-    if wx.Platform == "__WXMAC__":
-      face = "Menlo"
-    choruson = False
-    highlighton = False
-    cordattr = wx.TextAttr(wx.BLACK, font=wx.Font(self.textsize, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, False, face))
-    if self.chordcolor == 1:
-      cordattr = wx.TextAttr(wx.Colour(120,0,0), font=wx.Font(self.textsize, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, False, face))
-    elif self.chordcolor == 2:
-      cordattr = wx.TextAttr(wx.Colour(0,0,180), font=wx.Font(self.textsize, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, False, face))
-    elif self.chordcolor == 3:
-      cordattr = wx.TextAttr(wx.Colour(0,100,0), font=wx.Font(self.textsize, wx.FONTFAMILY_DEFAULT,  wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, False, face))
-    boldattr = wx.TextAttr(wx.BLACK, font=wx.Font(self.textsize, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, False, face))
-    fontattr = wx.TextAttr(wx.BLACK, font=wx.Font(self.textsize, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, face))
-    itlcattr = wx.TextAttr(wx.BLACK, font=wx.Font(self.textsize, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_SLANT, wx.FONTWEIGHT_NORMAL, False, face))
-    highlight = wx.Colour(200,200,200) #grey
-
-    cd = 0
-    while cd < len(self.directives) and self.directives[cd].y <= 0:
-      cd += 1
-    rtc = self.mx.control
-    #if wx.Platform == "__WXMSW__":
-    rtc.Hide()
-    rtc.Clear()
-    rtc.SetDefaultStyle(boldattr)
-    rtc.WriteText(self.title.center(self.width) + "\n" + self.subtitle.center(self.width) + "\n")
-    rtc.SetDefaultStyle(fontattr)
-    self.mx.SetTitle(self.title + " - " + self.subtitle);
-    l = 0
-    for lyric in self.lyrics:
-      #print(l,";",lyric[:-1])
-      #print("cd < len:", cd, len(self.directives))
-      while cd < len(self.directives) and self.directives[cd].y == l:
-        #print("y == l:", cd, self.directives[cd].y, l)
-        d = self.directives[cd]
-        if d.name == "start_of_chorus" or d.name == "soc":
-          #print("start_of_chorus");
-          choruson = True
-        if d.name == "end_of_chorus" or d.name == "eoc":
-          choruson = False
-          #print("end_of_chorus");
-        if d.name == "start_of_bridge" or d.name == "sob":
-          highlighton = True
-          #print("start_of_chorus");
-          #cordattr.SetBackgroundColour(highlight)
-          #fontattr.SetBackgroundColour(highlight)
-        if d.name == "end_of_bridge" or d.name == "eob":
-          highlighton = False
-          #cordattr.SetBackgroundColour(wx.WHITE)
-          #fontattr.SetBackgroundColour(wx.WHITE)
-          #choruson = False
-          #print("end_of_chorus");
-        if d.name == "comment" or d.name == "c" or\
-           d.name == "comment_italic" or d.name == "ci":
-          #print("comment:", d.text)
-          rtc.SetDefaultStyle(itlcattr)
-          if choruson:
-            rtc.WriteText(self.tab)
-          rtc.WriteText(self.tab + d.text + "\n")
-          rtc.SetDefaultStyle(fontattr)
-        cd += 1
-      s = 0
-      fontattr.SetBackgroundColour(wx.WHITE)
-      rtc.SetDefaultStyle(fontattr)
-      rtc.WriteText(self.tab) # normal tab
-      if choruson:
-        rtc.WriteText(self.tab) # chorus tab
-      if highlighton:
-        fontattr.SetBackgroundColour(highlight)
-        cordattr.SetBackgroundColour(highlight)
-        rtc.SetDefaultStyle(fontattr)
-      else:
-        cordattr.SetBackgroundColour(wx.WHITE)
-      while True:
-        cs = lyric.find('[',s)
-        if cs < 0:
-          rtc.WriteText(lyric[s:])
-          break
-        else:
-          ce = lyric.find(']',s)
-          if ce < 0:
-            rtc.WriteText(lyric[s:])
-            break
-          rtc.WriteText(lyric[s:cs])
-          rtc.SetDefaultStyle(cordattr)
-          rtc.WriteText(lyric[cs:ce+1])
-          rtc.SetDefaultStyle(fontattr)
-          s = ce + 1
-          if s >= len(lyric):
-            break
-      l += 1
-    #if wx.Platform == "__WXMSW__":
-    rtc.SetInsertionPoint(0) # PC hac
-    rtc.Show()
+from xsp_song import Song
+from xsp_directive import Directive
+from chordbase import ChordBase
+from xsp_chords import ChordWindow
       
 class MainWindow(wx.Frame):
   def __init__(self, parent, title, filename):
@@ -272,6 +14,9 @@ class MainWindow(wx.Frame):
     self.song = None
     self.textsize = 14
     self.chordcolor = 2
+    self.inline = True
+    self.chordframe = None
+    self.db = ChordBase()
 
     wx.Frame.__init__(self, parent, title=title, size=(1200,800))
     self.control = wx.TextCtrl(self, style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_RICH)
@@ -293,6 +38,8 @@ class MainWindow(wx.Frame):
     chordRed = chordmenu.Append(1002, "&Red", "Set chord to red")
     chordBlue = chordmenu.Append(1003, "&Blue", "Set chords to blue")
     chordGreen= chordmenu.Append(1004, "&Green","Set chords to green")
+    chordAbove = chordmenu.Append(1005, "&Above", "Chords above lyrics")
+    chordInline = chordmenu.Append(1006, "&Inline", "Chords inline with lyrics")
 
     # Setting up the menu.
     transmenu= wx.Menu()
@@ -300,12 +47,19 @@ class MainWindow(wx.Frame):
     transminus = transmenu.Append(2006, "Down &-", "Transpose down one step")
     transave = transmenu.Append(wx.ID_SAVE, "&Save", "Save transformation to chordpro file")
 
+    # Setting up the menu.
+    chordxmenu= wx.Menu()
+    chordxguitar = chordxmenu.Append(3007, "&Guitar","Display guitar chords")
+    chordxukulele = chordxmenu.Append(3008, "&Ukulele", "Display ukulele chords")
+    chordxoff = chordxmenu.Append(3009, "&Off", "Display no chords")
+
     # Creating the menubar.
     menuBar = wx.MenuBar()
     menuBar.Append(filemenu,"&File") # Adding the "filemenu" to the MenuBar
     menuBar.Append(zoommenu,"&Zoom") # Adding the "filemenu" to the MenuBar
-    menuBar.Append(chordmenu,"&Color") # Adding the "filemenu" to the MenuBar
+    menuBar.Append(chordmenu,"&View") # Adding the "filemenu" to the MenuBar
     menuBar.Append(transmenu,"&Transpose") # Adding the "filemenu" to the MenuBar
+    menuBar.Append(chordxmenu,"&Chords") # Adding the "filemenu" to the MenuBar
     self.SetMenuBar(menuBar)  # Adding the MenuBar to the Frame content.
 
     # Events.
@@ -321,6 +75,11 @@ class MainWindow(wx.Frame):
     self.Bind(wx.EVT_MENU, self.OnPlus, transplus)
     self.Bind(wx.EVT_MENU, self.OnMinus, transminus)
     self.Bind(wx.EVT_MENU, self.OnSave, transave)
+    self.Bind(wx.EVT_MENU, self.displayGuitarChords, chordxguitar)
+    self.Bind(wx.EVT_MENU, self.displayUkuleleChords, chordxukulele)
+    self.Bind(wx.EVT_MENU, self.displayOffChords, chordxoff)
+    self.Bind(wx.EVT_MENU, self.OnAbove, chordAbove)
+    self.Bind(wx.EVT_MENU, self.OnInline, chordInline)
 
     if filename != None:
       if self.opensong(filename):
@@ -330,6 +89,18 @@ class MainWindow(wx.Frame):
 
     self.Show()
 
+  def OnAbove(self, e):
+    if self.inline == False:
+      return
+    self.inline = False
+    self.song.display()
+
+  def OnInline(self, e):
+    if self.inline == True:
+      return
+    self.inline = True
+    self.song.display()
+    
   def OnPlus(self,e):
     if self.song != None:
       self.song.transform(1)
@@ -404,6 +175,7 @@ class MainWindow(wx.Frame):
     return rvalue
 
   def OnOpen(self,e):
+    self.displayOffChords(e)
     """ Open a file"""
     dlg = wx.FileDialog(self, "Choose a file", self.dirname, "", "*pro;*.cho", wx.FD_OPEN)
     if dlg.ShowModal() == wx.ID_OK:
@@ -416,6 +188,71 @@ class MainWindow(wx.Frame):
       self.song = None
     else:
       self.song.display()
+
+  def displayGuitarChords(self, e):
+
+    if self.song == None:
+      return
+
+    if self.chordframe != None:
+      self.chordframe.Close(True)
+      self.chordframe = None
+    
+    chorddefs = []
+    undefined = []
+
+    for cn in self.song.chords:
+      found = False
+      for cl in self.song.guitardefs: # check song defines for chord
+        if cl["name"] == cn:
+          found = True
+          chorddefs.append(cl)
+          break
+      #print(cn)
+      if not found:
+        cd = self.db.find_guitardef(cn)
+        if cd == None:
+          undefined.append(cn)
+        else:
+          chorddefs.append(cd)
+
+    self.chordframe = ChordWindow(self, "Guitar Chords", 6, undefined, chorddefs, self.chordcolor)
+    return
+
+  def displayOffChords(self, e):
+    if self.chordframe != None:
+      self.chordframe.Close(True)
+      self.chordframe = None
+
+  def displayUkuleleChords(self, e):
+
+    if self.song == None:
+      return
+    
+    if self.chordframe != None:
+      self.chordframe.Close(True)
+      self.chordframe = None
+    
+    chorddefs = []
+    undefined = []
+
+    for cn in self.song.chords:
+      found = False
+      for cl in self.song.ukuleledefs: # check song defines for chord
+        if cl["name"] == cn:
+          found = True
+          chorddefs.append(cl)
+          break
+      #print(cn)
+      if not found:
+        cd = self.db.find_ukuleledef(cn)
+        if cd == None:
+          undefined.append(cn)
+        else:
+          chorddefs.append(cd)
+
+    self.chordframe = ChordWindow(self, "Ukulele Chords", 4, undefined, chorddefs, self.chordcolor)
+    return
 
 #MAIN
 #print("platform:", wx.Platform)

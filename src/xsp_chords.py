@@ -7,8 +7,8 @@ class ChordWindow(wx.Frame):
     self.undefined = undefined
     self.chorddefs = chorddefs
     self.strings = strings
-    self.ch = 270
-    self.cw = 170
+    self.ch = 278
+    self.cw = 186
     self.co = 20
     #height = viewrect[3]
 
