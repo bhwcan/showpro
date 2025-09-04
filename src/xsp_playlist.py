@@ -9,7 +9,7 @@ class ListPanel(wx.Panel):
     wx.Panel.__init__(self, parent)
     self.mf = mainframe
     self.SetSize(1200,800)
-    self.numrows = 30
+    self.numrows = 60
     self.editlist = [ "Unsaved" ]
     self.playlists = {}
     self.currentplaylist = "Unsaved"
@@ -137,7 +137,7 @@ class ListPanel(wx.Panel):
       self.Parent.Parent.Parent.setstatus2("Playlist exported to " + pathname)
 
   def on_open(self,event):
-    with wx.FileDialog(self, "Save Playlist file", wildcard="Playlist files (*.plf)|*.plf",
+    with wx.FileDialog(self, "Open Playlist file", wildcard="Playlist files (*.plf)|*.plf",
                        defaultDir=self.defaultpath, style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST) as fileDialog:
 
       if fileDialog.ShowModal() == wx.ID_CANCEL:

@@ -6,6 +6,7 @@ from xsp_song import Song
 from xsp_directive import Directive
 from chordbase import ChordBase
 from xsp_chords import ChordWindow
+from playlist import PlayList
       
 class MainWindow(wx.Frame):
   def __init__(self, parent, title, filename):
@@ -17,10 +18,11 @@ class MainWindow(wx.Frame):
     self.inline = True
     self.chordframe = None
     self.db = ChordBase()
+    self.playlist = PlayList(self)
 
     wx.Frame.__init__(self, parent, title=title, size=(1200,800))
     self.control = wx.TextCtrl(self, style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_RICH)
-    self.CreateStatusBar() # A Statusbar in the bottom of the window
+    self.statusbar = self.CreateStatusBar() # A Statusbar in the bottom of the window
 
     # Setting up the menu.
     filemenu= wx.Menu()
@@ -53,6 +55,14 @@ class MainWindow(wx.Frame):
     chordxukulele = chordxmenu.Append(3008, "&Ukulele", "Display ukulele chords")
     chordxoff = chordxmenu.Append(3009, "&Off", "Display no chords")
 
+    # Setting up the menu.
+    playlistmenu= wx.Menu()
+    playlistopen = playlistmenu.Append(4008, "&Open","Open play list")
+    playlistnext = playlistmenu.Append(4009, "&Next","Next song")
+    playlistprevious = playlistmenu.Append(4010, "&Previous","Previous song")
+    playlistselect = playlistmenu.Append(4012, "&Select","Select from list")
+    playlistclose = playlistmenu.Append(4011, "&Close","Close play list")
+ 
     # Creating the menubar.
     menuBar = wx.MenuBar()
     menuBar.Append(filemenu,"&File") # Adding the "filemenu" to the MenuBar
@@ -60,6 +70,7 @@ class MainWindow(wx.Frame):
     menuBar.Append(chordmenu,"&View") # Adding the "filemenu" to the MenuBar
     menuBar.Append(transmenu,"&Transpose") # Adding the "filemenu" to the MenuBar
     menuBar.Append(chordxmenu,"&Chords") # Adding the "filemenu" to the MenuBar
+    menuBar.Append(playlistmenu,"&Playlist") # Adding the "filemenu" to the MenuBar
     self.SetMenuBar(menuBar)  # Adding the MenuBar to the Frame content.
 
     # Events.
@@ -80,14 +91,57 @@ class MainWindow(wx.Frame):
     self.Bind(wx.EVT_MENU, self.displayOffChords, chordxoff)
     self.Bind(wx.EVT_MENU, self.OnAbove, chordAbove)
     self.Bind(wx.EVT_MENU, self.OnInline, chordInline)
+    self.Bind(wx.EVT_MENU, self.OnPlayListOpen, playlistopen)
+    self.Bind(wx.EVT_MENU, self.OnPlayListNext, playlistnext)
+    self.Bind(wx.EVT_MENU, self.OnPlayListPrevious, playlistprevious)
+    self.Bind(wx.EVT_MENU, self.OnPlayListClose, playlistclose)
+    self.Bind(wx.EVT_MENU, self.OnPlayListSelect, playlistselect)
+    self.control.Bind(wx.EVT_MOUSE_EVENTS, self.mouse)
 
     if filename != None:
-      if self.opensong(filename):
-        self.song.display()
+      #print(filename, filename[-4:])
+      if filename[-4:] == ".plf":
+        self.playlist.openfile(filename)
       else:
-        song = None
+        if self.opensong(filename):
+          self.song.display()
+        else:
+          song = None
 
     self.Show()
+
+  def mouse(self, event):
+    if self.playlist.on and event.IsButton() and event.GetButton() == 1:
+      if event.ButtonDown():
+        viewrect = self.GetScreenRect()
+        xdivider = viewrect[2] // 4
+        #print("Rectangle:", viewrect)
+        #print("X", event.X, "divider:", xdivider, xdivider*3)
+        if event.X > xdivider * 3:
+          self.playlist.next()
+        elif event.X < xdivider:
+          self.playlist.previous()
+        else:
+          event.Skip()
+      else:
+        event.Skip()
+    else:
+      event.Skip()
+
+  def OnPlayListSelect(self, e):
+    self.playlist.select()
+
+  def OnPlayListOpen(self, e):
+    self.playlist.open()
+
+  def OnPlayListClose(self, e):
+    self.playlist.close()
+
+  def OnPlayListNext(self, e):
+    self.playlist.next()
+
+  def OnPlayListPrevious(self, e):
+    self.playlist.previous()
 
   def OnAbove(self, e):
     if self.inline == False:
