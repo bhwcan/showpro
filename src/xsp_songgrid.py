@@ -319,7 +319,7 @@ class SongGrid(wx.grid.Grid):
       return sorted(songs, key=lambda x: x[col])
     
   def sortcol(self, col):
-    print("sortcol:", col)
+    #print("sortcol:", col)
     if col != self.currentsortcol:
       self.songs = self.sortsongs(self.songs, col)
       self.gridsongs(self.songs)
