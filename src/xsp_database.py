@@ -44,7 +44,7 @@ class Database():
   def deletesongs(self):
     for song in self.songs:
       if song[0] == -1:  # stars -1 is deleted
-        self.deletefile(self.getsongpath(song[3], song[4]))
+        self.deletefile(self.getsongpath(song[3], song[5]))
 
   def deletefile(self, filename):
     os.remove(filename)
@@ -74,6 +74,7 @@ class Database():
         os.path.exists(bookidxfile): 
       with open(songfile, "r") as sf:
         self.songs = json.load(sf)
+        #print(self.songs[0])
       with open(songidxfile, "r") as sf:
         self.titleidx = json.load(sf)
       with open(bookidxfile, "r") as sf:
@@ -108,6 +109,7 @@ class Database():
     star = 0
     title = ""
     subtitle = ""
+    number = -1
     for line in data.splitlines():
       if first:
         if line.find("#showpro:") == 0:
@@ -131,7 +133,12 @@ class Database():
               title = line[colon+1:end].strip()
             if name == "st" or name == "subtitle":
               subtitle = line[colon+1:end].strip()
-    return(title, subtitle, star)
+            if name == "number":
+              try:
+                number = int(line[colon+1:end].strip())
+              except:
+                number = -1
+    return(title, subtitle, star, number)
 
   def idxtitle(self, sid, title):
     titles = set(title.lower().split())
@@ -159,6 +166,7 @@ class Database():
     self.songs = []
     self.titleidx = []
     self.booksidx = []
+    self.numberidx = []
 
     sid = 0
     # search files
@@ -179,13 +187,15 @@ class Database():
         for rfile in filenames:
           if rfile[-3:] == "pro" or rfile[-3:] == "cho":
             data = self.readsong(bookname, rfile)
-            (title, subtitle, star) = self.gettitles(data)
+            (title, subtitle, star, number) = self.gettitles(data)
             if title != "":
               if sid % 100 == 0 and sw != None:
                 #print("titles:", sid, title, subtitle, statusbar)
                 text = "Rebuilding indexes: {:05d}".format(sid)
                 sw.setstatus(text)
-              self.songs.append([ star, title, subtitle, booknames[bookno], rfile ])
+              if number >= 0:
+                self.numberidx.append([number, sid])
+              self.songs.append([ star, title, subtitle, booknames[bookno], number, rfile ])
               self.idxtitle(sid, title)
               self.idxtitle(sid, subtitle)
               sid += 1
@@ -204,6 +214,9 @@ class Database():
     self.titleidx = sorted(self.titleidx, key=lambda x: x[0])
     with open(os.path.join(self.path, "songsidx.dat"), "w") as fh:
       json.dump(self.titleidx, fh)
+    self.numberidx = sorted(self.numberidx, key=lambda x: x[0])
+    with open(os.path.join(self.path, "numberidx.dat"), "w") as fh:
+      json.dump(self.numberidx, fh)
     if os.path.exists(os.path.join(self.path, "chords.dat")):
       with open(os.path.join(self.path, "chords.dat"), "r") as cf:
         self.chorddefs = json.load(cf)
@@ -319,7 +332,7 @@ class Database():
     #print(len(songset), "songs found")
 
     for sx in songset:
-      resultset.append([sx, self.songs[sx][0], self.songs[sx][1], self.songs[sx][2], self.songs[sx][3], self.songs[sx][4]])
+      resultset.append([sx, self.songs[sx][0], self.songs[sx][1], self.songs[sx][2], self.songs[sx][3], self.songs[sx][4], self.songs[sx][5]])
     return resultset
 
   def getBooks(self):
@@ -335,7 +348,7 @@ class Database():
     sid = 0
     for song in self.songs:
       if sid >= idstart and sid < idend:
-        idsongs.append([sid, song[0], song[1], song[2], song[3], song[4]])
+        idsongs.append([sid, song[0], song[1], song[2], song[3], song[4], song[5]])
       sid += 1
     return idsongs
 
@@ -380,7 +393,7 @@ class Database():
 
     self.writesong(book, filename, titleline)
 
-    newsong = [ 0, title, subtitle, book, filename ]
+    newsong = [ 0, title, subtitle, book, -1, filename ]
 
     if bookid < 0:
       bookid = len(self.booksidx)-1

@@ -10,6 +10,7 @@ class Song:
     self.directives = []
     self.title = ""
     self.subtitle = ""
+    self.number = ""
     self.width = 0
     self.textsize = textsize
     self.chordcolor = chordcolor
@@ -143,6 +144,8 @@ class Song:
       self.title = text
     if name == "st" or name == "subtitle":
       self.subtitle = text
+    if name == "number":
+      self.number = text
     if name == "instrument":
       self.instrument = text.strip()
     if dtive.define:
@@ -355,7 +358,7 @@ class Song:
     rtc.Clear()
     if self.showtitles:
       rtc.SetDefaultStyle(boldattr)
-      rtc.WriteText(self.tab + self.title.center(self.width) + "\n" + self.tab + self.subtitle.center(self.width) + "\n")
+      rtc.WriteText(self.tab + self.number + self.title.center(self.width-len(self.number)) + "\n" + self.tab + self.subtitle.center(self.width) + "\n")
     rtc.SetDefaultStyle(fontattr)
     self.mx.SetTitle(self.title + " - " + self.subtitle);
     cd = 0

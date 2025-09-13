@@ -11,15 +11,16 @@ class SongGrid(wx.grid.Grid):
     self.starcolours = [ wx.WHITE, wx.Colour(254,251,1), wx.Colour(206, 251, 2), wx.Colour(135, 250, 0), wx.Colour(58, 249, 1), wx.Colour (0, 255, 0) ]
     self.songs = []
     self.numrows = rows
-    self.numcols = 5
+    self.numcols = 6
     self.db = db
     self.mf = mf
-    self.collables = [ "Stars", "Title", "Subtitle", "Book", "File" ]
-    self.colsortlables = [ "Stars *", "Title *", "Subtitle *", "Book *", "File *" ]
+    self.collables = [ "Stars", "Title", "Subtitle", "Book", "#", "File" ]
+    self.colsortlables = [ "Stars *", "Title *", "Subtitle *", "Book *", "# *", "File *" ]
     self.starscol = 0
     self.titlecol = 1
     self.subtitlecol = 2
-    self.filecol = 4
+    self.numbercol = 4
+    self.filecol = 5
     self.bookcol = 3
     self.rowbuff = 10
     self.fontsize = 12
@@ -220,7 +221,8 @@ class SongGrid(wx.grid.Grid):
     self.SetColSize(1, 300)
     self.SetColSize(2, 400)
     self.SetColSize(3, 100)
-    self.SetColSize(4, 400)
+    self.SetColSize(4, 50)
+    self.SetColSize(5, 400)
 
   def gridclear(self):
     self.ClearGrid()
@@ -265,6 +267,7 @@ class SongGrid(wx.grid.Grid):
 
   def gridrow(self, row, song):
     coloured = False
+    #print(song)
     #self.SetCellValue(row, 0, str(song[0]))
     self.SetCellTextColour(row, 0, wx.BLACK)
     if song[1] < 0:
@@ -277,10 +280,15 @@ class SongGrid(wx.grid.Grid):
       coloured = True
     else:
       self.SetCellValue(row, 0, "     ")
+    if song[5] < 0:
+      number = ""
+    else:
+      number = str(song[5]).rjust(6)
     self.SetCellValue(row, 1, song[2])
     self.SetCellValue(row, 2, song[3])
     self.SetCellValue(row, 3, song[4])
-    self.SetCellValue(row, 4, song[5])
+    self.SetCellValue(row, 4, number)
+    self.SetCellValue(row, 5, song[6])
     
   def on_cell_click(self, event):
     #print("Cell clicked:", event.GetRow(), event.GetCol())
@@ -305,12 +313,13 @@ class SongGrid(wx.grid.Grid):
 
   def sortsongs(self, songs, gridcol):
     col = gridcol + 1  # sid is hidden
-    if col > 1:
+    if col != 0 and col != 5:
       return sorted(songs, key=lambda x: x[col].lower())
     else:
       return sorted(songs, key=lambda x: x[col])
     
   def sortcol(self, col):
+    print("sortcol:", col)
     if col != self.currentsortcol:
       self.songs = self.sortsongs(self.songs, col)
       self.gridsongs(self.songs)

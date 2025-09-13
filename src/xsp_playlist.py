@@ -155,10 +155,19 @@ class ListPanel(wx.Panel):
       try:
         with open(pathname, 'r') as file:
           self.playlists[name]["songs"] = json.load(file)
+          # compatable with numberless lists
       except:
         del self.playlists[name]
         wx.LogError("Cannot open current data in file '%s'." % pathname)
         return
+      #print(self.playlists[name]["songs"][0], "length=", len(self.playlists[name]["songs"][0]))
+      if len(self.playlists[name]["songs"][0]) < 7:
+        #print("fix list compatability")
+        xlist = []
+        for s in self.playlists[name]["songs"]:
+          xlist.append([s[0], s[1], s[2], s[3], s[4], -1, s[5]])
+        self.playlists[name]["songs"] = xlist
+        #print(self.playlists[name]["songs"][0], "length=", len(self.playlists[name]["songs"][0]))
       if newlist:
         self.editbox.Append(name)
       self.editbox.SetValue(name)
