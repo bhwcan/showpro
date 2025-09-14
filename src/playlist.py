@@ -18,7 +18,7 @@ class PlayList():
   def currentFile(self):
     # use last for file name for compatability
     l = len(self.list[self.current])
-    print(self.list[self.current], "length=", l)
+    #print(self.list[self.current], "length=", l)
     return os.path.join(self.path, self.list[self.current][4], self.list[self.current][l-1])
 
   def open(self):
