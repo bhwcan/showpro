@@ -110,7 +110,13 @@ class MainWindow(wx.Frame):
 
     self.Show()
 
+  def ToggleFullScreen(self, event):
+    self.ShowFullScreen(not self.IsFullScreen())
+
   def mouse(self, event):
+    if event.ButtonDClick():
+      self.ToggleFullScreen(event)
+      return
     if self.playlist.on and event.IsButton() and event.GetButton() == 1:
       if event.ButtonDown():
         viewrect = self.GetScreenRect()
