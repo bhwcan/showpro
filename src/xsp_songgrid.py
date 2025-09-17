@@ -36,7 +36,7 @@ class SongGrid(wx.grid.Grid):
     self.SetDefaultCellFont(font)
     self.AutoSizeRows()
 
-    self.EnableEditing(False)
+    # self.EnableEditing(False)
     self.SetRowLabelSize(0)  # Hide row labels
     self.DisableDragRowSize()
 
@@ -48,7 +48,23 @@ class SongGrid(wx.grid.Grid):
     self.Bind(wx.grid.EVT_GRID_CELL_LEFT_CLICK, self.on_cell_click)
     self.Bind(wx.grid.EVT_GRID_LABEL_LEFT_CLICK, self.on_label_click)
     self.Bind(wx.EVT_KEY_DOWN, self.on_key_pressed)
+    self.Bind(wx.grid.EVT_GRID_CELL_CHANGED, self.on_cell_change)
 
+  def on_cell_change(self, event):
+    row = event.GetRow()
+    col = event.GetCol()
+    svalue = self.GetCellValue(row, col)
+    try:
+      value = int(svalue)
+    except:
+      self.SetCellValue(row, col, "")
+      return
+    sid = self.songs[row][0]
+    book = self.songs[row][self.bookcol+1]
+    filename = self.songs[row][self.filecol+1]
+    self.songs[row][self.numbercol+1] = value
+    self.setnumber(sid, book, filename, value)
+    
   def editsong(self, bookvalue, filevalue):
     pos = self.pf.GetPosition()
     pos[0] += 50
@@ -213,6 +229,25 @@ class SongGrid(wx.grid.Grid):
     self.db.setSongValue(sid, 0, value)
     self.gridsongs(self.songs)
 
+  def setnumber(self, sid, book, filename, value):
+    data = self.db.readsong(book, filename)
+    starstring = "{{number: {}}}\n".format(value)
+    first = True
+    loc = data.find("{number:")
+    if loc >= 0:
+      cr = data.find('\n', loc)
+      if ord(data[cr]) == 10:
+        cr = cr + 1
+      data = data[:loc] + starstring + data[cr:]
+    else:
+      data = starstring + data
+    #print(data)
+    #exit(10)
+    self.db.writesong(book, filename, data)
+    # this should work if the file was found
+    self.db.setSongValue(sid, self.numbercol, value)
+    self.gridsongs(self.songs)
+
   def getcurrentsortcol(self):
     return self.currentsortcol
   
@@ -284,6 +319,11 @@ class SongGrid(wx.grid.Grid):
       number = ""
     else:
       number = str(song[5]).rjust(6)
+    self.SetReadOnly(row, 0, True)
+    self.SetReadOnly(row, 1, True)
+    self.SetReadOnly(row, 2, True)
+    self.SetReadOnly(row, 3, True)
+    self.SetReadOnly(row, 5, True)
     self.SetCellValue(row, 1, song[2])
     self.SetCellValue(row, 2, song[3])
     self.SetCellValue(row, 3, song[4])
@@ -293,11 +333,15 @@ class SongGrid(wx.grid.Grid):
   def on_cell_click(self, event):
     #print("Cell clicked:", event.GetRow(), event.GetCol())
     row = event.GetRow()
+    col = event.GetCol()
+    if col == self.numbercol:
+      self.SetGridCursor(row, col)
+      self.EnableCellEditControl(True)
+      return
     filevalue = ""
     if row < len(self.songs):
       filevalue = self.songs[row][self.filecol+1]
     if len(filevalue) > 0:
-      col = event.GetCol()
       bookvalue = self.songs[row][self.bookcol+1]
       filename = self.db.getsongpath(bookvalue, filevalue)
       if col != self.filecol:

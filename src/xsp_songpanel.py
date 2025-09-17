@@ -19,6 +19,7 @@ class SongPanel(wx.Panel):
     self.editbook.SetValue(self.currentbook)
     self.rebuildbutton = wx.Button(self, label="Rebuild")
     self.newbutton = wx.Button(self, label="New Song")
+    self.playlistbutton = wx.Button(self, label="Playlist")
     self.delbutton = wx.Button(self, label="Delete")
     self.aboutbutton = wx.Button(self, label="About")
 
@@ -34,12 +35,14 @@ class SongPanel(wx.Panel):
     self.grid.Bind(wx.grid.EVT_GRID_CELL_RIGHT_CLICK, self.on_right_click)
     self.newbutton.Bind(wx.EVT_BUTTON, self.newsong)
     self.delbutton.Bind(wx.EVT_BUTTON, self.delsongs)
+    self.playlistbutton.Bind(wx.EVT_BUTTON, self.createplaylist)
     self.aboutbutton.Bind(wx.EVT_BUTTON, self.OnAbout)
 
     topsizer = wx.BoxSizer(wx.HORIZONTAL)
     topsizer.Add(self.editbook, 0, wx.EXPAND|wx.ALL, 10)
     topsizer.Add(self.newbutton, 0, wx.ALL, 10)
     topsizer.Add(self.rebuildbutton, 0, wx.ALL, 10)
+    topsizer.Add(self.playlistbutton, 0, wx.ALL, 10)
     topsizer.Add(self.delbutton, 0, wx.ALL, 10)
     topsizer.Add(self.aboutbutton, 0, wx.ALL, 10)
 
@@ -161,7 +164,11 @@ class SongPanel(wx.Panel):
 
   def on_right_click(self, event):
     self.addtoplaylist()
-    
+  
+  def createplaylist(self, event):
+    for song in self.grid.songs:
+      self.pp.addsong(song)
+
   def addtoplaylist(self):
       song = self.grid.getcurrentsong()
       if song:

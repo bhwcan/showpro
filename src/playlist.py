@@ -32,11 +32,22 @@ class PlayList():
       self.openfile(self.pathname)
 
   def openfile(self, filename):
+    self.current = 0
     self.pathname = filename
     self.name = pathlib.Path(self.pathname).stem
     if os.path.exists(self.pathname):
       with open(self.pathname, "r") as pf:
         self.list = json.load(pf)
+      num = 1
+      for song in self.list:
+        #print(song)
+        #print("length:", len(song))
+        if len(song) < 7:
+          #print("append:", song[5])
+          song.append(song[5])
+        song[5] = num
+        #print(song)
+        num += 1
     else:
       return
   
@@ -53,7 +64,8 @@ class PlayList():
   def select(self):
     songlist = []
     for song in self.list:
-      songlist.append(song[2])
+      strvalue = "{:4d} - {}".format(song[5], song[2])
+      songlist.append(strvalue)
     # Create the dialog with a list of choices
     dlg = wx.SingleChoiceDialog(
       self.parent,
