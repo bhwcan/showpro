@@ -81,8 +81,8 @@ class Database():
         self.booksidx = json.load(sf)
     else:
       rvalue = False
-    if os.path.exists(os.path.join(self.path, "chords.dat")):
-      with open(os.path.join(self.path, "chords.dat"), "r") as cf:
+    if os.path.exists(os.path.join(self.path, "chords.jsn")):
+      with open(os.path.join(self.path, "chords.jsn"), "r") as cf:
         self.chorddefs = json.load(cf)
     return rvalue
   

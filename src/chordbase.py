@@ -7,8 +7,8 @@ class ChordBase():
   def __init__(self):
     self.chorddefs = []
     self.path = os.path.join(Path.home(), "Documents", "showpro")
-    if os.path.exists(os.path.join(self.path, "chords.dat")):
-      with open(os.path.join(self.path, "chords.dat"), "r") as cf:
+    if os.path.exists(os.path.join(self.path, "chords.jsn")):
+      with open(os.path.join(self.path, "chords.jsn"), "r") as cf:
         self.chorddefs = json.load(cf)
   
   def find_ukuleledef(self, name):
