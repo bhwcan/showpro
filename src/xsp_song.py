@@ -475,6 +475,17 @@ class Song:
             rtc.WriteText(d.text)
             rtc.SetDefaultStyle(fontattr)       
             rtc.WriteText("\n")
+        if d.name == "textcolor":
+          if d.text:
+            #print(d.text)
+            fontcolour = wx.Colour(d.text)
+            #print(fontcolour)
+            if not fontcolour.IsOk():
+              fontcolour = defaulttextcolour
+            fontattr.SetTextColour(fontcolour)
+          else:
+            fontattr.SetTextColour(defaulttextcolour)
+          rtc.SetDefaultStyle(fontattr)
         cd += 1
 #      s = 0
       # if no chords then remove intro outro lines
