@@ -68,19 +68,30 @@ class Song:
     newchords = []
     split, oldchords = self.splitChords(inchord)
     for oldchord in oldchords:
+      chordfound = False
+      notefound = False
       newchord = ""
       for look in self.scalelookup:
         if oldchord.find(look["chord"]) == 0:
-          oldlen = len(look["chord"])
-          oldidx = look["index"]
-          newidx = oldidx + value
-          if newidx < 1:
-            newidx = 12
-          if newidx > 12:
-            newidx = 1
+          chordfound = True
+        elif oldchord.find(look["chord"].lower()) == 0:
+          notefound = True
+        else:
+          continue
+        #found chord or note (lower case)
+        oldlen = len(look["chord"])
+        oldidx = look["index"]
+        newidx = oldidx + value
+        if newidx < 1:
+          newidx = 12
+        if newidx > 12:
+          newidx = 1
+        if chordfound:
           newchord = self.scale[newidx] + oldchord[oldlen:]
-          newchords.append(newchord)
-          break
+        else:
+          newchord = self.scale[newidx].lower() + oldchord[oldlen:]
+        newchords.append(newchord)
+        break
     outchord = split.join(newchords)
     #print("transpose:", inchord, outchord)
     return outchord

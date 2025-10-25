@@ -1,6 +1,7 @@
 import wx
 import os
 import sys
+import webbrowser
 
 from xsp_song import Song
 from xsp_directive import Directive
@@ -21,7 +22,7 @@ class MainWindow(wx.Frame):
     self.playlist = PlayList(self)
 
     wx.Frame.__init__(self, parent, title=title, size=(1200,800))
-    self.control = wx.TextCtrl(self, style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_RICH)
+    self.control = wx.TextCtrl(self, style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_RICH | wx.TE_AUTO_URL)
     self.statusbar = self.CreateStatusBar() # A Statusbar in the bottom of the window
 
     # Setting up the menu.
@@ -74,6 +75,7 @@ class MainWindow(wx.Frame):
     self.SetMenuBar(menuBar)  # Adding the MenuBar to the Frame content.
 
     # Events.
+    self.Bind(wx.EVT_TEXT_URL, self.OnTextURL)
     self.Bind(wx.EVT_MENU, self.OnOpen, menuOpen)
     self.Bind(wx.EVT_MENU, self.OnZoomIn, menuZoomIn)
     self.Bind(wx.EVT_MENU, self.OnZoomOut, menuZoomOut)
@@ -109,6 +111,15 @@ class MainWindow(wx.Frame):
           song = None
 
     self.Show()
+
+  def OnTextURL(self, event):
+    #print('OnTextURL')
+    if event.MouseEvent.LeftUp():
+        #print(event.GetURLStart(), event.GetURLEnd())
+        url = self.control.GetRange(event.GetURLStart(), event.GetURLEnd())
+        #print(url)
+        webbrowser.open_new_tab(url)
+    event.Skip()
 
   def ToggleFullScreen(self, event):
     self.ShowFullScreen(not self.IsFullScreen())
