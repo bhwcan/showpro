@@ -62,6 +62,8 @@ class PlayList():
     self.parent.statusbar.SetStatusText(self.name)
 
   def select(self):
+    if not self.on:
+      return
     songlist = []
     for song in self.list:
       strvalue = "{:4d} - {}".format(song[5], song[2])
@@ -74,7 +76,12 @@ class PlayList():
       songlist,
       wx.CHOICEDLG_STYLE
     )
+    pos = self.parent.GetPosition()
+    dlg.SetPosition(wx.Point(-1,pos[1]))
+    size = self.parent.GetSize()
+    size.SetWidth(-1)
     dlg.SetSelection(self.current)
+    dlg.SetSize(size)
     # Show the dialog and check the result
     if dlg.ShowModal() == wx.ID_OK:
       self.current = dlg.GetSelection()

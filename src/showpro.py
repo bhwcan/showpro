@@ -58,10 +58,10 @@ class MainWindow(wx.Frame):
 
     # Setting up the menu.
     playlistmenu= wx.Menu()
+    playlistselect = playlistmenu.Append(4012, "&Select","Select from list")
     playlistopen = playlistmenu.Append(4008, "&Open","Open play list")
     playlistnext = playlistmenu.Append(4009, "&Next","Next song")
     playlistprevious = playlistmenu.Append(4010, "&Previous","Previous song")
-    playlistselect = playlistmenu.Append(4012, "&Select","Select from list")
     playlistclose = playlistmenu.Append(4011, "&Close","Close play list")
  
     # Creating the menubar.
