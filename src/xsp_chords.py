@@ -3,7 +3,7 @@ import wx.lib.scrolledpanel as scrolled
 
 class ChordWindow(wx.Frame):
   def __init__(self, parent, name, strings, undefined, chorddefs, color):
-    super().__init__(parent, title=name,style=(wx.DEFAULT_FRAME_STYLE | wx.STAY_ON_TOP) & ~(wx.CLOSE_BOX | wx.MAXIMIZE_BOX | wx.MINIMIZE_BOX))
+    super().__init__(parent, title=name,style=(wx.DEFAULT_FRAME_STYLE | wx.STAY_ON_TOP) & ~(wx.MAXIMIZE_BOX | wx.MINIMIZE_BOX))
     self.undefined = undefined
     self.chorddefs = chorddefs
     self.strings = strings

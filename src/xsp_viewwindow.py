@@ -186,7 +186,8 @@ class ViewWindow(wx.Frame):
       return
 
     if self.chordframe != None:
-      self.chordframe.Close(True)
+      if self.chordframe:
+        self.chordframe.Close(True)
       self.chordframe = None
       return
     
@@ -217,7 +218,8 @@ class ViewWindow(wx.Frame):
       return
     
     if self.chordframe != None:
-      self.chordframe.Close(True)
+      if self.chordframe:
+        self.chordframe.Close(True)
       self.chordframe = None
       return
     
