@@ -246,8 +246,17 @@ class Song:
       if s >= len(lyric):
         break
 
-  def displayabove(self, lyric, tabon, cordattr, cordtabattr, fontattr, choruson):
-    rtc = self.mx.control
+  def allspacers(self, s):
+    spacers = { ' ', '/', '|', '↓' , '-'}
+    if not s:  # Handle empty string case
+      return False
+    for char in s:
+      if char not in spacers:
+        return False
+    return True
+
+  def parsechords(self, line):
+
     s = 0
     cl = 0
 
@@ -255,66 +264,147 @@ class Song:
     lyricline = ""
 
     #special case no chords
-    cs = lyric.find('[',s)
+    cs = line.find('[',s)
     if cs < 0:
-      rtc.WriteText(lyric[s:])
-      return
+      lyricline = line
+      return chordline, lyricline
 
+    lp = 0
+    cp = 0
     while True:
-      cs = lyric.find('[',s)
+      cs = line.find('[',s)
       if cs < 0:
         # done chords
-        chordline += ' ' * (len(lyric[s:]) - cl)
-        cl = 0
-        lyricline += lyric[s:]
+        lyric = line[s:]
+        ll = len(lyric)
+  #      lyricline += lyric
+
+  #      print("lyric:", "["+lyric+"]", ll, self.allspacers(lyric))
+
+        if self.allspacers(lyric):
+          chordline += ' ' * ll
+          lyricline += ' ' * cp
+          lyricline += lyric
+        else:
+          lyricline += lyric
+          if cp >= ll:
+            # plus one is to always have a space between chords
+            chordline += ' '
+            lyricline += ' ' * (cp-ll+1)
+          else:
+            chordline += ' ' * (ll-cp)
+
+  #      print("last spot:",s,"chord start:", cs, "chord end:", ce, "chord len:", cp, "lyric len:", ll)
+  #      print("|"+chordline+"|")
+  #      print("|"+lyricline+"|")
         break
       else:
-        ce = lyric.find(']',s)
+        ce = line.find(']',s)
         if ce < 0:
+          lyric = line[s:cs]
+          ll = len(lyric)
+          chord = line[cs+1:]
+          self.setchord(chord)
+          cl = len(chord)
+  #        print("chord:", "["+chord+"]", cl)
+  #        print("lyric:", "["+lyric+"]", ll, self.allspacers(lyric))
+
+          # add broken chord to end of lyric
+          if self.allspacers(lyric):
+            chordline += ' ' * ll
+            chordline += chord
+            lyricline += ' ' * cp
+            lyricline += lyric
+            lyricline += ' ' * cl
+          else:
+            lyricline += lyric
+            if cl >= ll:
+              chordline += ' ' * (cl-ll)
+            chordline += line[cs+1:]
+            lyricline += ' ' * cl
+
+  #        print("broken spot:",s,"chord start:", cs, "chord end:", ce, "chord len:", cl, "lyric len:", ll)
+  #        print("|"+chordline+"|")
+  #        print("|"+lyricline+"|")
+
           # done chords no closing brace
-          chordline += ' ' * (len(lyric[s:]) - cl)
-          cl = 0
-          lyricline += lyric[s:]
+          #chordline += ' ' * (len(line[s:]) - cp)
+          #cl = 0
           break
-        # add lyric
-        ll = len(lyric[s:cs])
-        if cl > ll:
-          lyricline += lyric[s:cs].ljust(cl)
-        else:
-          lyricline += lyric[s:cs]
-          chordline += ' ' * (len(lyric[s:cs]) - cl)
 
-        #print("chord:", cl, "lyric:", ll)
-        #print("["+lyricline+"]")
-        #print("["+chordline+"]")
-
-        # add chord
-        chord = lyric[cs+1:ce]
+        # found end
+        lyric = line[s:cs]
+        ll = len(lyric)
+        chord = line[cs+1:ce]
         self.setchord(chord)
-        chordline += chord + ' '
-        cl = len(chord) + 1
+        cl = len(chord)
+  #      print("chord:", "["+chord+"]", cl)
+  #      print("lyric:", "["+lyric+"]", ll, self.allspacers(lyric))
+
+        if self.allspacers(lyric):
+          chordline += ' ' * ll
+          chordline += chord
+          lyricline += ' ' * cp
+          lyricline += lyric
+        else:
+          lyricline += lyric
+  #        print("cp:", cp, "ll:", ll, "cp>0", cp>0, "cp>=ll", cp>=ll)
+          if cp >= ll:
+            # plus one is to always have a space between chords
+  #          print("add space")
+            if cs > 0:
+              chordline += ' '
+              lyricline += ' ' * (cp-ll+1)
+          else:
+            chordline += ' ' * (ll-cp)
+          chordline += chord
+
+  #      print("spot:",s,"chord start:", cs, "chord end:", ce, "chord len:", cp, "lyric len:", ll)
+  #      print("["+chordline+"]")
+  #      print("["+lyricline+"]")
+
+        cp = cl
 
       s = ce + 1
-      if s >= len(lyric):
+      if s >= len(line):
         break
 
+    # check if ends on chord expand lyric line
+    if cs >= 0 and ce >= 0:
+      lyricline += ' ' * (cp)
+
+  #  print("end spot:",s,"chord start:", cs, "chord end:", ce, "chord len:", cl, "lyric len:", ll)
+  #  print("|"+chordline+"|")
+  #  print("|"+lyricline+"|")
+
+    return chordline, lyricline
+
+  def displayabove(self, lyric, tabon, cordattr, cordtabattr, fontattr, choruson):
+    processtabs = True
+    rtc = self.mx.control
+
+    chordline, lyricline = self.parsechords(lyric)
+
     # write lines
-    if self.chordcolor >= 0:
+    if len(chordline) > 0 and not chordline.isspace() and self.chordcolor >= 0:
       rtc.SetDefaultStyle(cordtabattr)
       rtc.WriteText(chordline)
       rtc.WriteText("\n")
+    else:
+      processtabs = False
 
-    if len(lyricline) > 0 and not lyricline.isspace():
-      bg = fontattr.GetBackgroundColour()
-      fontattr.SetBackgroundColour(wx.SystemSettings.GetColour(wx.SYS_COLOUR_WINDOW))
-      rtc.SetDefaultStyle(fontattr)
+#    if len(lyricline) > 0 and not lyricline.isspace():
+    bg = fontattr.GetBackgroundColour()
+    fontattr.SetBackgroundColour(wx.SystemSettings.GetColour(wx.SYS_COLOUR_WINDOW))
+    rtc.SetDefaultStyle(fontattr)
+    if processtabs:
       if self.showtabs:
         rtc.WriteText(self.tab) # normal tab
       if choruson:
         rtc.WriteText(self.tab) # chorus tab
-      fontattr.SetBackgroundColour(bg)
-      rtc.SetDefaultStyle(fontattr)
-      rtc.WriteText(lyricline)
+    fontattr.SetBackgroundColour(bg)
+    rtc.SetDefaultStyle(fontattr)
+    rtc.WriteText(lyricline)
     
   def display(self):
     face = "Monospace"
@@ -397,9 +487,11 @@ class Song:
         if d.name == "start_of_chorus" or d.name == "soc":
           #print("start_of_chorus");
           choruson = True
-          highlighton = True
+          #highlighton = True
           if d.text:
             #print("chorus text:", d.text)
+            commentattr.SetBackgroundColour(defaultbgcolour)
+            rtc.SetDefaultStyle(commentattr)
             if self.showtabs:
               rtc.WriteText(self.tab)
             rtc.WriteText(self.tab)
@@ -410,7 +502,7 @@ class Song:
             commentattr.SetBackgroundColour(defaultbgcolour)
         if d.name == "end_of_chorus" or d.name == "eoc":
           choruson = False
-          highlighton = False
+          #highlighton = False
           #print("end_of_chorus");
         if d.name == "start_of_tab" or d.name == "sot":
           #print("start_of_chorus");

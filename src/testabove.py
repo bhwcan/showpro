@@ -1,10 +1,11 @@
 def allspacers(s):
-    if not s:  # Handle empty string case
-        return False
-    for char in s:
-        if char != ' ' and char != '/' and char != '|' and char != '↓':
-            return False
-    return True
+  spacers = { ' ', '/', '|', '↓' , '-'}
+  if not s:  # Handle empty string case
+    return False
+  for char in s:
+    if char not in spacers:
+      return False
+  return True
 
 def parsechords(line):
   
@@ -136,12 +137,13 @@ print("Main *********************")
 #line = "[C ↓ ↓]/ [A ↓ Tacet] [C ↓ ↓]/ dog    [A ↓ Tacet dog"
 #line = "[C ↓ ↓]/[A ↓]"
 lines = ["[C] ↓ ↓ [A] ↓ [Tacet] /  [C] ↓ ↓ [A] ↓ [Tacet] /",
-         "/ [C] ↓ ↓ [A] ↓ [G] ↓ / [F] ↓ ↓ ↓ ↓ / [D] / [D] /",
+         "/ [C] ↓ ↓ [A] ↓ [G] ↓ / [F] ↓ ↓ ↓ ↓ / [D] - / [D] / -",
+         "[C] [↓ ↓] [A] [↓] [G] [↓]  [F] [↓] [↓] [↓] [↓]   [D]    [D]",
          "Verse 1:",
          "[D]Left a good job in the [D]city", 
-         "[D]Workin' for the man ev'ry [D]night and day",
-         "[D]And I never lost one [D]minute of sleepin'",
-         "[D]Worryin' 'bout the way things [D]might have been"
+         "[D]Workin' for [D] -- [D] the man ev'ry [D]night and day",
+         "[D]And I never lost↓ one [D]minute of sleepin'",
+         "[D]Worryin' 'bout the way things [D]might h/ave been"
         ]
 
 #lines = [
@@ -152,6 +154,8 @@ print("\nOUT\n")
 
 for line in lines:
   chordline, lyricline = parsechords(line)
-  print("|"+chordline+"|")
-  print("|"+lyricline+"|")
+  if chordline:
+    print("chord|"+chordline+"|")
+  if not lyricline.isspace():
+    print("lyric|"+lyricline+"|")
 
