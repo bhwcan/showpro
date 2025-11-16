@@ -23,13 +23,17 @@ class MyFrame(wx.Frame):
     self.db = ChordBase()
     self.playlist = PlayList(self)
 
+    self.statusbar = self.CreateStatusBar() # A Statusbar in the bottom of the window
+
     panel = wx.Panel(self)
     panel.SetBackgroundColour(wx.Colour(240, 240, 240))
 
     main_sizer = wx.BoxSizer(wx.HORIZONTAL)
 
     self.control = wx.TextCtrl(panel, style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_RICH | wx.TE_AUTO_URL)
-    self.statusbar = self.CreateStatusBar() # A Statusbar in the bottom of the window
+    #main_sizer.Add(self.control, 1, wx.EXPAND)
+    # self.control = wx.TextCtrl(panel, style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_RICH | wx.TE_AUTO_URL)
+    # self.statusbar = self.CreateStatusBar() # A Statusbar in the bottom of the window
     main_sizer.Add(self.control, proportion=1, flag=wx.EXPAND | wx.ALL, border=10)
 
     # In a vertical sizer:
@@ -47,20 +51,30 @@ class MyFrame(wx.Frame):
     buttonscaledown = wx.Button(panel, label="Scale\nDown -")
     buttonzoomin = wx.Button(panel, label="Zoom\nIn +")
     buttonzoomout = wx.Button(panel, label="Zoom\nOut -")
+    buttoncolour = wx.Button(panel, label="Chord\nColour\n")
 
+    vbox.AddStretchSpacer(1)
     vbox.Add(buttonfileopen, 0, wx.ALIGN_RIGHT | wx.RIGHT, 10)
+    vbox.AddStretchSpacer(1)
     vbox.Add(buttonplopen, 0, wx.ALIGN_RIGHT | wx.RIGHT, 10)
     vbox.Add(buttonplselect, 0, wx.ALIGN_RIGHT | wx.RIGHT, 10)
     vbox.Add(buttonplnext, 0, wx.ALIGN_RIGHT | wx.RIGHT, 10)
     vbox.Add(buttonplprevious, 0, wx.ALIGN_RIGHT | wx.RIGHT, 10)
+    vbox.AddStretchSpacer(1)
     vbox.Add(buttoninline, 0, wx.ALIGN_RIGHT | wx.RIGHT, 10)
     vbox.Add(buttonabove, 0, wx.ALIGN_RIGHT | wx.RIGHT, 10)
+    vbox.AddStretchSpacer(1)
     vbox.Add(buttonguitar, 0, wx.ALIGN_RIGHT | wx.RIGHT, 10)
     vbox.Add(buttonukulele, 0, wx.ALIGN_RIGHT | wx.RIGHT, 10)
+    vbox.AddStretchSpacer(1)
     vbox.Add(buttonscaleup, 0, wx.ALIGN_RIGHT | wx.RIGHT, 10)
     vbox.Add(buttonscaledown, 0, wx.ALIGN_RIGHT | wx.RIGHT, 10)
+    vbox.AddStretchSpacer(1)
     vbox.Add(buttonzoomin, 0, wx.ALIGN_RIGHT | wx.RIGHT, 10)
     vbox.Add(buttonzoomout, 0, wx.ALIGN_RIGHT | wx.RIGHT, 10)
+    vbox.AddStretchSpacer(1)
+    vbox.Add(buttoncolour, 0, wx.ALIGN_RIGHT | wx.RIGHT, 10)
+    vbox.AddStretchSpacer(1)
 
     main_sizer.Add(vbox, proportion=0, flag=wx.EXPAND | wx.BOTTOM | wx.RIGHT, border=5)
 
@@ -77,11 +91,19 @@ class MyFrame(wx.Frame):
     buttonplselect.Bind(wx.EVT_BUTTON, self.OnPlayListSelect)
     buttonguitar.Bind(wx.EVT_BUTTON, self.displayGuitarChords)
     buttonukulele.Bind(wx.EVT_BUTTON, self.displayUkuleleChords)
+    buttoncolour.Bind(wx.EVT_BUTTON, self.OnColour)
     self.control.Bind(wx.EVT_MOUSE_EVENTS, self.mouse)
  
     panel.SetSizer(main_sizer)
     self.Layout()
 
+  def OnColour(self, event):
+    self.chordcolor += 1
+    if self.chordcolor > 3:
+      self.chordcolor = 0
+    if self.song != None:
+      self.song.setchordcolor(self.chordcolor)
+    
   def ToggleFullScreen(self, event):
     self.ShowFullScreen(not self.IsFullScreen())
     
