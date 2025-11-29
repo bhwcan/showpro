@@ -1,6 +1,7 @@
 import wx
 import wx.grid
-import os
+import subprocess
+import platform
 #from xsp_editwindow import EditWindow
 
 class SongGrid(wx.grid.Grid):
@@ -74,9 +75,21 @@ class SongGrid(wx.grid.Grid):
     # size[0] -= 250
     # size[1] -= 100
     # editframe = EditWindow(self, bookvalue, filevalue, pos, size)
-    os.startfile(self.db.getsongpath(bookvalue, filevalue))
+    #os.startfile(self.db.getsongpath(bookvalue, filevalue))
     #editor.editor(self.db.getsongpath(bookvalue, filevalue))
 
+    # Determine the default editor based on the operating system
+    if platform.system() == "Windows":
+        editor = "notepad.exe"
+    elif platform.system() == "Darwin":  # macOS
+        editor = "open"  # 'open' command opens with default application
+    else:  # Linux/Unix
+        editor = "emacs" # 'xdg-open' opens with default application
+
+    file_to_edit = self.db.getsongpath(bookvalue, filevalue)
+
+    subprocess.Popen([editor, file_to_edit])
+    
   def on_key_pressed(self,event):
     key = event.GetKeyCode()
     #print(key, "alt:", event.AltDown())
