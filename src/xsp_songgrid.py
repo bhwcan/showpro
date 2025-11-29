@@ -1,6 +1,7 @@
 import wx
 import wx.grid
-from xsp_editwindow import EditWindow
+import os
+#from xsp_editwindow import EditWindow
 
 class SongGrid(wx.grid.Grid):
   def __init__(self, parent, rows, db, mf):
@@ -66,14 +67,16 @@ class SongGrid(wx.grid.Grid):
     self.setnumber(sid, book, filename, value)
     
   def editsong(self, bookvalue, filevalue):
-    pos = self.pf.GetPosition()
-    pos[0] += 50
-    pos[1] += 50
-    size = self.pf.GetSize()
-    size[0] -= 250
-    size[1] -= 100
-    editframe = EditWindow(self, bookvalue, filevalue, pos, size)
-    
+    # pos = self.pf.GetPosition()
+    # pos[0] += 50
+    # pos[1] += 50
+    # size = self.pf.GetSize()
+    # size[0] -= 250
+    # size[1] -= 100
+    # editframe = EditWindow(self, bookvalue, filevalue, pos, size)
+    os.startfile(self.db.getsongpath(bookvalue, filevalue))
+    #editor.editor(self.db.getsongpath(bookvalue, filevalue))
+
   def on_key_pressed(self,event):
     key = event.GetKeyCode()
     #print(key, "alt:", event.AltDown())

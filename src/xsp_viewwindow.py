@@ -185,10 +185,8 @@ class ViewWindow(wx.Frame):
     if self.song == None:
       return
 
-    if self.chordframe != None:
-      if self.chordframe:
-        self.chordframe.Close(True)
-      self.chordframe = None
+    if self.chordframe:
+      self.chordframe.Close(True)
       return
     
     chorddefs = []
@@ -217,10 +215,8 @@ class ViewWindow(wx.Frame):
     if self.song == None:
       return
     
-    if self.chordframe != None:
-      if self.chordframe:
-        self.chordframe.Close(True)
-      self.chordframe = None
+    if self.chordframe:
+      self.chordframe.Close(True)
       return
     
     chorddefs = []
@@ -287,9 +283,8 @@ class ViewWindow(wx.Frame):
     self.Close(True)  # Close the frame.
 
   def opensong(self, data):
-    if self.chordframe != None:
+    if self.chordframe:
       self.chordframe.Close(True)
-      self.chordframe = None
     
     self.song = Song(self, self.textsize, self.chordcolor, data)
     self.song.settitles(self.songtitles)
