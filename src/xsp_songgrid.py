@@ -372,8 +372,11 @@ class SongGrid(wx.grid.Grid):
     event.Skip()
 
   def sortsongs(self, songs, gridcol):
+    #print("sortsongs", gridcol)
+    if gridcol < 0:
+      return songs
     col = gridcol + 1  # sid is hidden
-    if col != 0 and col != 5:
+    if col != 1 and col != 5:
       return sorted(songs, key=lambda x: x[col].lower())
     else:
       return sorted(songs, key=lambda x: x[col])
