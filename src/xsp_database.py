@@ -41,15 +41,20 @@ class Database():
     return self.musichome
 
   def getmusicpath(self, link):
+    # make music path work for windows and others
+    # if absolute path leave it alone
     if link.startswith(self.musichome):
       return link
     else:
-      if platform.system() != "Windows":
-        ospath = link.replace('\\', '/')
+      if platform.system() == "Windows":
+        ospath = link.replace('/', '\\')
       else:
-        ospath = link
+        ospath = link.replace('\\', '/')
       #print("ospath:", ospath)
-      return self.musichome+ospath
+    newpath = self.musichome+ospath
+    if os.path.exists(newpath) and os.path.isfile(newpath):
+      return newpath
+    return ""
 
   def getplaylistpath(self):
     return(os.path.join(self.path, "playlists"))

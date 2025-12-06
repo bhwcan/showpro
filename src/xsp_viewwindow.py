@@ -7,6 +7,7 @@ from xsp_chords import ChordWindow
   
 class ViewWindow(wx.Frame):
   def __init__(self, parent, db, viewrect):
+    self.mw = parent
     self.db = db
     self.dirname=""
     self.filename=""
@@ -171,9 +172,14 @@ class ViewWindow(wx.Frame):
       #event.Skip()
 
   def playsong(self):
+    self.mw.setstatus2("")
     #print("playsong")
     # if no path then do nothing
     if not self.song.musicpath:
+      return
+
+    path = self.db.getmusicpath(self.song.musicpath)
+    if not path:
       return
 
     # has a path load player
@@ -186,7 +192,7 @@ class ViewWindow(wx.Frame):
       return
 
     # play the song with relative music path
-    path = self.db.getmusicpath(self.song.musicpath)
+    self.mw.setstatus2("Playing: "+path)
     media = vlc.Media("file:///"+path)
     self.player.set_media(media)
     self.player.play()
@@ -309,6 +315,9 @@ class ViewWindow(wx.Frame):
     self.Close(True)  # Close the frame.
 
   def opensong(self, data):
+    if self.player and self.player.is_playing():
+      self.player.stop()
+    self.mw.setstatus2("")
     if self.chordframe:
       self.chordframe.Close(True)
     
