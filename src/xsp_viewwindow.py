@@ -1,5 +1,6 @@
 import wx
 import webbrowser
+import vlc
 
 from xsp_song import Song
 from xsp_chords import ChordWindow
@@ -18,6 +19,7 @@ class ViewWindow(wx.Frame):
     self.songtitles = True
     self.instrument = "ukulele"
     self.inline = True
+    self.player = None
 
     parent.vf = self
 
@@ -122,6 +124,9 @@ class ViewWindow(wx.Frame):
     #print(key, chr(key))
     if key == 350: #F11 - does not work on mac
       self.ToggleFullScreen(event)
+    elif key == 80 and event.ControlDown(): # ctrl-P
+      if self.song:
+        self.playsong()
     elif key == 85 and event.ControlDown(): # ctrl-U
       self.instrument = "ukulele"
     elif key == 71 and event.ControlDown(): # ctrl-G
@@ -164,6 +169,26 @@ class ViewWindow(wx.Frame):
       self.ResetFocus()
       #self.control.SetFocus()
       #event.Skip()
+
+  def playsong(self):
+    # if no path then do nothing
+    if not self.song.musicpath:
+      return
+
+    # has a path load player
+    if self.player == None:
+      self.player = vlc.MediaPlayer()
+
+    # check if currently playing and stop
+    if self.player.is_playing():
+      self.player.stop()
+      return
+
+    # play the song with relative music path
+    path = self.db.getmusicpath(self.song.musicpath)
+    media = vlc.Media("file:///"+path)
+    self.player.set_media(media)
+    self.player.play()
 
   def ResetFocus(self):
     #print("ViewWindow Reset Focus")

@@ -11,6 +11,7 @@ class Song:
     self.title = ""
     self.subtitle = ""
     self.number = ""
+    self.musicpath = ""
     self.width = 0
     self.textsize = textsize
     self.chordcolor = chordcolor
@@ -159,6 +160,8 @@ class Song:
       self.number = text
     if name == "instrument":
       self.instrument = text.strip()
+    if name == "musicpath":
+      self.musicpath = text.strip()
     if dtive.define:
       if len(dtive.chorddef["frets"]) == 4:
         self.ukuleledefs.append(dtive.chorddef)
@@ -582,17 +585,18 @@ class Song:
 #      s = 0
       # if no chords then remove intro outro lines
       if self.chordcolor < 0:
-        if tabon or lyric.lower().find("intro:") >= 0 \
-           or lyric.lower().find("outro:") >= 0 \
-           or lyric.lower().find("riff:") >= 0 \
-           or lyric.find("<") == 0:
+        #or lyric.lower().find("intro:") >= 0 \
+        #or lyric.lower().find("outro:") >= 0 \
+        if tabon \
+          or lyric.lower().find("riff:") >= 0 \
+          or lyric.find("<") == 0:
           l += 1
           continue
         # remove timing hints for no chords
         lyric = lyric.replace('/','');
         lyric = lyric.replace('↑','')
         lyric = lyric.replace('↓','')
-        lyric = lyric.replace('|', '')
+        #lyric = lyric.replace('|', '')
       fontattr.SetBackgroundColour(defaultbgcolour)
       rtc.SetDefaultStyle(fontattr)
       if self.showtabs:

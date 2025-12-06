@@ -6,6 +6,7 @@ from pathlib import Path
 class Database():
   def __init__(self):
     self.path = None
+    self.musichome = os.path.join(Path.home(), "Music")
     self.rebuildrequired = False
     self.songs = []
     self.titleidx = []
@@ -34,6 +35,15 @@ class Database():
 
   def getrootpath(self):
     return self.path
+
+  def getmusicroot(self):
+    return self.musichome
+
+  def getmusicpath(self, link):
+    if link.startswith(self.musichome):
+      return link
+    else:
+      return os.path.join(self.musichome+link)
 
   def getplaylistpath(self):
     return(os.path.join(self.path, "playlists"))
