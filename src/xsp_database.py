@@ -1,6 +1,7 @@
 import os
 import json
 import string
+import platform
 from pathlib import Path
 
 class Database():
@@ -43,7 +44,12 @@ class Database():
     if link.startswith(self.musichome):
       return link
     else:
-      return os.path.join(self.musichome+link)
+      if platform.system() != "Windows":
+        ospath = link.replace('\\', '/')
+      else:
+        ospath = link
+      #print("ospath:", ospath)
+      return self.musichome+ospath
 
   def getplaylistpath(self):
     return(os.path.join(self.path, "playlists"))

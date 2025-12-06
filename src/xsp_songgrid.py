@@ -79,16 +79,19 @@ class SongGrid(wx.grid.Grid):
     #editor.editor(self.db.getsongpath(bookvalue, filevalue))
 
     # Determine the default editor based on the operating system
+    execute = []
+    #print("editsong:", platform.system())
     if platform.system() == "Windows":
-        editor = "notepad.exe"
+      execute.append("notepad.exe")
     elif platform.system() == "Darwin":  # macOS
-        editor = "open"  # 'open' command opens with default application
+      execute.append("open")
+      execute.append("-e")
     else:  # Linux/Unix
-        editor = "emacs" # 'xdg-open' opens with default application
+      execute.append("emacs") # 'xdg-open' opens with default application
 
     file_to_edit = self.db.getsongpath(bookvalue, filevalue)
-
-    subprocess.Popen([editor, file_to_edit])
+    execute.append(file_to_edit)
+    subprocess.Popen(execute)
     
   def on_key_pressed(self,event):
     key = event.GetKeyCode()

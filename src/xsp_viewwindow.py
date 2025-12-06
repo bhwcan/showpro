@@ -171,6 +171,7 @@ class ViewWindow(wx.Frame):
       #event.Skip()
 
   def playsong(self):
+    #print("playsong")
     # if no path then do nothing
     if not self.song.musicpath:
       return
