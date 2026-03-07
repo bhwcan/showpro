@@ -5,6 +5,8 @@ import webbrowser
 from pathlib import Path
 
 from xsp_song import Song
+from xsp_database import Database
+from searchwindow import SearchWindow
 from playlist import PlayList
 from chordbase import ChordBase
 from xsp_chords import ChordWindow
@@ -20,8 +22,20 @@ class MyFrame(wx.Frame):
     self.chordcolor = 2
     self.inline = True
     self.chordframe = None
-    self.db = ChordBase()
+    #self.db = ChordBase()
+    self.db = Database()
     self.playlist = PlayList(self)
+
+    if not self.db.setrootpath() or not self.db.open():
+      dlg = wx.MessageDialog(None,
+                             " Invalid Path: " + self.db.getrootpath() + "\n",
+                             "Please create showpro song database\n"\
+                             "ask Byron", wx.OK|wx.ICON_ERROR)
+      dlg.ShowModal() # Shows it
+      dlg.Destroy() # finally destroy it when finished.
+      exit(10)
+    #self.db.setrootpath()
+    #self.db.open()
 
     self.statusbar = self.CreateStatusBar() # A Statusbar in the bottom of the window
 
@@ -39,6 +53,7 @@ class MyFrame(wx.Frame):
     # In a vertical sizer:
     vbox = wx.BoxSizer(wx.VERTICAL)
     buttonfileopen = wx.Button(panel, label="File\nOpen")
+    buttonsearch = wx.Button(panel, label="Song\nSearch")
     buttonplopen = wx.Button(panel, label="Playlist\nOpen")
     buttonplselect = wx.Button(panel, label="Playlist\nSelect")
     buttonplnext = wx.Button(panel, label="Playlist\nNext")
@@ -55,6 +70,8 @@ class MyFrame(wx.Frame):
 
     vbox.AddStretchSpacer(1)
     vbox.Add(buttonfileopen, 0, wx.ALIGN_RIGHT | wx.RIGHT, 10)
+    vbox.AddStretchSpacer(1)
+    vbox.Add(buttonsearch, 0, wx.ALIGN_RIGHT | wx.RIGHT, 10)
     vbox.AddStretchSpacer(1)
     vbox.Add(buttonplopen, 0, wx.ALIGN_RIGHT | wx.RIGHT, 10)
     vbox.Add(buttonplselect, 0, wx.ALIGN_RIGHT | wx.RIGHT, 10)
@@ -79,6 +96,7 @@ class MyFrame(wx.Frame):
     main_sizer.Add(vbox, proportion=0, flag=wx.EXPAND | wx.BOTTOM | wx.RIGHT, border=5)
 
     buttonfileopen.Bind(wx.EVT_BUTTON, self.OnOpen)
+    buttonsearch.Bind(wx.EVT_BUTTON, self.OnSearch)
     buttonzoomin.Bind(wx.EVT_BUTTON, self.OnZoomIn)
     buttonzoomout.Bind(wx.EVT_BUTTON, self.OnZoomOut)
     buttoninline.Bind(wx.EVT_BUTTON, self.OnInline)
@@ -127,6 +145,10 @@ class MyFrame(wx.Frame):
           event.Skip()
       else:
         event.Skip()
+
+  def OnSearch(self, e):
+    search = SearchWindow(self, self.db)
+    search.start()
 
   def OnPlayListSelect(self, e):
     self.playlist.select()
