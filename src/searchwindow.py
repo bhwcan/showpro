@@ -57,6 +57,8 @@ class SearchPanel(wx.Panel):
     self.searchop.SetValue("And")
     self.searchtxt2.Clear()
     self.grid.ClearGrid()
+    self.searchlist = []
+    self.showsongs()
     
   def on_button_click(self, event):
     self.search = self.searchtxt1.GetValue().strip().lower()

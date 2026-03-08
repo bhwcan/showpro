@@ -22,6 +22,7 @@ class MyFrame(wx.Frame):
     self.chordcolor = 2
     self.inline = True
     self.chordframe = None
+    self.search = None
     #self.db = ChordBase()
     self.db = Database()
     self.playlist = PlayList(self)
@@ -147,8 +148,12 @@ class MyFrame(wx.Frame):
         event.Skip()
 
   def OnSearch(self, e):
-    search = SearchWindow(self, self.db)
-    search.start()
+    if not self.search:
+      self.search = SearchWindow(self, self.db)
+      self.search.start()
+    else:
+      self.search.Raise()
+      self.search.SetFocus()
 
   def OnPlayListSelect(self, e):
     self.playlist.select()
