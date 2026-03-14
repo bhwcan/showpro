@@ -61,6 +61,7 @@ class MyFrame(wx.Frame):
     buttonplprevious = wx.Button(panel, label="Playlist\nPrev")
     buttoninline = wx.Button(panel, label="Chords\nInline")
     buttonabove = wx.Button(panel, label="Chords\nAbove")
+    buttonbaritone = wx.Button(panel, label="Bariton\nChords")
     buttonguitar = wx.Button(panel, label="Guitar\nChords")
     buttonukulele = wx.Button(panel, label="Ukulele\nChords")
     buttonscaleup = wx.Button(panel, label="Scale\nUp +")
@@ -82,6 +83,7 @@ class MyFrame(wx.Frame):
     vbox.Add(buttoninline, 0, wx.ALIGN_RIGHT | wx.RIGHT, 10)
     vbox.Add(buttonabove, 0, wx.ALIGN_RIGHT | wx.RIGHT, 10)
     vbox.AddStretchSpacer(1)
+    vbox.Add(buttonbaritone, 0, wx.ALIGN_RIGHT | wx.RIGHT, 10)
     vbox.Add(buttonguitar, 0, wx.ALIGN_RIGHT | wx.RIGHT, 10)
     vbox.Add(buttonukulele, 0, wx.ALIGN_RIGHT | wx.RIGHT, 10)
     vbox.AddStretchSpacer(1)
@@ -108,6 +110,7 @@ class MyFrame(wx.Frame):
     buttonplnext.Bind(wx.EVT_BUTTON, self.OnPlayListNext)
     buttonplprevious.Bind(wx.EVT_BUTTON, self.OnPlayListPrevious)
     buttonplselect.Bind(wx.EVT_BUTTON, self.OnPlayListSelect)
+    buttonbaritone.Bind(wx.EVT_BUTTON, self.displayBaritoneChords)
     buttonguitar.Bind(wx.EVT_BUTTON, self.displayGuitarChords)
     buttonukulele.Bind(wx.EVT_BUTTON, self.displayUkuleleChords)
     buttoncolour.Bind(wx.EVT_BUTTON, self.OnColour)
@@ -234,6 +237,37 @@ class MyFrame(wx.Frame):
     else:
       self.song.display()
 
+  def displayBaritoneChords(self, e):
+
+    if self.song == None:
+      return
+
+    if self.chordframe != None:
+      if self.chordframe:
+        self.chordframe.Close(True)
+      self.chordframe = None
+    
+    chorddefs = []
+    undefined = []
+
+    for cn in self.song.chords:
+      found = False
+      for cl in self.song.guitardefs: # check song defines for chord
+        if cl["name"] == cn:
+          found = True
+          chorddefs.append(cl)
+          break
+      #print(cn)
+      if not found:
+        cd = self.db.find_guitardef(cn)
+        if cd == None:
+          undefined.append(cn)
+        else:
+          chorddefs.append(cd)
+
+    self.chordframe = ChordWindow(self, "Baritone Chords", 4, undefined, chorddefs, self.chordcolor)
+    return
+
   def displayGuitarChords(self, e):
 
     if self.song == None:
@@ -267,7 +301,8 @@ class MyFrame(wx.Frame):
 
   def displayOffChords(self, e):
     if self.chordframe != None:
-      self.chordframe.Close(True)
+      if self.chordframe:
+        self.chordframe.Close(True)
       self.chordframe = None
 
   def displayUkuleleChords(self, e):

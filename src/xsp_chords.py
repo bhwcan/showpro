@@ -113,7 +113,11 @@ class DisplayChord(wx.Panel):
     # Draw open, muted, and fretted string markers
     font = wx.Font(10, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL)
     dc.SetFont(font)
-    for i, fret in enumerate(self.frets):
+    start = len(self.frets) - num_strings
+    #print(self.chord_name)
+    for i in range(num_strings):
+      fret = self.frets[i+start]
+      #print(i, fret)
       x = int((i + 1) * string_gap)
       if fret == -1:  # Muted string
         dc.DrawText('X', x - 5, int(fret_gap * 0.5))
